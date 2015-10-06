@@ -15,6 +15,7 @@ bool TrajectoryLineCreator::initialize() {
     //TODO für was hat der das car?
     car = datamanager()->writeChannel<sensor_utils::Car>(this,"CAR");
     config = getConfig();
+    kappa_old = 0;
 
     return true;
 }
@@ -39,17 +40,11 @@ bool TrajectoryLineCreator::advancedTrajectory(){
     //eigenes auto, vx,vy, dw -winkelgeschwindigkeit dw (zunächst mal 0)
     //vector mit x-koordinaten
     //vector mit y-koordinaten
-    double S[3];
-    S[0] = 0;//Anfangsgeschwindigkeit
-    S[1] = 0;//Anfangsbeschleunigung
-    S[2] = 1;//Endgeschwindigkeit
-
-    //Winkelgeschwindigkeiten
-    double D[4];
-    D[0] = -0.2;//
-    D[1] = 0;//
-    D[2] = 0;//
-    D[3] = -0.2;//
+    double v1 = 2;//endgeschwindigkeit
+    double d1 = 0.2;//Abweichung, die man am Ende haben will
+    double vx0 = 1; //Sollte nicht 0 sein, wegen smoothem start
+    double ax0 = 0; //beschl. am anfang
+    double w = 0; //aktuelle winkelgeschwindigkeit
 
     double kj = config->get<double>("kj",1.0);
     double kT = config->get<double>("kT",1.0);
@@ -61,12 +56,11 @@ bool TrajectoryLineCreator::advancedTrajectory(){
     double tMin = 0.1;//Minimal benötigte Zeit
     double tMax = 10; //Maximal benötigte Zeit
 
-    double safetyS = config->get<double>("safetyS",0.2); //Sicherheitsabstand tangential zur Straße
-    double safetyD = config->get<double>("safetyS",0.2); //Sicherheitsabstand orthogonal zur Straße
+    double safetyS = config->get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
+    double safetyD = config->get<double>("safetyD",0.1); //Sicherheitsabstand orthogonal zur Straße
 
     double dt = config->get<double>("dt",0.01); //Zeitintervall zwischen den Kollisionsabfragen
 
-    double ds = config->get<double>("ds",0.005); //Abstand des Streckenzugs
     double m = config->get<double>("m",20); //Anzahl der Punkte im Streckenzug
 
     double y0 = road->polarDarstellung[0];
@@ -75,8 +69,7 @@ bool TrajectoryLineCreator::advancedTrajectory(){
 
     int obstacle_count = envObstacles->objects.size();
 
-    emxArray_real_T *dataVeh =
-            dataVeh = emxCreate_real_T(3,obstacle_count);
+    emxArray_real_T *dataVeh = emxCreate_real_T(3,obstacle_count);
     for(int i = 0; i < obstacle_count; i++){
         const std::shared_ptr<street_environment::EnvironmentObject> &obj = envObstacles->objects[i];
         if(obj->getType() != 1){
@@ -91,45 +84,43 @@ bool TrajectoryLineCreator::advancedTrajectory(){
         logger.debug("Abstand zum hinderniss: ")<<x;
         dataVeh->data[i*3 +1] = 0; //geschwindigkeit vom hindernis
         //TODO rechte oder linke spur
-        dataVeh->data[i*3+ 2] = 1; //ob linke (-1) oder rechte spur (1)
+        dataVeh->data[i*3+ 2] = -1;  //TODO
     }
 
     //get kappa from circle
-    static float kappa_old =0;
     float kappa = 0;
     //Wie stark der alte radius ins gewicht fallen soll
-    float kappa_ratio = 0.5;
+    float kappa_ratio = config->get<float>("kappa_ratio",0);
 
     int kappaCount = 3;
+    //std::cout << "trajec-creator: kappa-values: ";
     for(int i = 0; i < kappaCount; i++){
         kappa += road->polarDarstellung[2+i];
+        //std::cout<< std::to_string(road->polarDarstellung[2+i])<< " , ";
     }
+    //std::cout<<std::endl;
     kappa /= kappaCount;
-    if(kappa_old == 0){
-        kappa_old = kappa;
-    }
+    logger.debug("kappa")<<kappa_old <<" , "<< kappa << " ratio: "<<kappa_ratio;
     kappa = kappa_ratio*kappa_old+(1-kappa_ratio)*kappa;
     kappa_old = kappa;
 
     logger.debug("advancedTrajectory")<<"kappa: "<<kappa;
     //output
-    double flag1;
-    double flag2;
+    double flag;
+    double T = -1; //gesamtzeit
 
     //punkte
     emxArray_real_T *x = emxCreate_real_T(1,m);
     emxArray_real_T *y = emxCreate_real_T(1,m);
 
 
-    otg_xy_reallyDumb(S,D, kj,
+    otg_xy_reallyDumb(v1,d1, kj,
                       kT,  ks,  kd,  dT,  tMin,  tMax,
-                      dataVeh,  safetyS, safetyD, dt, ds,
-                      m,  kappa,  y0,  phi,  &flag1,  &flag2,
-                      x, y);
+                      dataVeh,  safetyS, safetyD, dt, m,  kappa,  y0,  phi,vx0,ax0,w,  &flag,x, y,&T);
 
 
-    logger.debug("advancedTrajectory")<<"flag1: "<<flag1 << " flag2: "<<flag2;
-    if(flag1 < 0 || flag2 < 0)
+    logger.debug("advancedTrajectory")<<"flag: "<<flag;
+    if(flag < 0)
         return false;
 
     for(int i = 0; i < m; i++){
