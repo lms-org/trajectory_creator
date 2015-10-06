@@ -17,7 +17,7 @@ function [collision] = otg_collDet_dumb(ps, pd, T, dataVeh, safetyS, safetyD, dt
 %           dataVeh(:,i) = [s0i; vi; Ii] s.t.
 %               s0i = initial distance between obstacle car i and own car
 %               vi  = velocity of obstacle car i anlong the road
-%               Ii  = -1/1: -1: on left lane, +1: on the right lane
+%               Ii  = -1/1: -1: on right lane, +1: on the left lane
 %       safetyS = min. safety distance in s direction
 %       safetyD = min. safety distance in D direction with sign:
 %           if Ii == -1: d(t) must be bigger  than safetyD

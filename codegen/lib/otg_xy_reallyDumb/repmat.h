@@ -1,12 +1,12 @@
 /*
- * File: otg_ps.h
+ * File: repmat.h
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 06-Oct-2015 11:15:45
+ * C/C++ source code generated on  : 06-Oct-2015 16:22:34
  */
 
-#ifndef __OTG_PS_H__
-#define __OTG_PS_H__
+#ifndef __REPMAT_H__
+#define __REPMAT_H__
 
 /* Include Files */
 #include <math.h>
@@ -18,12 +18,12 @@
 #include "otg_xy_reallyDumb_types.h"
 
 /* Function Declarations */
-extern void otg_ps(const double S[3], double T, double ps[5]);
+extern void repmat(const emxArray_real_T *a, emxArray_real_T *b);
 
 #endif
 
 /*
- * File trailer for otg_ps.h
+ * File trailer for repmat.h
  *
  * [EOF]
  */

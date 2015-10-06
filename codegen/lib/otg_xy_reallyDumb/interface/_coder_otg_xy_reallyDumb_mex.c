@@ -20,7 +20,7 @@ void *emlrtRootTLSGlobal = NULL;
 static void otg_xy_reallyDumb_mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
   const mxArray *outputs[4];
-  const mxArray *inputs[18];
+  const mxArray *inputs[20];
   int n = 0;
   int nOutputs = (nlhs < 1 ? 1 : nlhs);
   int nInputs = nrhs;
@@ -29,8 +29,8 @@ static void otg_xy_reallyDumb_mexFunction(int nlhs, mxArray *plhs[], int nrhs, c
   otg_xy_reallyDumb_initialize(&emlrtContextGlobal);
   st.tls = emlrtRootTLSGlobal;
   /* Check for proper number of arguments. */
-  if (nrhs != 18) {
-    emlrtErrMsgIdAndTxt(&st, "EMLRT:runTime:WrongNumberOfInputs", 5, mxINT32_CLASS, 18, mxCHAR_CLASS, 17, "otg_xy_reallyDumb");
+  if (nrhs != 20) {
+    emlrtErrMsgIdAndTxt(&st, "EMLRT:runTime:WrongNumberOfInputs", 5, mxINT32_CLASS, 20, mxCHAR_CLASS, 17, "otg_xy_reallyDumb");
   } else if (nlhs > 4) {
     emlrtErrMsgIdAndTxt(&st, "EMLRT:runTime:TooManyOutputArguments", 3, mxCHAR_CLASS, 17, "otg_xy_reallyDumb");
   }

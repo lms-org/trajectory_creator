@@ -2,7 +2,7 @@
  * File: otg_pspdT_reallyDumb.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 06-Oct-2015 11:15:45
+ * C/C++ source code generated on  : 06-Oct-2015 16:22:34
  */
 
 /* Include Files */
@@ -10,11 +10,63 @@
 #include "otg_xy_reallyDumb.h"
 #include "otg_pspdT_reallyDumb.h"
 #include "otg_xy_reallyDumb_emxutil.h"
-#include "otg_ps.h"
 #include "linspace.h"
-#include "otg_xy_reallyDumb_rtwutil.h"
+
+/* Function Declarations */
+static double rt_powd_snf(double u0, double u1);
 
 /* Function Definitions */
+
+/*
+ * Arguments    : double u0
+ *                double u1
+ * Return Type  : double
+ */
+static double rt_powd_snf(double u0, double u1)
+{
+  double y;
+  double d0;
+  double d1;
+  if (rtIsNaN(u0) || rtIsNaN(u1)) {
+    y = rtNaN;
+  } else {
+    d0 = fabs(u0);
+    d1 = fabs(u1);
+    if (rtIsInf(u1)) {
+      if (d0 == 1.0) {
+        y = rtNaN;
+      } else if (d0 > 1.0) {
+        if (u1 > 0.0) {
+          y = rtInf;
+        } else {
+          y = 0.0;
+        }
+      } else if (u1 > 0.0) {
+        y = 0.0;
+      } else {
+        y = rtInf;
+      }
+    } else if (d1 == 0.0) {
+      y = 1.0;
+    } else if (d1 == 1.0) {
+      if (u1 > 0.0) {
+        y = u0;
+      } else {
+        y = 1.0 / u0;
+      }
+    } else if (u1 == 2.0) {
+      y = u0 * u0;
+    } else if ((u1 == 0.5) && (u0 >= 0.0)) {
+      y = sqrt(u0);
+    } else if ((u0 < 0.0) && (u1 > floor(u1))) {
+      y = rtNaN;
+    } else {
+      y = pow(u0, u1);
+    }
+  }
+
+  return y;
+}
 
 /*
  * This is the OTG = Optimal trajectory generation package. This is based on
@@ -45,7 +97,7 @@
  *            dataVeh(:,i) = [s0i; vi; Ii] s.t.
  *                s0i = initial distance between obstacle car i and own car
  *                vi  = velocity of obstacle car i anlong the road
- *                Ii  = -1/1: -1: on left lane, +1: on the right lane
+ *                Ii  = -1/1: -1: on right lane, +1: on the left lane
  *        safetyS = min. safety distance in s direction
  *        safetyD = min. safety distance in D direction with sign:
  *            if Ii == -1: d(t) must be bigger  than safetyD
@@ -92,7 +144,7 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
   *flag, double ps_data[], int ps_size[2], double pd_data[], int pd_size[2],
   double *T)
 {
-  int i0;
+  int i1;
   emxArray_real_T *TT;
   emxArray_real_T *PS;
   double n;
@@ -104,11 +156,11 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
   emxArray_real_T *tt;
   emxArray_real_T *ss;
   emxArray_real_T *dd;
-  double dv1[5];
+  double ps[5];
   double pd[6];
-  double delta1;
+  unsigned int uv0[2];
   int b_n;
-  int iv0[2];
+  double y;
   boolean_T exitg4;
   int nx;
   int32_T exitg3;
@@ -121,20 +173,20 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
   /* % init for case of return */
   ps_size[0] = 1;
   ps_size[1] = 5;
-  for (i0 = 0; i0 < 5; i0++) {
-    ps_data[i0] = 0.0;
+  for (i1 = 0; i1 < 5; i1++) {
+    ps_data[i1] = 0.0;
   }
 
   pd_size[0] = 1;
   pd_size[1] = 6;
-  for (i0 = 0; i0 < 6; i0++) {
-    pd_data[i0] = 0.0;
+  for (i1 = 0; i1 < 6; i1++) {
+    pd_data[i1] = 0.0;
   }
 
   emxInit_real_T(&TT, 2);
   emxInit_real_T(&PS, 2);
   *T = 0.0;
-  *flag = 0.0;
+  *flag = 1.0;
 
   /* % init */
   n = ceil(Tmax - Tmin) / dT;
@@ -143,49 +195,49 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
   linspace(Tmin, Tmax, n, TT);
 
   /* generate all Ts */
-  i0 = PS->size[0] * PS->size[1];
+  i1 = PS->size[0] * PS->size[1];
   PS->size[0] = 5;
   PS->size[1] = (int)n;
-  emxEnsureCapacity((emxArray__common *)PS, i0, (int)sizeof(double));
+  emxEnsureCapacity((emxArray__common *)PS, i1, (int)sizeof(double));
   j = 5 * (int)n;
-  for (i0 = 0; i0 < j; i0++) {
-    PS->data[i0] = 0.0;
+  for (i1 = 0; i1 < j; i1++) {
+    PS->data[i1] = 0.0;
   }
 
   emxInit_real_T(&PD, 2);
 
   /* all the coefficients pd */
-  i0 = PD->size[0] * PD->size[1];
+  i1 = PD->size[0] * PD->size[1];
   PD->size[0] = 6;
   PD->size[1] = (int)n;
-  emxEnsureCapacity((emxArray__common *)PD, i0, (int)sizeof(double));
+  emxEnsureCapacity((emxArray__common *)PD, i1, (int)sizeof(double));
   j = 6 * (int)n;
-  for (i0 = 0; i0 < j; i0++) {
-    PD->data[i0] = 0.0;
+  for (i1 = 0; i1 < j; i1++) {
+    PD->data[i1] = 0.0;
   }
 
   emxInit_real_T(&C, 2);
 
   /* all the coefficients pd */
-  i0 = C->size[0] * C->size[1];
+  i1 = C->size[0] * C->size[1];
   C->size[0] = 1;
   C->size[1] = (int)n;
-  emxEnsureCapacity((emxArray__common *)C, i0, (int)sizeof(double));
+  emxEnsureCapacity((emxArray__common *)C, i1, (int)sizeof(double));
   j = (int)n;
-  for (i0 = 0; i0 < j; i0++) {
-    C->data[i0] = 0.0;
+  for (i1 = 0; i1 < j; i1++) {
+    C->data[i1] = 0.0;
   }
 
   emxInit_real_T(&collisions, 2);
 
   /* the cost function values */
-  i0 = collisions->size[0] * collisions->size[1];
+  i1 = collisions->size[0] * collisions->size[1];
   collisions->size[0] = 1;
   collisions->size[1] = (int)n;
-  emxEnsureCapacity((emxArray__common *)collisions, i0, (int)sizeof(double));
+  emxEnsureCapacity((emxArray__common *)collisions, i1, (int)sizeof(double));
   j = (int)n;
-  for (i0 = 0; i0 < j; i0++) {
-    collisions->data[i0] = 0.0;
+  for (i1 = 0; i1 < j; i1++) {
+    collisions->data[i1] = 0.0;
   }
 
   /* collisions (0: no collision, 1: collision) */
@@ -194,9 +246,34 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
   emxInit_real_T(&ss, 2);
   emxInit_real_T(&dd, 2);
   while (k <= (int)n - 1) {
-    otg_ps(S, TT->data[k], dv1);
-    for (i0 = 0; i0 < 5; i0++) {
-      PS->data[i0 + PS->size[0] * k] = dv1[i0];
+    /* This is the OTG = Optimal trajectory generation package. This is based on */
+    /* the paper "Optimal Trajectory Generation for Dynamic Street Scenarios in a */
+    /* Frenet Frame"(2010) by Werling et. al. */
+    /*  */
+    /* -------------------------------------------------------------------------- */
+    /*  */
+    /* otg_ps returns the coefficients of the unique 4th order Polynomial for s(t) */
+    /*    INPUT: */
+    /*        S = [v0, a0, v1] s.t. */
+    /*            s(0) = 0, s'(0) = v0, s''(0) = a0, s'(T) = v1 */
+    /*        T = end time */
+    /*  */
+    /*    OUTPUT: */
+    /*        ps = coefficients of the polynomial in std. matlab notation i.e. */
+    /*            s(t) = ps(1)*t^4 + ps(2)*t^3 + ps(3)*t^2 + ps(4)*t + ps(5) */
+    /*  */
+    /*  See also  */
+    /* init */
+    /* formulas precomputed */
+    ps[0] = 1.0 / rt_powd_snf(TT->data[k], 3.0) * ((S[0] * 2.0 - S[2] * 2.0) +
+      TT->data[k] * S[1]) * 0.25;
+    ps[1] = 1.0 / (TT->data[k] * TT->data[k]) * ((S[0] * 3.0 - S[2] * 3.0) +
+      TT->data[k] * S[1] * 2.0) * -0.33333333333333331;
+    ps[2] = S[1] * 0.5;
+    ps[3] = S[0];
+    ps[4] = 0.0;
+    for (i1 = 0; i1 < 5; i1++) {
+      PS->data[i1 + PS->size[0] * k] = ps[i1];
     }
 
     /* get coefficients */
@@ -231,8 +308,8 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
     pd[3] = D[2] / 2.0;
     pd[4] = D[1];
     pd[5] = D[0];
-    for (i0 = 0; i0 < 6; i0++) {
-      PD->data[i0 + PD->size[0] * k] = pd[i0];
+    for (i1 = 0; i1 < 6; i1++) {
+      PD->data[i1 + PD->size[0] * k] = pd[i1];
     }
 
     /* get coefficients */
@@ -366,7 +443,7 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
     /*            dataVeh(:,i) = [s0i; vi; Ii] s.t. */
     /*                s0i = initial distance between obstacle car i and own car */
     /*                vi  = velocity of obstacle car i anlong the road */
-    /*                Ii  = -1/1: -1: on left lane, +1: on the right lane */
+    /*                Ii  = -1/1: -1: on right lane, +1: on the left lane */
     /*        safetyS = min. safety distance in s direction */
     /*        safetyD = min. safety distance in D direction with sign: */
     /*            if Ii == -1: d(t) must be bigger  than safetyD */
@@ -378,101 +455,71 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
     /*  */
     /*  See also */
     /* number of obstacle vehicles */
-    delta1 = ceil(TT->data[k] / dt);
-    if (delta1 < 0.0) {
-      delta1 = 0.0;
-    }
-
-    i0 = tt->size[0] * tt->size[1];
-    tt->size[0] = 1;
-    tt->size[1] = (int)delta1;
-    emxEnsureCapacity((emxArray__common *)tt, i0, (int)sizeof(double));
-    if ((int)delta1 >= 1) {
-      tt->data[(int)delta1 - 1] = TT->data[k];
-      if (tt->size[1] >= 2) {
-        tt->data[0] = 0.0;
-        if (tt->size[1] >= 3) {
-          if ((TT->data[k] < 0.0) && (fabs(TT->data[k]) >
-               8.9884656743115785E+307)) {
-            delta1 = TT->data[k] / ((double)tt->size[1] - 1.0);
-            i0 = tt->size[1];
-            for (b_n = 0; b_n <= i0 - 3; b_n++) {
-              tt->data[b_n + 1] = delta1 * (1.0 + (double)b_n);
-            }
-          } else {
-            delta1 = TT->data[k] / ((double)tt->size[1] - 1.0);
-            i0 = tt->size[1];
-            for (b_n = 0; b_n <= i0 - 3; b_n++) {
-              tt->data[b_n + 1] = (1.0 + (double)b_n) * delta1;
-            }
-          }
-        }
-      }
-    }
+    b_linspace(TT->data[k], ceil(TT->data[k] / dt), tt);
 
     /* samples */
-    for (i0 = 0; i0 < 2; i0++) {
-      iv0[i0] = tt->size[i0];
+    for (i1 = 0; i1 < 2; i1++) {
+      uv0[i1] = (unsigned int)tt->size[i1];
     }
 
-    i0 = ss->size[0] * ss->size[1];
+    i1 = ss->size[0] * ss->size[1];
     ss->size[0] = 1;
-    ss->size[1] = iv0[1];
-    emxEnsureCapacity((emxArray__common *)ss, i0, (int)sizeof(double));
-    if (!(iv0[1] == 0)) {
-      i0 = ss->size[0] * ss->size[1];
+    ss->size[1] = (int)uv0[1];
+    emxEnsureCapacity((emxArray__common *)ss, i1, (int)sizeof(double));
+    if (!((int)uv0[1] == 0)) {
+      i1 = ss->size[0] * ss->size[1];
       ss->size[0] = 1;
-      emxEnsureCapacity((emxArray__common *)ss, i0, (int)sizeof(double));
-      i0 = ss->size[0] * ss->size[1];
-      ss->size[1] = iv0[1];
-      emxEnsureCapacity((emxArray__common *)ss, i0, (int)sizeof(double));
-      j = iv0[1];
-      for (i0 = 0; i0 < j; i0++) {
-        ss->data[i0] = PS->data[PS->size[0] * k];
+      emxEnsureCapacity((emxArray__common *)ss, i1, (int)sizeof(double));
+      i1 = ss->size[0] * ss->size[1];
+      ss->size[1] = (int)uv0[1];
+      emxEnsureCapacity((emxArray__common *)ss, i1, (int)sizeof(double));
+      j = (int)uv0[1];
+      for (i1 = 0; i1 < j; i1++) {
+        ss->data[i1] = PS->data[PS->size[0] * k];
       }
 
       for (b_n = 0; b_n < 4; b_n++) {
-        i0 = ss->size[0] * ss->size[1];
+        i1 = ss->size[0] * ss->size[1];
         ss->size[0] = 1;
         ss->size[1] = tt->size[1];
-        emxEnsureCapacity((emxArray__common *)ss, i0, (int)sizeof(double));
-        delta1 = PS->data[(b_n + PS->size[0] * k) + 1];
+        emxEnsureCapacity((emxArray__common *)ss, i1, (int)sizeof(double));
+        y = PS->data[(b_n + PS->size[0] * k) + 1];
         j = tt->size[0] * tt->size[1];
-        for (i0 = 0; i0 < j; i0++) {
-          ss->data[i0] = tt->data[i0] * ss->data[i0] + delta1;
+        for (i1 = 0; i1 < j; i1++) {
+          ss->data[i1] = tt->data[i1] * ss->data[i1] + y;
         }
       }
     }
 
-    for (i0 = 0; i0 < 2; i0++) {
-      iv0[i0] = tt->size[i0];
+    for (i1 = 0; i1 < 2; i1++) {
+      uv0[i1] = (unsigned int)tt->size[i1];
     }
 
-    i0 = dd->size[0] * dd->size[1];
+    i1 = dd->size[0] * dd->size[1];
     dd->size[0] = 1;
-    dd->size[1] = iv0[1];
-    emxEnsureCapacity((emxArray__common *)dd, i0, (int)sizeof(double));
-    if (!(iv0[1] == 0)) {
-      i0 = dd->size[0] * dd->size[1];
+    dd->size[1] = (int)uv0[1];
+    emxEnsureCapacity((emxArray__common *)dd, i1, (int)sizeof(double));
+    if (!((int)uv0[1] == 0)) {
+      i1 = dd->size[0] * dd->size[1];
       dd->size[0] = 1;
-      emxEnsureCapacity((emxArray__common *)dd, i0, (int)sizeof(double));
-      i0 = dd->size[0] * dd->size[1];
-      dd->size[1] = iv0[1];
-      emxEnsureCapacity((emxArray__common *)dd, i0, (int)sizeof(double));
-      j = iv0[1];
-      for (i0 = 0; i0 < j; i0++) {
-        dd->data[i0] = PD->data[PD->size[0] * k];
+      emxEnsureCapacity((emxArray__common *)dd, i1, (int)sizeof(double));
+      i1 = dd->size[0] * dd->size[1];
+      dd->size[1] = (int)uv0[1];
+      emxEnsureCapacity((emxArray__common *)dd, i1, (int)sizeof(double));
+      j = (int)uv0[1];
+      for (i1 = 0; i1 < j; i1++) {
+        dd->data[i1] = PD->data[PD->size[0] * k];
       }
 
       for (b_n = 0; b_n < 5; b_n++) {
-        i0 = dd->size[0] * dd->size[1];
+        i1 = dd->size[0] * dd->size[1];
         dd->size[0] = 1;
         dd->size[1] = tt->size[1];
-        emxEnsureCapacity((emxArray__common *)dd, i0, (int)sizeof(double));
-        delta1 = PD->data[(b_n + PD->size[0] * k) + 1];
+        emxEnsureCapacity((emxArray__common *)dd, i1, (int)sizeof(double));
+        y = PD->data[(b_n + PD->size[0] * k) + 1];
         j = tt->size[0] * tt->size[1];
-        for (i0 = 0; i0 < j; i0++) {
-          dd->data[i0] = tt->data[i0] * dd->data[i0] + delta1;
+        for (i1 = 0; i1 < j; i1++) {
+          dd->data[i1] = tt->data[i1] * dd->data[i1] + y;
         }
       }
     }
@@ -529,28 +576,28 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
   emxFree_real_T(&ss);
   emxFree_real_T(&tt);
   emxInit_boolean_T(&ind_noCol, 2);
-  i0 = ind_noCol->size[0] * ind_noCol->size[1];
+  i1 = ind_noCol->size[0] * ind_noCol->size[1];
   ind_noCol->size[0] = 1;
   ind_noCol->size[1] = collisions->size[1];
-  emxEnsureCapacity((emxArray__common *)ind_noCol, i0, (int)sizeof(boolean_T));
+  emxEnsureCapacity((emxArray__common *)ind_noCol, i1, (int)sizeof(boolean_T));
   j = collisions->size[0] * collisions->size[1];
-  for (i0 = 0; i0 < j; i0++) {
-    ind_noCol->data[i0] = (collisions->data[i0] == 0.0);
+  for (i1 = 0; i1 < j; i1++) {
+    ind_noCol->data[i1] = (collisions->data[i1] == 0.0);
   }
 
   emxFree_real_T(&collisions);
 
   /* get all with no collisions */
   if (ind_noCol->size[1] == 0) {
-    delta1 = 0.0;
+    y = 0.0;
   } else {
-    delta1 = ind_noCol->data[0];
+    y = ind_noCol->data[0];
     for (k = 2; k <= ind_noCol->size[1]; k++) {
-      delta1 += (double)ind_noCol->data[k - 1];
+      y += (double)ind_noCol->data[k - 1];
     }
   }
 
-  if (delta1 == 0.0) {
+  if (y == 0.0) {
     /* no trajectory with no collision */
     *flag = -1.0;
   } else {
@@ -563,10 +610,10 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
     }
 
     emxInit_int32_T(&ii, 2);
-    i0 = ii->size[0] * ii->size[1];
+    i1 = ii->size[0] * ii->size[1];
     ii->size[0] = 1;
     ii->size[1] = k;
-    emxEnsureCapacity((emxArray__common *)ii, i0, (int)sizeof(int));
+    emxEnsureCapacity((emxArray__common *)ii, i1, (int)sizeof(int));
     j = 0;
     for (nx = 1; nx <= b_n; nx++) {
       if (ind_noCol->data[nx - 1]) {
@@ -577,15 +624,15 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
 
     j = 1;
     b_n = ii->size[1];
-    delta1 = C->data[ii->data[0] - 1];
+    y = C->data[ii->data[0] - 1];
     if (ii->size[1] > 1) {
-      if (rtIsNaN(delta1)) {
+      if (rtIsNaN(y)) {
         nx = 2;
         exitg2 = false;
         while ((!exitg2) && (nx <= b_n)) {
           j = nx;
           if (!rtIsNaN(C->data[ii->data[ii->size[0] * (nx - 1)] - 1])) {
-            delta1 = C->data[ii->data[ii->size[0] * (nx - 1)] - 1];
+            y = C->data[ii->data[ii->size[0] * (nx - 1)] - 1];
             exitg2 = true;
           } else {
             nx++;
@@ -595,8 +642,8 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
 
       if (j < ii->size[1]) {
         while (j + 1 <= b_n) {
-          if (C->data[ii->data[ii->size[0] * j] - 1] < delta1) {
-            delta1 = C->data[ii->data[ii->size[0] * j] - 1];
+          if (C->data[ii->data[ii->size[0] * j] - 1] < y) {
+            y = C->data[ii->data[ii->size[0] * j] - 1];
           }
 
           j++;
@@ -604,21 +651,21 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
       }
     }
 
-    i0 = ind_noCol->size[0] * ind_noCol->size[1];
+    i1 = ind_noCol->size[0] * ind_noCol->size[1];
     ind_noCol->size[0] = 1;
     ind_noCol->size[1] = C->size[1];
-    emxEnsureCapacity((emxArray__common *)ind_noCol, i0, (int)sizeof(boolean_T));
+    emxEnsureCapacity((emxArray__common *)ind_noCol, i1, (int)sizeof(boolean_T));
     j = C->size[0] * C->size[1];
-    for (i0 = 0; i0 < j; i0++) {
-      ind_noCol->data[i0] = ((C->data[i0] == delta1) && ind_noCol->data[i0]);
+    for (i1 = 0; i1 < j; i1++) {
+      ind_noCol->data[i1] = ((C->data[i1] == y) && ind_noCol->data[i1]);
     }
 
     nx = ind_noCol->size[1];
     b_n = 0;
-    i0 = ii->size[0] * ii->size[1];
+    i1 = ii->size[0] * ii->size[1];
     ii->size[0] = 1;
     ii->size[1] = ind_noCol->size[1];
-    emxEnsureCapacity((emxArray__common *)ii, i0, (int)sizeof(int));
+    emxEnsureCapacity((emxArray__common *)ii, i1, (int)sizeof(int));
     j = 1;
     exitg1 = false;
     while ((!exitg1) && (j <= nx)) {
@@ -642,29 +689,29 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
 
     if (ind_noCol->size[1] == 1) {
       if (b_n == 0) {
-        i0 = ii->size[0] * ii->size[1];
+        i1 = ii->size[0] * ii->size[1];
         ii->size[0] = 1;
         ii->size[1] = 0;
-        emxEnsureCapacity((emxArray__common *)ii, i0, (int)sizeof(int));
+        emxEnsureCapacity((emxArray__common *)ii, i1, (int)sizeof(int));
       }
     } else {
-      i0 = ii->size[0] * ii->size[1];
+      i1 = ii->size[0] * ii->size[1];
       if (1 > b_n) {
         ii->size[1] = 0;
       } else {
         ii->size[1] = b_n;
       }
 
-      emxEnsureCapacity((emxArray__common *)ii, i0, (int)sizeof(int));
+      emxEnsureCapacity((emxArray__common *)ii, i1, (int)sizeof(int));
     }
 
-    i0 = C->size[0] * C->size[1];
+    i1 = C->size[0] * C->size[1];
     C->size[0] = 1;
     C->size[1] = ii->size[1];
-    emxEnsureCapacity((emxArray__common *)C, i0, (int)sizeof(double));
+    emxEnsureCapacity((emxArray__common *)C, i1, (int)sizeof(double));
     j = ii->size[0] * ii->size[1];
-    for (i0 = 0; i0 < j; i0++) {
-      C->data[i0] = ii->data[i0];
+    for (i1 = 0; i1 < j; i1++) {
+      C->data[i1] = ii->data[i1];
     }
 
     emxFree_int32_T(&ii);
@@ -674,15 +721,15 @@ void otg_pspdT_reallyDumb(const double S[3], const double D[4], double kj,
     j = (int)C->data[0];
     ps_size[0] = 5;
     ps_size[1] = 1;
-    for (i0 = 0; i0 < 5; i0++) {
-      ps_data[i0] = PS->data[i0 + PS->size[0] * (j - 1)];
+    for (i1 = 0; i1 < 5; i1++) {
+      ps_data[i1] = PS->data[i1 + PS->size[0] * (j - 1)];
     }
 
     j = (int)C->data[0];
     pd_size[0] = 6;
     pd_size[1] = 1;
-    for (i0 = 0; i0 < 6; i0++) {
-      pd_data[i0] = PD->data[i0 + PD->size[0] * (j - 1)];
+    for (i1 = 0; i1 < 6; i1++) {
+      pd_data[i1] = PD->data[i1 + PD->size[0] * (j - 1)];
     }
 
     *T = TT->data[(int)C->data[0] - 1];

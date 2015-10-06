@@ -2,7 +2,7 @@
  * File: otg_xy_reallyDumb.h
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 06-Oct-2015 11:15:45
+ * C/C++ source code generated on  : 06-Oct-2015 16:22:34
  */
 
 #ifndef __OTG_XY_REALLYDUMB_H__
@@ -18,11 +18,11 @@
 #include "otg_xy_reallyDumb_types.h"
 
 /* Function Declarations */
-extern void otg_xy_reallyDumb(const double S[3], const double D[4], double kj,
-  double kT, double ks, double kd, double dT, double Tmin, double Tmax, const
-  emxArray_real_T *dataVeh, double safetyS, double safetyD, double dt, double ds,
-  double m, double kappa, double b_y0, double phi, double *flag1, double *flag2,
-  emxArray_real_T *x, emxArray_real_T *y);
+extern void otg_xy_reallyDumb(double v1, double d1, double kj, double kT, double
+  ks, double kd, double dT, double Tmin, double Tmax, const emxArray_real_T
+  *dataVeh, double safetyS, double safetyD, double dt, double m, double kappa,
+  double b_y0, double phi, double vx0, double ax0, double w, double *flag,
+  emxArray_real_T *x, emxArray_real_T *y, double *T);
 
 #endif
 

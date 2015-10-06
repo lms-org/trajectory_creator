@@ -2,7 +2,7 @@
  * File: otg_xy_reallyDumb_emxutil.h
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 06-Oct-2015 11:15:45
+ * C/C++ source code generated on  : 06-Oct-2015 16:22:34
  */
 
 #ifndef __OTG_XY_REALLYDUMB_EMXUTIL_H__
