@@ -91,7 +91,7 @@ R = [cos(phi), -sin(phi); sin(phi) cos(phi)];
 
 
 for k = 1:m
-    xy_car(:,k) =  R*XY(:,k) + [-sin(phi);cos(phi)]*(D(1));
+    xy_car(:,k) =  R*XY(:,k) + [-sin(phi);cos(phi)]*(-D(1));
 end
 
 x = xy_car(1,:);
