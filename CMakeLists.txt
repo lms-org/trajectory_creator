@@ -8,5 +8,5 @@ set (HEADERS
 )
 include_directories("include")
 
-add_library (trajectory_line_creator MODULE ${SOURCES} ${HEADERS})
-target_link_libraries(trajectory_line_creator PRIVATE lmscore math_lib sensor_utils street_environment)
+add_library (trajectory_creator MODULE ${SOURCES} ${HEADERS})
+target_link_libraries(trajectory_creator PRIVATE lmscore math_lib sensor_utils street_environment)
