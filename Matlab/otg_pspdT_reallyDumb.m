@@ -27,7 +27,7 @@ function [flag, ps, pd, T] = otg_pspdT_reallyDumb(S, D, kj, kT, ks, kd, dT, Tmin
 %           dataVeh(:,i) = [s0i; vi; Ii] s.t.
 %               s0i = initial distance between obstacle car i and own car
 %               vi  = velocity of obstacle car i anlong the road
-%               Ii  = -1/1: -1: on left lane, +1: on the right lane
+%               Ii  = -1/1: -1: on right lane, +1: on the left lane
 %       safetyS = min. safety distance in s direction
 %       safetyD = min. safety distance in D direction with sign:
 %           if Ii == -1: d(t) must be bigger  than safetyD
@@ -52,7 +52,7 @@ function [flag, ps, pd, T] = otg_pspdT_reallyDumb(S, D, kj, kT, ks, kd, dT, Tmin
 ps = zeros(1, 5);
 pd = zeros(1, 6);
 T = 0;
-flag = 0;
+flag = 1;
 
 %% init
 n = ceil(Tmax-Tmin)/dT; %number samples in the T space

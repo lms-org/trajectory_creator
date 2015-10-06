@@ -1,0 +1,33 @@
+<pre class="code">
+<span class="srcline"><span class="lineno"><a href="35,1" id="srcline1"> 1</a></span><span class="line"><span class="keyword">function</span> [<span class="var type1" id="S2T1U3">Ctot</span>] = otg_Ctot(<span class="var type1" id="S3T19U6">ps</span>, <span class="var type1" id="S4T20U7">pd</span>, <span class="var type1" id="S5T1U8">T</span>, <span class="var type1" id="S6T1U9">kj</span>, <span class="var type1" id="S7T1U10">kT</span>, <span class="var type1" id="S8T1U11">ks</span>, <span class="var type1" id="S9T1U12">kd</span>)</span></span>
+<span class="srcline"><span class="lineno"><a href="35,2" id="srcline2"> 2</a></span><span class="line"><span class="comment">%This is the OTG = Optimal trajectory generation package. This is based on</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,3" id="srcline3"> 3</a></span><span class="line"><span class="comment">%the paper "Optimal Trajectory Generation for Dynamic Street Scenarios in a</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,4" id="srcline4"> 4</a></span><span class="line"><span class="comment">%Frenet Frame"(2010) by Werling et. al.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,5" id="srcline5"> 5</a></span><span class="line"><span class="comment">%</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,6" id="srcline6"> 6</a></span><span class="line"><span class="comment">%--------------------------------------------------------------------------</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,7" id="srcline7"> 7</a></span><span class="line"><span class="comment">%</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,8" id="srcline8"> 8</a></span><span class="line"><span class="comment">%otg_Ctot returns value of the cost total function Ctot = ks*Cs + kd*Cd</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,9" id="srcline9"> 9</a></span><span class="line"><span class="comment">%   INPUT:</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,10" id="srcline10">10</a></span><span class="line"><span class="comment">%       ps = coefficients of the polynomial (otg_ps) s.t.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,11" id="srcline11">11</a></span><span class="line"><span class="comment">%           s(t) = ps(1)*t^4 + ps(2)*t^3 + ps(3)*t^2 + ps(4)*t + ps(5)</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,12" id="srcline12">12</a></span><span class="line"><span class="comment">%       pd = coefficients of the polynomial d (otg_pd) s.t.</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,13" id="srcline13">13</a></span><span class="line"><span class="comment">%           d(t) = pd(1)*t^5 + pd(2)*t^4 + pd(3)*t^3 + pd(4)*t^2 + pd(5)*t</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,14" id="srcline14">14</a></span><span class="line"><span class="comment">%           + pd(6)</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,15" id="srcline15">15</a></span><span class="line"><span class="comment">%       T = end time</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,16" id="srcline16">16</a></span><span class="line"><span class="comment">%       kj = weight for the jerk functional</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,17" id="srcline17">17</a></span><span class="line"><span class="comment">%       kT = weight for the time</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,18" id="srcline18">18</a></span><span class="line"><span class="comment">%       ks = weight of the longitudinal weight function</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,19" id="srcline19">19</a></span><span class="line"><span class="comment">%       kd = weight of the lateral weight function</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,20" id="srcline20">20</a></span><span class="line"><span class="comment">%</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,21" id="srcline21">21</a></span><span class="line"><span class="comment">%   OUTPUT:</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,22" id="srcline22">22</a></span><span class="line"><span class="comment">%       Ctot = ks*Cs + kd*Cd</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,23" id="srcline23">23</a></span><span class="line"><span class="comment">%</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,24" id="srcline24">24</a></span><span class="line"><span class="comment">% See also </span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,25" id="srcline25">25</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="35,26" id="srcline26">26</a></span><span class="line"><span class="mxinfo " id="T1:U9"><span class="var type1" id="S2T1U15">Ctot</span> = <span class="mxinfo " id="T1:U11"><span class="mxinfo " id="T1:U12"><span class="var type1" id="S8T1U18">ks</span>*<span class="mxinfo " id="T1:U14"><span class="fcn" id="F52N4:B20">otg_Cs</span>(<span class="var type1" id="S3T19U21">ps</span>, <span class="var type1" id="S5T1U22">T</span>, <span class="var type1" id="S6T1U23">kj</span>, <span class="var type1" id="S7T1U24">kT</span>)</span></span> + <span class="mxinfo " id="T1:U19"><span class="var type1" id="S9T1U26">kd</span>*<span class="mxinfo " id="T1:U21"><span class="fcn" id="F54N3:B28">otg_Cd</span>(<span class="var type1" id="S4T20U29">pd</span>, <span class="var type1" id="S5T1U30">T</span>, <span class="var type1" id="S6T1U31">kj</span>, <span class="var type1" id="S7T1U32">kT</span>)</span></span></span></span>;</span></span>
+<span class="srcline"><span class="lineno"><a href="35,27" id="srcline27">27</a></span><span class="line"><span class="keyword">end</span></span></span>
+<span class="srcline"><span class="lineno"><a href="35,28" id="srcline28">28</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="35,29" id="srcline29">29</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="35,30" id="srcline30">30</a></span><span class="line"></span></span>
+<span class="srcline"><span class="lineno"><a href="35,31" id="srcline31">31</a></span><span class="line"></span></span>
+</pre>

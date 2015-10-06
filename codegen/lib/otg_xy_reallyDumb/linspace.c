@@ -2,7 +2,7 @@
  * File: linspace.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 06-Oct-2015 11:15:45
+ * C/C++ source code generated on  : 06-Oct-2015 16:22:34
  */
 
 /* Include Files */
@@ -14,6 +14,49 @@
 /* Function Definitions */
 
 /*
+ * Arguments    : double d2
+ *                double n1
+ *                emxArray_real_T *y
+ * Return Type  : void
+ */
+void b_linspace(double d2, double n1, emxArray_real_T *y)
+{
+  double delta1;
+  int i3;
+  int k;
+  if (n1 < 0.0) {
+    n1 = 0.0;
+  }
+
+  delta1 = floor(n1);
+  i3 = y->size[0] * y->size[1];
+  y->size[0] = 1;
+  y->size[1] = (int)delta1;
+  emxEnsureCapacity((emxArray__common *)y, i3, (int)sizeof(double));
+  if ((int)delta1 >= 1) {
+    y->data[(int)delta1 - 1] = d2;
+    if (y->size[1] >= 2) {
+      y->data[0] = 0.0;
+      if (y->size[1] >= 3) {
+        if ((d2 < 0.0) && (fabs(d2) > 8.9884656743115785E+307)) {
+          delta1 = d2 / ((double)y->size[1] - 1.0);
+          i3 = y->size[1];
+          for (k = 0; k <= i3 - 3; k++) {
+            y->data[k + 1] = delta1 * (1.0 + (double)k);
+          }
+        } else {
+          delta1 = d2 / ((double)y->size[1] - 1.0);
+          i3 = y->size[1];
+          for (k = 0; k <= i3 - 3; k++) {
+            y->data[k + 1] = (1.0 + (double)k) * delta1;
+          }
+        }
+      }
+    }
+  }
+}
+
+/*
  * Arguments    : double d1
  *                double d2
  *                double n1
@@ -23,7 +66,7 @@
 void linspace(double d1, double d2, double n1, emxArray_real_T *y)
 {
   double delta1;
-  int i1;
+  int i2;
   double delta2;
   int k;
   if (n1 < 0.0) {
@@ -31,10 +74,10 @@ void linspace(double d1, double d2, double n1, emxArray_real_T *y)
   }
 
   delta1 = floor(n1);
-  i1 = y->size[0] * y->size[1];
+  i2 = y->size[0] * y->size[1];
   y->size[0] = 1;
   y->size[1] = (int)delta1;
-  emxEnsureCapacity((emxArray__common *)y, i1, (int)sizeof(double));
+  emxEnsureCapacity((emxArray__common *)y, i2, (int)sizeof(double));
   if ((int)delta1 >= 1) {
     y->data[(int)delta1 - 1] = d2;
     if (y->size[1] >= 2) {
@@ -44,15 +87,15 @@ void linspace(double d1, double d2, double n1, emxArray_real_T *y)
              (fabs(d2) > 8.9884656743115785E+307))) {
           delta1 = d1 / ((double)y->size[1] - 1.0);
           delta2 = d2 / ((double)y->size[1] - 1.0);
-          i1 = y->size[1];
-          for (k = 0; k <= i1 - 3; k++) {
+          i2 = y->size[1];
+          for (k = 0; k <= i2 - 3; k++) {
             y->data[k + 1] = (d1 + delta2 * (1.0 + (double)k)) - delta1 * (1.0 +
               (double)k);
           }
         } else {
           delta1 = (d2 - d1) / ((double)y->size[1] - 1.0);
-          i1 = y->size[1];
-          for (k = 0; k <= i1 - 3; k++) {
+          i2 = y->size[1];
+          for (k = 0; k <= i2 - 3; k++) {
             y->data[k + 1] = d1 + (1.0 + (double)k) * delta1;
           }
         }

@@ -2,7 +2,7 @@
 ## Makefile generated for MATLAB file/project 'otg_xy_reallyDumb'. 
 ## 
 ## Makefile     : otg_xy_reallyDumb_rtw.mk
-## Generated on : Tue Oct 06 11:15:56 2015
+## Generated on : Tue Oct 06 16:22:45 2015
 ## MATLAB Coder version: 2.7 (R2014b)
 ## 
 ## Build Info:
@@ -186,7 +186,7 @@ DEFINES = $(DEFINES_STANDARD)
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb_rtwutil.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb_initialize.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb_terminate.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_pspdT_reallyDumb.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/linspace.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_ps.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/polyval.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/eig.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/sqrt.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb_emxutil.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb_emxAPI.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/rt_nonfinite.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/rtGetNaN.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/rtGetInf.c
+SRCS = $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb_initialize.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb_terminate.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_pspdT_reallyDumb.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/linspace.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/polyval.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/repmat.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb_emxutil.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/otg_xy_reallyDumb_emxAPI.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/rt_nonfinite.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/rtGetNaN.c $(START_DIR)/codegen/lib/otg_xy_reallyDumb/rtGetInf.c
 
 ALL_SRCS = $(SRCS)
 
@@ -194,7 +194,7 @@ ALL_SRCS = $(SRCS)
 ## OBJECTS
 ###########################################################################
 
-OBJS = otg_xy_reallyDumb_rtwutil.o otg_xy_reallyDumb_initialize.o otg_xy_reallyDumb_terminate.o otg_xy_reallyDumb.o otg_pspdT_reallyDumb.o linspace.o otg_ps.o polyval.o eig.o sqrt.o otg_xy_reallyDumb_emxutil.o otg_xy_reallyDumb_emxAPI.o rt_nonfinite.o rtGetNaN.o rtGetInf.o
+OBJS = otg_xy_reallyDumb_initialize.o otg_xy_reallyDumb_terminate.o otg_xy_reallyDumb.o otg_pspdT_reallyDumb.o linspace.o polyval.o repmat.o otg_xy_reallyDumb_emxutil.o otg_xy_reallyDumb_emxAPI.o rt_nonfinite.o rtGetNaN.o rtGetInf.o
 
 ALL_OBJS = $(OBJS)
 
