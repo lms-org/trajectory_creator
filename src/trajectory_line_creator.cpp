@@ -5,6 +5,7 @@
 
 extern "C"{
 #include "lib/otg_xy_reallyDumb/otg_xy_reallyDumb.h"
+#include "lib/otg_xy_reallyDumb/otg_xy_reallyDumb_emxAPI.h"
 }
 
 bool TrajectoryLineCreator::initialize() {
