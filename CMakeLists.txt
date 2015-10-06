@@ -6,7 +6,9 @@ set ( SOURCES
 set (HEADERS
         "include/trajectory_line_creator.h"
 )
-include_directories("include")
+include_directories("include" "codegen")
 
-add_library (trajectory_line_creator MODULE ${SOURCES} ${HEADERS})
-target_link_libraries(trajectory_line_creator PRIVATE lmscore math_lib sensor_utils street_environment)
+
+file(GLOB matlab "codegen/lib/otg_xy_reallyDumb/*.c" "codegen/lib/otg_xy_reallyDumb/*.h")
+add_library (trajectory_creator MODULE ${SOURCES} ${HEADERS} ${matlab})
+target_link_libraries(trajectory_creator PRIVATE lmscore math_lib sensor_utils street_environment)

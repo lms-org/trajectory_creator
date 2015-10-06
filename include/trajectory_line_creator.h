@@ -13,7 +13,7 @@ public:
     bool cycle() override;
 private:
     void simpleTrajectory();
-    void advancedTrajectory();
+    bool advancedTrajectory();
     const street_environment::EnvironmentObjects *envObstacles;
     const street_environment::RoadLane *road;
     lms::math::polyLine2f *trajectory;
