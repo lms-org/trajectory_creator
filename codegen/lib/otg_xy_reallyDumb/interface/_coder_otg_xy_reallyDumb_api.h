@@ -2,7 +2,7 @@
  * File: _coder_otg_xy_reallyDumb_api.h 
  *  
  * MATLAB Coder version            : 2.7 
- * C/C++ source code generated on  : 06-Oct-2015 16:22:34 
+ * C/C++ source code generated on  : 06-Oct-2015 17:34:35 
  */
 
 #ifndef ___CODER_OTG_XY_REALLYDUMB_API_H__

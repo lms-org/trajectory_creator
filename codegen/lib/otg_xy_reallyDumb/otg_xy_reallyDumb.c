@@ -2,7 +2,7 @@
  * File: otg_xy_reallyDumb.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 06-Oct-2015 16:22:34
+ * C/C++ source code generated on  : 06-Oct-2015 17:34:35
  */
 
 /* Include Files */
@@ -391,7 +391,7 @@ void otg_xy_reallyDumb(double v1, double d1, double kj, double kT, double ks,
         }
 
         xy_car->data[jtilecol + xy_car->size[0] * k] = cosphi_d + dv1[jtilecol] *
-          D[0];
+          -D[0];
       }
     }
 
