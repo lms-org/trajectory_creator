@@ -443,7 +443,7 @@
       <param.DefaultFixedPointSignedness />
     </unset>
     <fileset.entrypoints>
-      <file custom-data-expanded="true" value="${PROJECT_ROOT}/Matlab/otg_xy_reallyDumb.m">
+      <file custom-data-expanded="false" value="${PROJECT_ROOT}/Matlab/otg_xy_reallyDumb.m">
         <Inputs fileName="otg_xy_reallyDumb.m" functionName="otg_xy_reallyDumb">
           <Input Name="v1">
             <Class>double</Class>
