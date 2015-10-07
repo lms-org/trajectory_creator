@@ -95,7 +95,7 @@ bool TrajectoryLineCreator::advancedTrajectory(){
     int kappaCount = 3;
     //std::cout << "trajec-creator: kappa-values: ";
     for(int i = 0; i < kappaCount; i++){
-        kappa += road->polarDarstellung[2+i];
+        kappa += road->polarDarstellung[5+i];
         //std::cout<< std::to_string(road->polarDarstellung[2+i])<< " , ";
     }
     //std::cout<<std::endl;
