@@ -19,6 +19,7 @@ private:
     lms::math::polyLine2f *trajectory;
     const lms::ModuleConfig *config;
     sensor_utils::Car *car;
+    float kappa_old;
 
 };
 
