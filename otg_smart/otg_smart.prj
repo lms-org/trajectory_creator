@@ -442,7 +442,7 @@
       <param.DefaultFixedPointSignedness />
     </unset>
     <fileset.entrypoints>
-      <file custom-data-expanded="true" value="/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_xy.m">
+      <file custom-data-expanded="false" value="/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_xy.m">
         <Inputs fileName="otg_smart_xy.m" functionName="otg_smart_xy">
           <Input Name="absTOL">
             <Class>double</Class>
