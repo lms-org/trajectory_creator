@@ -114,7 +114,7 @@ if sum((notD > 0) & (coll > 0)) > 0
     %there is at least one traj wich is both not drivable and not colliding
     %--> no valid trajectory exists
     flag2 = 0;
-    return
+    return;
 end
 
 

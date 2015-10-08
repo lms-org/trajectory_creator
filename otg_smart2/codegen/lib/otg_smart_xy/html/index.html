@@ -1,0 +1,798 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>Code Generation Report</title>
+<link rel="stylesheet" type="text/css" href="file:////Applications/MATLAB_R2014b.app/toolbox/coder/coder/resources/eml_report.css" />
+<link rel="stylesheet" type="text/css" href="file:////Applications/MATLAB_R2014b.app/toolbox/coder/coder/resources/jQuery/ui.resizable.css" />
+<link rel="stylesheet" type="text/css" href="file:////Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/codegen/lib/otg_smart_xy/html/index.css" />
+
+<script type="text/javascript" src="file:////Applications/MATLAB_R2014b.app/toolbox/coder/coder/resources/jQuery/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="file:////Applications/MATLAB_R2014b.app/toolbox/coder/coder/resources/jQuery/jquery-ui-1.7.custom.min.js"></script>
+<script type="text/javascript" src="file:////Applications/MATLAB_R2014b.app/toolbox/coder/coder/resources/jQuery/jquery.tablesorter.mod.js"></script>
+<script type="text/javascript" src="file:////Applications/MATLAB_R2014b.app/toolbox/coder/coder/resources/jQuery/jquery.hotkeys-0.7.8.js"></script>
+<script type="text/javascript" src="file:////Applications/MATLAB_R2014b.app/toolbox/coder/coder/resources/eml_report_interactions.js"></script>
+<script type="text/javascript" src="file:////Applications/MATLAB_R2014b.app/toolbox/coder/coder/resources/eml_report_layout.js"></script>
+<script type="text/javascript" src="file:////Applications/MATLAB_R2014b.app/toolbox/rtw/rtw/+coder/+report/resources/rtwshrink.js"></script>
+<script type="text/javascript">
+var localizedMessages = {
+    callSelectPrompt: "Select a function call:",
+    callSelectSource: "Calls from this function",
+    callSelectTarget: "Calls to this function",
+    infoForExpression: "Information for the selected expression:",
+    infoForVarType: "Information for the selected variable:",
+    infoForVarConst: "Information for the selected compile-time constant:",
+    infoForVarNone: "This variable does not have information associated with it.",
+    infoForFilter: "Matched {0}/{1} functions, {2}/{3} methods",
+    autoExtrinsicCall: "Only supported within the MATLAB environment."
+};
+var keyBindings = {
+        selectMCodeTab: "Ctrl+m",
+    selectCallStackTab: "Ctrl+k",
+        selectCCodeTab: "Ctrl+c",
+       selectReportTab: "Ctrl+r",
+     selectCenterPanel: "Ctrl+w",
+      selectSummaryTab: "Ctrl+s",
+     selectMessagesTab: "Ctrl+a",
+    selectWatchListTab: "Ctrl+v",
+     selectBuildLogTab: "Ctrl+t"
+};
+var functionInfoTable = {
+ MATLABcode1: "otg_smart_xy1_mcode.html",
+ fpath1: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_xy.m",
+ lines1: [1, 1, 135],
+ watch1: "otg_smart_xy1_watch.html",
+ title1: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_xy.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_xy.m')\">otg_smart_xy</a></span>",
+ tcall1: [  ],
+ scall1: [ [ "From line 97 to otg_smart_pspdT", "440#srcline1" ] ],
+ MATLABcode39: "otg_ps39_mcode.html",
+ fpath39: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_ps.m",
+ lines39: [1, 1, 34],
+ watch39: "otg_ps39_watch.html",
+ title39: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_ps.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_ps.m')\">otg_ps &gt; 1</a></span>",
+ tcall39: [ [ "From otg_smart_objFun > 1 line 80", "144#F39N9:B88" ], [ "From otg_smart_objFun > 2 line 80", "183#F39N9:B88" ], [ "From otg_smart_objFun > 3 line 80", "439#F39N9:B88" ] ],
+ scall39: [  ],
+ MATLABcode49: "otg_pd49_mcode.html",
+ fpath49: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_pd.m",
+ lines49: [1, 1, 36],
+ watch49: "otg_pd49_watch.html",
+ title49: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_pd.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_pd.m')\">otg_pd &gt; 1</a></span>",
+ tcall49: [ [ "From otg_smart_objFun > 1 line 81", "144#F49N8:B100" ], [ "From otg_smart_objFun > 2 line 81", "183#F49N8:B100" ], [ "From otg_smart_objFun > 3 line 81", "439#F49N8:B100" ] ],
+ scall49: [  ],
+ MATLABcode50: "otg_Jts50_mcode.html",
+ fpath50: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Jts.m",
+ lines50: [1, 1, 23],
+ watch50: "otg_Jts50_watch.html",
+ title50: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Jts.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Jts.m')\">otg_Jts</a></span>",
+ tcall50: [ [ "From otg_Cs line 22", "51#F50N7:B17" ] ],
+ scall50: [  ],
+ MATLABcode51: "otg_Cs51_mcode.html",
+ fpath51: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Cs.m",
+ lines51: [1, 1, 26],
+ watch51: "otg_Cs51_watch.html",
+ title51: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Cs.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Cs.m')\">otg_Cs</a></span>",
+ tcall51: [ [ "From otg_Ctot line 26", "54#F51N4:B20" ] ],
+ scall51: [ [ "From line 22 to otg_Jts", "50#srcline1" ] ],
+ MATLABcode52: "otg_Jtd52_mcode.html",
+ fpath52: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Jtd.m",
+ lines52: [1, 1, 25],
+ watch52: "otg_Jtd52_watch.html",
+ title52: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Jtd.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Jtd.m')\">otg_Jtd</a></span>",
+ tcall52: [ [ "From otg_Cd line 23", "53#F52N6:B17" ] ],
+ scall52: [  ],
+ MATLABcode53: "otg_Cd53_mcode.html",
+ fpath53: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Cd.m",
+ lines53: [1, 1, 29],
+ watch53: "otg_Cd53_watch.html",
+ title53: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Cd.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Cd.m')\">otg_Cd</a></span>",
+ tcall53: [ [ "From otg_Ctot line 26", "54#F53N3:B28" ] ],
+ scall53: [ [ "From line 23 to otg_Jtd", "52#srcline1" ] ],
+ MATLABcode54: "otg_Ctot54_mcode.html",
+ fpath54: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Ctot.m",
+ lines54: [1, 1, 32],
+ watch54: "otg_Ctot54_watch.html",
+ title54: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Ctot.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Ctot.m')\">otg_Ctot</a></span>",
+ tcall54: [ [ "From otg_smart_objFun > 1 line 87", "144#F54N5:B117" ], [ "From otg_smart_objFun > 2 line 87", "183#F54N5:B117" ], [ "From otg_smart_objFun > 3 line 87", "439#F54N5:B117" ] ],
+ scall54: [ [ "From line 26 to otg_Cs", "51#srcline1" ], [ "From line 26 to otg_Cd", "53#srcline1" ] ],
+ MATLABcode144: "otg_smart_objFun144_mcode.html",
+ fpath144: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m",
+ lines144: [1, 1, 283],
+ watch144: "otg_smart_objFun144_watch.html",
+ title144: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m')\">otg_smart_objFun &gt; 1</a></span>",
+ tcall144: [ [ "From otg_smart_optT line 79", "205#F144N10:B61" ] ],
+ scall144: [ [ "From line 80 to otg_ps > 1", "39#srcline1" ], [ "From line 81 to otg_pd > 1", "49#srcline1" ], [ "From line 87 to otg_Ctot", "54#srcline1" ] ],
+ MATLABcode183: "otg_smart_objFun183_mcode.html",
+ fpath183: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m",
+ lines183: [1, 1, 283],
+ watch183: "otg_smart_objFun183_watch.html",
+ title183: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m')\">otg_smart_objFun &gt; 2</a></span>",
+ tcall183: [ [ "From otg_smart_opt_step line 127", "202#F183N10:B231" ], [ "From otg_smart_opt_step line 155", "202#F183N10:B383" ], [ "From otg_smart_opt_step line 191", "202#F183N10:B552" ], [ "From otg_smart_opt_step line 218", "202#F183N10:B701" ], [ "From otg_smart_opt_step line 245", "202#F183N10:B843" ], [ "From otg_smart_opt_step line 251", "202#F183N10:B871" ] ],
+ scall183: [ [ "From line 80 to otg_ps > 1", "39#srcline1" ], [ "From line 81 to otg_pd > 1", "49#srcline1" ], [ "From line 87 to otg_Ctot", "54#srcline1" ] ],
+ MATLABcode202: "otg_smart_opt_step202_mcode.html",
+ fpath202: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_opt_step.m",
+ lines202: [1, 1, 338],
+ watch202: "otg_smart_opt_step202_watch.html",
+ title202: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_opt_step.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_opt_step.m')\">otg_smart_opt_step</a></span>",
+ tcall202: [ [ "From otg_smart_optT line 83", "205#F202N12:B91" ] ],
+ scall202: [ [ "From line 127 to otg_smart_objFun > 2", "183#srcline1" ], [ "From line 155 to otg_smart_objFun > 2", "183#srcline1" ], [ "From line 191 to otg_smart_objFun > 2", "183#srcline1" ], [ "From line 218 to otg_smart_objFun > 2", "183#srcline1" ], [ "From line 245 to otg_smart_objFun > 2", "183#srcline1" ], [ "From line 251 to otg_smart_objFun > 2", "183#srcline1" ] ],
+ MATLABcode205: "otg_smart_optT205_mcode.html",
+ fpath205: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_optT.m",
+ lines205: [1, 1, 128],
+ watch205: "otg_smart_optT205_watch.html",
+ title205: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_optT.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_optT.m')\">otg_smart_optT</a></span>",
+ tcall205: [ [ "From otg_smart_pspdT line 94", "440#F205N11:B98" ] ],
+ scall205: [ [ "From line 79 to otg_smart_objFun > 1", "144#srcline1" ], [ "From line 83 to otg_smart_opt_step", "202#srcline1" ] ],
+ MATLABcode225: "otg_ps225_mcode.html",
+ fpath225: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_ps.m",
+ lines225: [1, 1, 34],
+ watch225: "otg_ps225_watch.html",
+ title225: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_ps.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_ps.m')\">otg_ps &gt; 2</a></span>",
+ tcall225: [ [ "From otg_smart_pspdT line 101", "440#F225N9:B135" ] ],
+ scall225: [  ],
+ MATLABcode437: "otg_pd437_mcode.html",
+ fpath437: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_pd.m",
+ lines437: [1, 1, 36],
+ watch437: "otg_pd437_watch.html",
+ title437: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_pd.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_pd.m')\">otg_pd &gt; 2</a></span>",
+ tcall437: [ [ "From otg_smart_pspdT line 102", "440#F437N8:B142" ] ],
+ scall437: [  ],
+ MATLABcode439: "otg_smart_objFun439_mcode.html",
+ fpath439: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m",
+ lines439: [1, 1, 283],
+ watch439: "otg_smart_objFun439_watch.html",
+ title439: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m')\">otg_smart_objFun &gt; 3</a></span>",
+ tcall439: [ [ "From otg_smart_pspdT line 106", "440#F439N10:B153" ] ],
+ scall439: [ [ "From line 80 to otg_ps > 1", "39#srcline1" ], [ "From line 81 to otg_pd > 1", "49#srcline1" ], [ "From line 87 to otg_Ctot", "54#srcline1" ] ],
+ MATLABcode440: "otg_smart_pspdT440_mcode.html",
+ fpath440: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_pspdT.m",
+ lines440: [1, 1, 119],
+ watch440: "otg_smart_pspdT440_watch.html",
+ title440: "Function: <span class='functionname'><a title='/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_pspdT.m' class='functionlink' href=\"matlab: open('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_pspdT.m')\">otg_smart_pspdT</a></span>",
+ tcall440: [ [ "From otg_smart_xy line 97", "1#F440N13:B171" ] ],
+ scall440: [ [ "From line 94 to otg_smart_optT", "205#srcline1" ], [ "From line 101 to otg_ps > 2", "225#srcline1" ], [ "From line 102 to otg_pd > 2", "437#srcline1" ], [ "From line 106 to otg_smart_objFun > 3", "439#srcline1" ] ],
+ rootFcnID: "1",
+ firstPage: "otg_smart_xy_c.html",
+ htmlRoot: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/codegen/lib/otg_smart_xy/html/"
+};
+var scriptInfoTable = {
+ fpath1: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_xy.m",
+ fpath2: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/eml_scalar_cos.m",
+ fpath3: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/cos.m",
+ fpath4: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/eml_scalar_sin.m",
+ fpath5: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/sin.m",
+ fpath6: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/isBuiltInNumeric.m",
+ fpath7: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/ismatrix.m",
+ fpath8: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/scalarEg.p",
+ fpath9: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_scalar_eg.m",
+ fpath10: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/scalexpAlloc.p",
+ fpath11: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_scalexp_alloc.m",
+ fpath12: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/eml_scalar_floor.m",
+ fpath13: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/floor.m",
+ fpath14: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/ops/power.m",
+ fpath15: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/ops/mpower.m",
+ fpath16: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/assert.m",
+ fpath17: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_scalexp_compatible.m",
+ fpath18: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/div.p",
+ fpath19: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_div.m",
+ fpath20: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/ops/rdivide.m",
+ fpath21: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/ops/mrdivide.p",
+ fpath22: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/eml_scalar_abs.m",
+ fpath23: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/abs.m",
+ fpath24: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/ops/eml_mtimes_helper.m",
+ fpath25: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/length.m",
+ fpath26: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_ps.m",
+ fpath27: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_pd.m",
+ fpath28: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Jts.m",
+ fpath29: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Cs.m",
+ fpath30: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Jtd.m",
+ fpath31: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Cd.m",
+ fpath32: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_Ctot.m",
+ fpath33: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_index_class.m",
+ fpath34: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_float_model.m",
+ fpath35: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_realmax.m",
+ fpath36: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/realmax.m",
+ fpath37: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/linspace.m",
+ fpath38: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/fixedpoint/isnumerictype.m",
+ fpath39: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/fixedpoint/isfi.m",
+ fpath40: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_switch_helper.m",
+ fpath41: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/intmax.m",
+ fpath42: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/intmin.m",
+ fpath43: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_int_forloop_overflow_check.m",
+ fpath44: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/polyfun/polyder.m",
+ fpath45: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/isinf.m",
+ fpath46: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/isnan.m",
+ fpath47: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/isfinite.m",
+ fpath48: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/polyfun/polyval.m",
+ fpath49: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_isequal_core.m",
+ fpath50: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/isequal.m",
+ fpath51: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/constNonSingletonDim.m",
+ fpath52: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_const_nonsingleton_dim.m",
+ fpath53: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/indexPlus.m",
+ fpath54: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_index_plus.m",
+ fpath55: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_relop.m",
+ fpath56: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_min_or_max.m",
+ fpath57: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/datafun/max.m",
+ fpath58: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_objFun.m",
+ fpath59: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/narginchk.m",
+ fpath60: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/datafun/private/process_sumprod_inputs.m",
+ fpath61: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/datafun/private/combine_vector_elements.m",
+ fpath62: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/datafun/private/sumprod.m",
+ fpath63: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/datafun/sum.m",
+ fpath64: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_li_find.m",
+ fpath65: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_opt_step.m",
+ fpath66: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/find.m",
+ fpath67: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_optT.m",
+ fpath68: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_realmin.m",
+ fpath69: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/realmin.m",
+ fpath70: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_is_float_class.m",
+ fpath71: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_eps.m",
+ fpath72: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/eps.m",
+ fpath73: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/datafun/min.m",
+ fpath74: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/ops/colon.m",
+ fpath75: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/isaUint.p",
+ fpath76: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_isa_uint.m",
+ fpath77: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/unsignedClass.p",
+ fpath78: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_unsigned_class.m",
+ fpath79: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/indexMinus.m",
+ fpath80: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_index_minus.m",
+ fpath81: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/indexTimes.m",
+ fpath82: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_index_times.m",
+ fpath83: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/inline.p",
+ fpath84: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/use_refblas.p",
+ fpath85: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/xcabs1.p",
+ fpath86: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/ixamax.p",
+ fpath87: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/ixamax.p",
+ fpath88: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_ixamax.m",
+ fpath89: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/xswap.p",
+ fpath90: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/xswap.p",
+ fpath91: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_xswap.m",
+ fpath92: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/xgerx.p",
+ fpath93: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/xger.p",
+ fpath94: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/xger.p",
+ fpath95: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/xgeru.p",
+ fpath96: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_xgeru.m",
+ fpath97: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/lapack/matlab/eml_matlab_zgetrf.m",
+ fpath98: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/lapack/internal/eml_lapack_xgetrf.m",
+ fpath99: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/lapack/eml_xgetrf.m",
+ fpath100: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_warning.m",
+ fpath101: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_lusolve.m",
+ fpath102: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/xtrsm.p",
+ fpath103: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/xtrsm.p",
+ fpath104: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_xtrsm.m",
+ fpath105: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_error.m",
+ fpath106: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/eml_scalar_sqrt.m",
+ fpath107: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elfun/sqrt.m",
+ fpath108: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/xnrm2.p",
+ fpath109: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/xnrm2.p",
+ fpath110: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_xnrm2.m",
+ fpath111: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_dlapy2.m",
+ fpath112: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/xscal.p",
+ fpath113: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/xscal.p",
+ fpath114: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_xscal.m",
+ fpath115: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/lapack/matlab/eml_matlab_zlarfg.m",
+ fpath116: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/indexIntRelop.m",
+ fpath117: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/lapack/matlab/eml_matlab_zlarf.m",
+ fpath118: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/conjtimes.m",
+ fpath119: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/xgemv.p",
+ fpath120: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/xgemv.p",
+ fpath121: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_xgemv.m",
+ fpath122: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/xgerc.p",
+ fpath123: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_xgerc.m",
+ fpath124: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/lapack/matlab/eml_matlab_zgeqp3.m",
+ fpath125: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/lapack/internal/eml_lapack_xgeqp3.m",
+ fpath126: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/lapack/eml_xgeqp3.m",
+ fpath127: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_xcabs1.m",
+ fpath128: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_flt2str.m",
+ fpath129: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_qrsolve.m",
+ fpath130: "/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/otg/trajectory_creator/Matlab/otg_smart/otg_smart_pspdT.m",
+ fpath131: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_assert_valid_size_arg.m",
+ fpath132: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/eml_is_integer_class.m",
+ fpath133: "/Applications/MATLAB_R2014b.app/toolbox/shared/coder/coder/+coder/+internal/prodsize.m",
+ fpath134: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/elmat/repmat.m",
+ fpath135: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+refblas/xgemm.p",
+ fpath136: "/Applications/MATLAB_R2014b.app/toolbox/coder/coder/+coder/+internal/+blas/xgemm.p",
+ fpath137: "/Applications/MATLAB_R2014b.app/toolbox/eml/lib/matlab/eml/blas/eml_xgemm.m"
+};
+</script>
+</head>
+<body>
+
+<div class="west">
+<ul class="ui-tabs-nav">
+<li class="ui-tabs-nav-item ui-tabs-selected"><span class="tab-link" id="MATLABcode"><span>MATLAB code</span></span></li>
+<li class="ui-tabs-nav-item"><span class="tab-link" id="callstack"><span>Call stack</span></span></li>
+<li class="ui-tabs-nav-item"><span class="tab-link" id="ccode"><span>C code</span></span></li>
+</ul>
+<div id="MATLABcodebody" class="ui-tabs-panel">
+<!-- Begin Filter -->
+<div class="grayline methodset" onclick="filterClick(event);">
+<a class="collapsed">Filter</a>
+</div>
+<div id="filterbody" class="hidden">
+<table class="myfunc-filter-tbl">
+<tr>
+<td title="Use this filter to display only functions and methods that contain variables or expressions with the specified attributes." colspan="2" class="checkbox">
+<div class="myfunc-filterby-chk"><input type="checkbox" class="filterenable" />
+<div class="filter-enable-lbl">Filter functions and methods</div></div></td></tr><tr>
+<td class="label"><div class="myfunc-filterby-lbl">Filter by:</div></td>
+<td class="select">
+<div class="filters">
+<select class="myfunc-filterby">
+<option id="size">Size</option>
+<option id="complex">Complexity</option>
+<option id="class">Class</option>
+</select>
+</div>
+</td>
+</tr>
+
+<tr>
+<td class="label"><div class="myfunc-filterstr-lbl">Filter:</div></td>
+<td class="input"><div>
+
+<div class="size">
+<select class="myfunc-filter size">
+<option value="1 39 49 50 51 52 53 54 144 183 202 205 439 440">1 x 1</option>
+<option value="144 183 439">1 x 100</option>
+<option value="1 39 144 183 202 205 225 439 440">1 x 3</option>
+<option value="1 49 144 183 202 205 437 439 440">1 x 4</option>
+<option value="39 225">1 x 5</option>
+<option value="49 437">1 x 6</option>
+<option value="1 205 225 437 439 440">1 x <b>:</b>3</option>
+<option value="144 183 439">1 x <b>:</b>4</option>
+<option value="144 183 439">1 x <b>:</b>5</option>
+<option value="1">1 x <b>:</b>?</option>
+<option value="1">2 x 2</option>
+<option value="1">2 x <b>:</b>?</option>
+<option value="1 144 183 202 205 439 440">3 x 1</option>
+<option value="50 51 54 183">5 x 1</option>
+<option value="144">5 x 3</option>
+<option value="439">5 x <b>:</b>3</option>
+<option value="52 53 54 183">6 x 1</option>
+<option value="144">6 x 3</option>
+<option value="439">6 x <b>:</b>3</option>
+<option value="1 440"><b>:</b>5 x <b>:</b>5</option>
+<option value="1 440"><b>:</b>6 x <b>:</b>6</option>
+</select>
+</div>
+
+<div class="complex">
+<select class="myfunc-filter complex">
+<option value="">Complex values</option>
+<option value="1 39 49 50 51 52 53 54 144 183 202 205 225 437 439 440">Real values</option>
+</select>
+</div>
+<!-- Begin Class Filter -->
+<div class="class">
+<select class="myfunc-filter class">
+<option value="1 39 49 50 51 52 53 54 144 183 202 205 225 437 439 440">double</option>
+<option value="1 205 440">int32</option>
+<option value="205">logical</option>
+</select>
+</div>
+<!-- End Class Filter -->
+</div>
+</td>
+</tr>
+</table>
+<div class="myfunc-count"></div>
+</div>
+<!-- End Filter -->
+<div class="grayline methodset" onmouseover="callTreeMouseOver(event);" onmouseout="callTreeMouseOut(event);" onclick="functionSetClick(event);">
+<a class="expanded">Functions</a>
+</div>
+<!-- Begin Function Tree -->
+<div id="functiontreebody">
+<div class="functionwrapper" onmouseover="callTreeMouseOver(event);" onmouseout="callTreeMouseOut(event);" onclick="functionTreeClick(event);">
+<ol class="tree">
+<!-- Begin Function Tree Roots -->
+<li class="leaf  passed"><a href="#" class="fcn " id="F53N3:F1">otg_Cd</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F51N4:F2">otg_Cs</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F54N5:F3">otg_Ctot</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F52N6:F4">otg_Jtd</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F50N7:F5">otg_Jts</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F49N8:F6">otg_pd &gt; 1</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F437N8:F7">otg_pd &gt; 2</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F39N9:F8">otg_ps &gt; 1</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F225N9:F9">otg_ps &gt; 2</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F144N10:F10">otg_smart_objFun &gt; 1</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F183N10:F11">otg_smart_objFun &gt; 2</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F439N10:F12">otg_smart_objFun &gt; 3</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F205N11:F13">otg_smart_optT</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F202N12:F14">otg_smart_opt_step</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F440N13:F15">otg_smart_pspdT</a></li>
+<li class="leaf  passed"><a href="#" class="fcn " id="F1N14:F16">otg_smart_xy</a></li>
+<!-- End Function Tree Roots -->
+</ol>
+<!-- Function Tree Nodes -->
+<div class="functiontreenodes hidden">
+</div>
+<!-- End Function Tree Nodes -->
+</div>
+</div>
+<!-- End Function Tree -->
+</div>
+<!-- Begin Call Tree -->
+<div id="callstackbody" class="ui-tabs-panel hidden">
+<div class="treewrapper" onmouseover="callTreeMouseOver(event);" onmouseout="callTreeMouseOut(event);" onclick="callTreeClick(event);">
+<ol class="tree">
+<!-- Call Tree Root -->
+<li class="node collapsed passed"><a href="#" class="fcn " id="F1N14:L1">otg_smart_xy</a>
+<ul>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F440N13:L2">otg_smart_pspdT</a></li>
+</ul>
+</li>
+</ol>
+<!-- Call Tree Nodes -->
+<div class="callstacknodes hidden">
+<ol class="callstacknode" id="callstacknode1">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F1N14:l1">otg_smart_xy</a>
+<ul>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F440N13:l2">otg_smart_pspdT</a></li>
+</ul>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode39">
+
+<li class="leaf passed"><a href="#" class="fcn " id="F39N9:l3">otg_ps &gt; 1</a>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode49">
+
+<li class="leaf passed"><a href="#" class="fcn " id="F49N8:l4">otg_pd &gt; 1</a>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode50">
+
+<li class="leaf passed"><a href="#" class="fcn " id="F50N7:l5">otg_Jts</a>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode51">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F51N4:l6">otg_Cs</a>
+<ul>
+<li class="leaf passed"><a href="#" class="fcn " id="F50N7:l7">otg_Jts</a></li>
+</ul>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode52">
+
+<li class="leaf passed"><a href="#" class="fcn " id="F52N6:l8">otg_Jtd</a>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode53">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F53N3:l9">otg_Cd</a>
+<ul>
+<li class="leaf passed"><a href="#" class="fcn " id="F52N6:l10">otg_Jtd</a></li>
+</ul>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode54">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F54N5:l11">otg_Ctot</a>
+<ul>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F51N4:l12">otg_Cs</a></li>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F53N3:l13">otg_Cd</a></li>
+</ul>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode144">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F144N10:l14">otg_smart_objFun &gt; 1</a>
+<ul>
+<li class="leaf passed"><a href="#" class="fcn " id="F39N9:l15">otg_ps &gt; 1</a></li>
+<li class="leaf passed"><a href="#" class="fcn " id="F49N8:l16">otg_pd &gt; 1</a></li>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F54N5:l17">otg_Ctot</a></li>
+</ul>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode183">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F183N10:l18">otg_smart_objFun &gt; 2</a>
+<ul>
+<li class="leaf passed"><a href="#" class="fcn " id="F39N9:l19">otg_ps &gt; 1</a></li>
+<li class="leaf passed"><a href="#" class="fcn " id="F49N8:l20">otg_pd &gt; 1</a></li>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F54N5:l21">otg_Ctot</a></li>
+</ul>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode202">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F202N12:l22">otg_smart_opt_step</a>
+<ul>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F183N10:l23">otg_smart_objFun &gt; 2</a></li>
+</ul>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode205">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F205N11:l24">otg_smart_optT</a>
+<ul>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F144N10:l25">otg_smart_objFun &gt; 1</a></li>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F202N12:l26">otg_smart_opt_step</a></li>
+</ul>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode225">
+
+<li class="leaf passed"><a href="#" class="fcn " id="F225N9:l27">otg_ps &gt; 2</a>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode437">
+
+<li class="leaf passed"><a href="#" class="fcn " id="F437N8:l28">otg_pd &gt; 2</a>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode439">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F439N10:l29">otg_smart_objFun &gt; 3</a>
+<ul>
+<li class="leaf passed"><a href="#" class="fcn " id="F39N9:l30">otg_ps &gt; 1</a></li>
+<li class="leaf passed"><a href="#" class="fcn " id="F49N8:l31">otg_pd &gt; 1</a></li>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F54N5:l32">otg_Ctot</a></li>
+</ul>
+</li>
+</ol>
+<ol class="callstacknode" id="callstacknode440">
+
+<li class="node collapsed passed"><a href="#" class="fcn " id="F440N13:l33">otg_smart_pspdT</a>
+<ul>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F205N11:l34">otg_smart_optT</a></li>
+<li class="leaf passed"><a href="#" class="fcn " id="F225N9:l35">otg_ps &gt; 2</a></li>
+<li class="leaf passed"><a href="#" class="fcn " id="F437N8:l36">otg_pd &gt; 2</a></li>
+<li class="node collapsed passed"><a href="#" class="fcn " id="F439N10:l37">otg_smart_objFun &gt; 3</a></li>
+</ul>
+</li>
+</ol>
+
+</div>
+</div>
+</div>
+<!-- End Call Tree -->
+<!-- Begin C Code -->
+<div id="ccodebody" class="ui-tabs-panel hidden">
+
+<table class="myfunc-list" cellspacing="0" cellpadding="0" onclick="reportFileClick(event);">
+<tbody>
+<tr class="report" id="metrics.html"><td class="report"><a href="#">Static Code Metrics Report</a></td></tr>
+</tbody>
+</table><div class="grayline methodset" onclick="ccodeClick(event,1);">
+<a class="expanded">Target Source Files</a>
+</div>
+<!-- Begin C Code List -->
+<div id="ccodelistbody1" class="visible">
+<table class="myfunc-list" cellspacing="0" cellpadding="0" onclick="cFileClick(event);">
+<tbody>
+<tr class="ccode" id="abs_c.html"><td class="ccode"><a href="#">abs.c</a></td></tr>
+<tr class="ccode" id="abs_h.html"><td class="ccode"><a href="#">abs.h</a></td></tr>
+<tr class="ccode" id="linspace_c.html"><td class="ccode"><a href="#">linspace.c</a></td></tr>
+<tr class="ccode" id="linspace_h.html"><td class="ccode"><a href="#">linspace.h</a></td></tr>
+<tr class="ccode" id="mrdivide_c.html"><td class="ccode"><a href="#">mrdivide.c</a></td></tr>
+<tr class="ccode" id="mrdivide_h.html"><td class="ccode"><a href="#">mrdivide.h</a></td></tr>
+<tr class="ccode" id="otg_pd_c.html"><td class="ccode"><a href="#">otg_pd.c</a></td></tr>
+<tr class="ccode" id="otg_pd_h.html"><td class="ccode"><a href="#">otg_pd.h</a></td></tr>
+<tr class="ccode" id="otg_ps_c.html"><td class="ccode"><a href="#">otg_ps.c</a></td></tr>
+<tr class="ccode" id="otg_ps_h.html"><td class="ccode"><a href="#">otg_ps.h</a></td></tr>
+<tr class="ccode" id="otg_smart_objFun_c.html"><td class="ccode"><a href="#">otg_smart_objFun.c</a></td></tr>
+<tr class="ccode" id="otg_smart_objFun_h.html"><td class="ccode"><a href="#">otg_smart_objFun.h</a></td></tr>
+<tr class="ccode" id="otg_smart_opt_step_c.html"><td class="ccode"><a href="#">otg_smart_opt_step.c</a></td></tr>
+<tr class="ccode" id="otg_smart_opt_step_h.html"><td class="ccode"><a href="#">otg_smart_opt_step.h</a></td></tr>
+<tr class="ccode" id="otg_smart_pspdT_c.html"><td class="ccode"><a href="#">otg_smart_pspdT.c</a></td></tr>
+<tr class="ccode" id="otg_smart_pspdT_h.html"><td class="ccode"><a href="#">otg_smart_pspdT.h</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_c.html"><td class="ccode"><a href="#">otg_smart_xy.c</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_h.html"><td class="ccode"><a href="#">otg_smart_xy.h</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_emxAPI_c.html"><td class="ccode"><a href="#">otg_smart_xy_emxAPI.c</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_emxAPI_h.html"><td class="ccode"><a href="#">otg_smart_xy_emxAPI.h</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_emxutil_c.html"><td class="ccode"><a href="#">otg_smart_xy_emxutil.c</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_emxutil_h.html"><td class="ccode"><a href="#">otg_smart_xy_emxutil.h</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_initialize_c.html"><td class="ccode"><a href="#">otg_smart_xy_initialize.c</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_initialize_h.html"><td class="ccode"><a href="#">otg_smart_xy_initialize.h</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_rtwutil_c.html"><td class="ccode"><a href="#">otg_smart_xy_rtwutil.c</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_rtwutil_h.html"><td class="ccode"><a href="#">otg_smart_xy_rtwutil.h</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_terminate_c.html"><td class="ccode"><a href="#">otg_smart_xy_terminate.c</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_terminate_h.html"><td class="ccode"><a href="#">otg_smart_xy_terminate.h</a></td></tr>
+<tr class="ccode" id="otg_smart_xy_types_h.html"><td class="ccode"><a href="#">otg_smart_xy_types.h</a></td></tr>
+<tr class="ccode" id="polyder_c.html"><td class="ccode"><a href="#">polyder.c</a></td></tr>
+<tr class="ccode" id="polyder_h.html"><td class="ccode"><a href="#">polyder.h</a></td></tr>
+<tr class="ccode" id="polyval_c.html"><td class="ccode"><a href="#">polyval.c</a></td></tr>
+<tr class="ccode" id="polyval_h.html"><td class="ccode"><a href="#">polyval.h</a></td></tr>
+<tr class="ccode" id="power_c.html"><td class="ccode"><a href="#">power.c</a></td></tr>
+<tr class="ccode" id="power_h.html"><td class="ccode"><a href="#">power.h</a></td></tr>
+<tr class="ccode" id="rdivide_c.html"><td class="ccode"><a href="#">rdivide.c</a></td></tr>
+<tr class="ccode" id="rdivide_h.html"><td class="ccode"><a href="#">rdivide.h</a></td></tr>
+<tr class="ccode" id="repmat_c.html"><td class="ccode"><a href="#">repmat.c</a></td></tr>
+<tr class="ccode" id="repmat_h.html"><td class="ccode"><a href="#">repmat.h</a></td></tr>
+<tr class="ccode" id="rtGetInf_c.html"><td class="ccode"><a href="#">rtGetInf.c</a></td></tr>
+<tr class="ccode" id="rtGetInf_h.html"><td class="ccode"><a href="#">rtGetInf.h</a></td></tr>
+<tr class="ccode" id="rtGetNaN_c.html"><td class="ccode"><a href="#">rtGetNaN.c</a></td></tr>
+<tr class="ccode" id="rtGetNaN_h.html"><td class="ccode"><a href="#">rtGetNaN.h</a></td></tr>
+<tr class="ccode" id="rt_nonfinite_c.html"><td class="ccode"><a href="#">rt_nonfinite.c</a></td></tr>
+<tr class="ccode" id="rt_nonfinite_h.html"><td class="ccode"><a href="#">rt_nonfinite.h</a></td></tr>
+<tr class="ccode" id="rtwtypes_h.html"><td class="ccode"><a href="#">rtwtypes.h</a></td></tr>
+</tbody>
+</table>
+</div>
+<!-- End C Code List -->
+</div>
+<!-- End C Code -->
+</div>
+<!-- Tooltips -->
+<div class="aux hidden">
+<div class="tooltips">
+<div class="tooltip" id="TT1"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>int32</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT2"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT3"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>logical</td></tr></table></div>
+<div class="tooltip" id="TT4"><table class="tooltip"><tr><th>Size</th><td>1 x 2</td></tr><tr><th>Class</th><td>cell</td></tr></table></div>
+<div class="tooltip" id="TT5"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>coder.internal.indexInt</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT6"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>cell</td></tr></table></div>
+<div class="tooltip" id="TT7"><table class="tooltip"><tr><th>Size</th><td>1 x 3</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT8"><table class="tooltip"><tr><th>Size</th><td>1 x 4</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT9"><table class="tooltip"><tr><th>Size</th><td>3 x 1</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT10"><table class="tooltip"><tr><th>Size</th><td>1 x 13</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT11"><table class="tooltip"><tr><th>Size</th><td>1 x 0</td></tr><tr><th>Class</th><td>cell</td></tr></table></div>
+<div class="tooltip" id="TT12"><table class="tooltip"><tr><th>Size</th><td>1 x 5</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT13"><table class="tooltip"><tr><th>Size</th><td>1 x 6</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT14"><table class="tooltip"><tr><th>Size</th><td>5 x 3</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT15"><table class="tooltip"><tr><th>Size</th><td>6 x 3</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT16"><table class="tooltip"><tr><th>Size</th><td>5 x 1</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT17"><table class="tooltip"><tr><th>Size</th><td>6 x 1</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT18"><table class="tooltip"><tr><th>Size</th><td>1 x 100</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT19"><table class="tooltip"><tr><th>Size</th><td>1 x 23</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT20"><table class="tooltip"><tr><th>Size</th><td>1 x 6</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT21"><table class="tooltip"><tr><th>Size</th><td>1 x 30</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT22"><table class="tooltip"><tr><th>Size</th><td>1 x 9</td></tr><tr><th>Class</th><td>cell</td></tr></table></div>
+<div class="tooltip" id="TT23"><table class="tooltip"><tr><th>Size</th><td>1 x <b>:</b>?</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT24"><table class="tooltip"><tr><th>Size</th><td>1 x 2</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT25"><table class="tooltip"><tr><th>Size</th><td>1 x 7</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT26"><table class="tooltip"><tr><th>Size</th><td>1 x 3</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT27"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>function_handle</td></tr></table></div>
+<div class="tooltip" id="TT28"><table class="tooltip"><tr><th>Size</th><td>1 x 5</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT29"><table class="tooltip"><tr><th>Size</th><td>1 x 3</td></tr><tr><th>Class</th><td>logical</td></tr></table></div>
+<div class="tooltip" id="TT30"><table class="tooltip"><tr><th>Size</th><td>1 x 33</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT31"><table class="tooltip"><tr><th>Size</th><td>1 x 32</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT32"><table class="tooltip"><tr><th>Size</th><td>1 x 47</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT33"><table class="tooltip"><tr><th>Size</th><td>1 x 36</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT34"><table class="tooltip"><tr><th>Size</th><td>1 x 39</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT35"><table class="tooltip"><tr><th>Size</th><td>0 x 0</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT36"><table class="tooltip"><tr><th>Size</th><td>1 x 37</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT37"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>function_handle</td></tr></table></div>
+<div class="tooltip" id="TT38"><table class="tooltip"><tr><th>Size</th><td>1 x <b>:</b>?</td></tr><tr><th>Class</th><td>coder.internal.indexInt</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT39"><table class="tooltip"><tr><th>Size</th><td>1 x 0</td></tr><tr><th>Class</th><td>coder.internal.indexInt</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT40"><table class="tooltip"><tr><th>Size</th><td>0 x 0</td></tr><tr><th>Class</th><td>coder.internal.indexInt</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT41"><table class="tooltip"><tr><th>Size</th><td>0 x 1</td></tr><tr><th>Class</th><td>coder.internal.indexInt</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT42"><table class="tooltip"><tr><th>Size</th><td>1 x 0</td></tr><tr><th>Class</th><td>logical</td></tr></table></div>
+<div class="tooltip" id="TT43"><table class="tooltip"><tr><th>Size</th><td>1 x <b>:</b>?</td></tr><tr><th>Class</th><td>logical</td></tr></table></div>
+<div class="tooltip" id="TT44"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT45"><table class="tooltip"><tr><th>Size</th><td>1 x 3</td></tr><tr><th>Class</th><td>cell</td></tr></table></div>
+<div class="tooltip" id="TT46"><table class="tooltip"><tr><th>Size</th><td><b>:</b>? x 1</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT47"><table class="tooltip"><tr><th>Size</th><td>1 x 2</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT48"><table class="tooltip"><tr><th>Size</th><td>1 x 12</td></tr><tr><th>Class</th><td>cell</td></tr></table></div>
+<div class="tooltip" id="TT49"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>uint8</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT50"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>function_handle</td></tr></table></div>
+<div class="tooltip" id="TT51"><table class="tooltip"><tr><th>Size</th><td>1 x 0</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT52"><table class="tooltip"><tr><th>Size</th><td>5 x <b>:</b>?</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT53"><table class="tooltip"><tr><th>Size</th><td>6 x <b>:</b>?</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT54"><table class="tooltip"><tr><th>Size</th><td><b>:</b>? x <b>:</b>?</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT55"><table class="tooltip"><tr><th>Size</th><td>2 x <b>:</b>?</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT56"><table class="tooltip"><tr><th>Size</th><td>1 x 28</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT57"><table class="tooltip"><tr><th>Size</th><td>2 x 1</td></tr><tr><th>Class</th><td>logical</td></tr></table></div>
+<div class="tooltip" id="TT58"><table class="tooltip"><tr><th>Size</th><td>1 x 2</td></tr><tr><th>Class</th><td>coder.internal.indexInt</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT59"><table class="tooltip"><tr><th>Size</th><td>2 x 1</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT60"><table class="tooltip"><tr><th>Size</th><td>2 x 2</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT61"><table class="tooltip"><tr><th>Size</th><td><b>:</b>5 x <b>:</b>5</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT62"><table class="tooltip"><tr><th>Size</th><td><b>:</b>6 x <b>:</b>6</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT63"><table class="tooltip"><tr><th>Size</th><td>1 x <b>:</b>3</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT64"><table class="tooltip"><tr><th>Size</th><td>1 x <b>:</b>5</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT65"><table class="tooltip"><tr><th>Size</th><td>1 x <b>:</b>4</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT66"><table class="tooltip"><tr><th>Size</th><td>1 x <b>:</b>3</td></tr><tr><th>Class</th><td>coder.internal.indexInt</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT67"><table class="tooltip"><tr><th>Size</th><td>1 x 3 *</td></tr><tr><th>Class</th><td>coder.internal.indexInt</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT68"><table class="tooltip"><tr><th>Size</th><td>1 x 3 *</td></tr><tr><th>Class</th><td>logical</td></tr></table></div>
+<div class="tooltip" id="TT69"><table class="tooltip"><tr><th>Size</th><td>1 x 1 *</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT70"><table class="tooltip"><tr><th>Size</th><td>1 x 1 *</td></tr><tr><th>Class</th><td>coder.internal.indexInt</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT71"><table class="tooltip"><tr><th>Size</th><td>1 x <b>:</b>1</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT72"><table class="tooltip"><tr><th>Size</th><td><b>:</b>3 x 1</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT73"><table class="tooltip"><tr><th>Size</th><td><b>:</b>1 x 1</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT74"><table class="tooltip"><tr><th>Size</th><td>5 x <b>:</b>3</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT75"><table class="tooltip"><tr><th>Size</th><td>6 x <b>:</b>3</td></tr><tr><th>Class</th><td>double</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT76"><table class="tooltip"><tr><th>Size</th><td>1 x 1</td></tr><tr><th>Class</th><td>mxArray</td></tr></table></div>
+<div class="tooltip" id="TT77"><table class="tooltip"><tr><th>Size</th><td>1 x <b>:</b>3</td></tr><tr><th>Class</th><td>int32</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT78"><table class="tooltip"><tr><th>Size</th><td>1 x 45</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT79"><table class="tooltip"><tr><th>Size</th><td>1 x 21</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT80"><table class="tooltip"><tr><th>Size</th><td>1 x 19</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT81"><table class="tooltip"><tr><th>Size</th><td>1 x 1 *</td></tr><tr><th>Class</th><td>int32</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT82"><table class="tooltip"><tr><th>Size</th><td>1 x 27</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT83"><table class="tooltip"><tr><th>Size</th><td>1 x 4</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+<div class="tooltip" id="TT84"><table class="tooltip"><tr><th>Size</th><td>1 x 2</td></tr><tr><th>Class</th><td>int32</td></tr><tr><th>Complex</th><td>No</td></tr></table></div>
+<div class="tooltip" id="TT85"><table class="tooltip"><tr><th>Size</th><td>1 x 15</td></tr><tr><th>Class</th><td>char</td></tr></table></div>
+</div>
+</div>
+<!-- End Tooltips -->
+
+<div class="south">
+<ul class="ui-tabs-nav">
+<li class="ui-tabs-nav-item ui-tabs-selected"><span class="tab-link" id="summary"><span>Summary</span></span></li>
+<li class="ui-tabs-nav-item"><span class="tab-link" id="messages"><span>All Messages (0)</span></span></li>
+<li class="ui-tabs-nav-item"><span class="tab-link" id="watchlist"><span>Variables</span></span></li>
+<li class="ui-tabs-nav-item hidden"><span class="tab-link" id="watchload"><span>Variables</span></span></li>
+<li class="ui-tabs-nav-item"><span class="tab-link" id="buildlog1"><span>Target Build Log</span></span></li>
+</ul>
+
+<!-- Compilation Summary -->
+<div id="summarybody" class="ui-tabs-panel">
+<table cellpadding="1" cellspacing="4">
+<tr><td>C source code generated on:</td><td>08-Oct-2015 14:14:22</td></tr>
+<tr><td>Coding target:</td><td>Static Library</td></tr>
+<tr><td>Number of errors:</td><td><a href="javascript:selectMessagesTab();">0</a></td></tr>
+<tr><td>Number of warnings:</td><td><a href="javascript:selectMessagesTab();">0</a></td></tr>
+<tr><td>Number of notices:</td><td><a href="javascript:selectMessagesTab();">0</a></td></tr>
+</table>
+<p/><p/><table>
+<tr><td><b>Tell Us What You Think</b></td></tr>
+<tr><td>We value your feedback. Please take a few minutes to answer this short questionnaire regarding the Code Generation Report.</td></tr>
+<tr><td><a href="matlab: web('http://www.customersat3.com/TakeSurvey.asp?si=ELu7GTnTYtk%3D','-browser');">&gt;&gt;Provide Feedback</a></td></tr>
+</table>
+</div>
+
+<!-- Message Table -->
+<div id="messagesbody" class="ui-tabs-panel hidden">
+<div>
+<div class="msgsuccess">Code generation successful. Click here to <a href="javaScript:selectSummaryTab();">view summary</a>.</div>
+</div>
+</div>
+<!-- Watchlist Table -->
+<div id="watchlistbody" class="ui-tabs-panel hidden">
+</div>
+<div id="watchloadbody" class="ui-tabs-panel hidden">
+Loading Variables table ...
+</div>
+
+<!-- Target Build Log -->
+<div id="buildlog1body" class="ui-tabs-panel hidden">
+<div class="grayline"></div>
+<table cellpadding="4" cellspacing="1"><tr>
+<td align="left" class="td-linebottomrt-gray" colspan="2">Build Parameters</td>
+</tr>
+<tr><td align="left" valign="top" class="td-linebottomrt">Build directory</td>
+<td align="left" valign="top" class="td-linebottomrt-link"><a href="matlab: cd('/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/codegen/lib/otg_smart_xy')">/Users/lukas/Documents/MATLAB/Umfeldmodell/trajGen/codegen/lib/otg_smart_xy</a></td></tr>
+<tr><td align="left" valign="top" class="td-linebottomrt">Make wrapper</td>
+<td align="left" valign="top" class="td-linebottomrt-link">/Applications/MATLAB_R2014b.app/bin/maci64/gmake -f otg_smart_xy_rtw.mk all</td></tr>
+<tr><td align="left" valign="top" class="td-linebottomrt">Make command</td>
+<td align="left" valign="top" class="td-linebottomrt-link">/Applications/MATLAB_R2014b.app/bin/maci64/gmake -f otg_smart_xy_rtw.mk all</td></tr>
+</table>
+<br/>
+<table border="1" cellpadding="4" cellspacing="1" width="100%">
+<tr><td align="left" class="td-linebottomrt-gray">Build Log</td></tr>
+<tr><td valign="top" class="td-script">
+<pre>
+<span class="td-line-number">    1   </span><span class="td-line-normal">Compilation suppressed: generating code only.</span>
+</pre>
+</td></tr></table>
+
+</div>
+</div>
+<!-- Begin MATLAB Code Panel -->
+<div class="center">
+<div class="center-title">
+<div class="ui-tabs-nav-item ui-tabs-selected">
+<span class="functiontitle">
+</span>
+<!-- Begin Call Sites -->
+<span id="callsiteselecttable" class="call-sites-tbl">
+<span id="callsiteselectlabel" class="filtered">Calls:</span>
+<select id="callsiteselect" onchange="callSiteChange(event)">
+<option value="callsiteprompt">Select a function call:</option>
+</select>
+</span>
+<!-- End Call Sites -->
+</div>
+</div>
+<div class="ui-tabs-panel">
+<div class="code" onmouseover="mcodeMouseOver(event);" onmouseout="mcodeMouseOut(event);"onclick="mcodeClick(event);">
+</div>
+</div>
+</div>
+<!-- End MATLAB Code Panel -->
+</body>
+</html>
