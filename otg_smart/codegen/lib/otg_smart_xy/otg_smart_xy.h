@@ -2,7 +2,7 @@
  * File: otg_smart_xy.h
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 07-Oct-2015 17:18:09
+ * C/C++ source code generated on  : 08-Oct-2015 13:10:03
  */
 
 #ifndef __OTG_SMART_XY_H__
@@ -13,7 +13,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rt_defines.h"
 #include "rt_nonfinite.h"
 #include "rtwtypes.h"
 #include "otg_smart_xy_types.h"
@@ -24,7 +23,7 @@ extern void otg_smart_xy(double absTOL, short maxIter, double v1, double d1,
   safetyS, double safetyD, double kappaMax, double aOrthMax, short m, double
   kappa, double b_y0, double phi, double vx0, double ax0, double w, double
   *flag1, double *flag2, double *flag3, double *flagAll, emxArray_real_T *x,
-  emxArray_real_T *y, double T_data[], int T_size[2], double *TOL);
+  emxArray_real_T *y, double *T, double *TOL);
 
 #endif
 

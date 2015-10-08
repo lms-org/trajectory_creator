@@ -2,7 +2,7 @@
  * File: _coder_otg_smart_xy_api.h 
  *  
  * MATLAB Coder version            : 2.7 
- * C/C++ source code generated on  : 07-Oct-2015 17:18:09 
+ * C/C++ source code generated on  : 08-Oct-2015 13:10:03 
  */
 
 #ifndef ___CODER_OTG_SMART_XY_API_H__
@@ -38,7 +38,7 @@ extern void otg_smart_xy_initialize(emlrtContext *aContext);
 extern void otg_smart_xy_terminate(void);
 extern void otg_smart_xy_atexit(void);
 extern void otg_smart_xy_api(const mxArray *prhs[20], const mxArray *plhs[8]);
-extern void otg_smart_xy(real_T absTOL, int16_T maxIter, real_T v1, real_T d1, real_T kj, real_T kT, real_T ks, real_T kd, real_T dataVeh[3], real_T safetyS, real_T safetyD, real_T kappaMax, real_T aOrthMax, int16_T m, real_T kappa, real_T b_y0, real_T phi, real_T vx0, real_T ax0, real_T w, real_T *flag1, real_T *flag2, real_T *flag3, real_T *flagAll, emxArray_real_T *x, emxArray_real_T *y, real_T T_data[], int32_T T_size[2], real_T *TOL);
+extern void otg_smart_xy(real_T absTOL, int16_T maxIter, real_T v1, real_T d1, real_T kj, real_T kT, real_T ks, real_T kd, real_T dataVeh[3], real_T safetyS, real_T safetyD, real_T kappaMax, real_T aOrthMax, int16_T m, real_T kappa, real_T b_y0, real_T phi, real_T vx0, real_T ax0, real_T w, real_T *flag1, real_T *flag2, real_T *flag3, real_T *flagAll, emxArray_real_T *x, emxArray_real_T *y, real_T *T, real_T *TOL);
 extern void otg_smart_xy_xil_terminate(void);
 
 #endif

@@ -1,31 +1,29 @@
 /*
- * File: eig.h
+ * File: abs.h
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 07-Oct-2015 17:18:09
+ * C/C++ source code generated on  : 08-Oct-2015 13:10:03
  */
 
-#ifndef __EIG_H__
-#define __EIG_H__
+#ifndef __ABS_H__
+#define __ABS_H__
 
 /* Include Files */
 #include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include "rt_defines.h"
 #include "rt_nonfinite.h"
 #include "rtwtypes.h"
 #include "otg_smart_xy_types.h"
 
 /* Function Declarations */
-extern void eig(const creal_T A_data[], const int A_size[2], creal_T V_data[],
-                int V_size[1]);
+extern void b_abs(const double x[100], double y[100]);
 
 #endif
 
 /*
- * File trailer for eig.h
+ * File trailer for abs.h
  *
  * [EOF]
  */

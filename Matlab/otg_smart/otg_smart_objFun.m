@@ -60,6 +60,10 @@ function [Ctot, notD, coll, flag] = otg_smart_objFun(T, S, D, kj, kT, ks, kd, da
 % See also
 
 %% init
+nSamples = 100;
+
+polyrootfind = 0;
+
 n = length(T);
 flag = 1;
 
@@ -87,118 +91,192 @@ end
 %% See if drivable: We use a very rough approximation here!!
 
 for i = 1:n
-    %LENKEINSCHLAG
-    d_d = polyder(PD(:,i)); %first derivative w.r.t. t of d(t)
-    d_dd = polyder(d_d); %second derivative w.r.t. t of d(t)
-    d_ddd = polyder(d_dd); %third derivative to find the max of the second derivative
-    r = roots(d_ddd)';%get all roots of THIRD derivative
+    % polynomial root finding
     
-    ind = imag(r) == 0;%only real roots
-    r = r(ind);
-    
-    ind = (r>0) & (r < T(i)); %only roots in interval
-    r = r(ind);
-    
-    ts_d = [0 r T(i)]; %also max at the border
-    d_dd_ts = polyval(d_dd, ts_d); %HERE ONE NEEDS THE SECOND DERIVATIVE
-    
-    d_dd_max = max(d_dd_ts); %get the maximal value of the polynomial on the interval
-    
-    
-    s_d = polyder(PS(:,i)); %first derivative w.r.t. t of s(t) = v(t)
-    s_dd = polyder(s_d); %second derivative to find the
-    r = roots(s_dd)';%get all roots of first derivative
-    
-    ind = imag(r) == 0;%only real roots
-    r = r(ind);
-    
-    ind = (r>0) & (r < T(i)); %only roots in interval
-    r = r(ind);
-    
-    ts_s = [0 r T(i)]; %also min at the border
-    s_d_ts = polyval(s_d, ts_s);
-    
-    s_d_min = min(s_d_ts); %get the min value of the polynomial on the interval
-    s_d_max = max(s_d_ts); %get the maximal value of the velocity in s direction
-    
-    if (s_d_min) <= 0
-        %something went terrible wrong. we are driving backwards
-        flag = -1;
-        return;
+    if polyrootfind
+        %LENKEINSCHLAG
+        d_d = polyder(PD(:,i)); %first derivative w.r.t. t of d(t)
+        d_dd = polyder(d_d); %second derivative w.r.t. t of d(t)
+        d_ddd = polyder(d_dd); %third derivative to find the max of the second derivative
+        r = roots(d_ddd)';%get all roots of THIRD derivative
+        
+        ind = imag(r) == 0;%only real roots
+        r = r(ind);
+        
+        ind = (r>0) & (r < T(i)); %only roots in interval
+        r = r(ind);
+        
+        ts_d = [0 r T(i)]; %also max at the border
+        d_dd_ts = polyval(d_dd, ts_d); %HERE ONE NEEDS THE SECOND DERIVATIVE
+        
+        d_dd_max = max(d_dd_ts); %get the maximal value of the polynomial on the interval
+        
+        
+        s_d = polyder(PS(:,i)); %first derivative w.r.t. t of s(t) = v(t)
+        s_dd = polyder(s_d); %second derivative to find the
+        r = roots(s_dd)';%get all roots of first derivative
+        
+        ind = imag(r) == 0;%only real roots
+        r = r(ind);
+        
+        ind = (r>0) & (r < T(i)); %only roots in interval
+        r = r(ind);
+        
+        ts_s = [0 r T(i)]; %also min at the border
+        s_d_ts = polyval(s_d, ts_s);
+        
+        s_d_min = min(s_d_ts); %get the min value of the polynomial on the interval
+        s_d_max = max(s_d_ts); %get the maximal value of the velocity in s direction
+        
+        if (s_d_min) <= 0
+            %something went terrible wrong. we are driving backwards
+            flag = -1;
+            return;
+        end
+        
+        %now the bound for the curvature can be calculated
+        kappa_xy_max = abs(kappa) + d_dd_max/s_d_min;
+        
+        if kappa_xy_max > kappaMax
+            %the curvature could be (according to our approximation) to big
+            notD(i) = 1;
+        end
+        
+        
+        %MAXIMALE ORTH: BESCHLEUNIGUNG
+        r = roots(d_dd)';%get all roots of SECOND derivative
+        
+        ind = imag(r) == 0;%only real roots
+        r = r(ind);
+        
+        ind = (r>0) & (r < T(i)); %only roots in interval
+        r = r(ind);
+        
+        ts_d_2 = [0 r T(i)]; %also max at the border
+        d_d_ts = polyval(d_d, ts_d_2); %HERE ONE NEEDS THE SECOND DERIVATIVE
+        
+        d_d_max = max(d_d_ts); %get the maximal value of the polynomial on the interval
+        
+        vx_max = sqrt(s_d_max^2+d_d_max^2);
+        
+        if vx_max^2*kappa_xy_max > aOrthMax
+            %the orthogonal acceleration is too much for the grip
+            notD(i) = notD(i)+2; %must be 2. 2+1 = 3 (all), 0 + 2= 2 (only acc.)
+        end
+        
     end
     
-    %now the bound for the curvature can be calculated
-    kappa_xy_max = abs(kappa) + d_dd_max/s_d_min;
     
-    if kappa_xy_max > kappaMax
-        %the curvature could be (according to our approximation) to big
-        notD(i) = 1;
+    %sampling based approach
+    if ~polyrootfind
+        tt = linspace(0, T(i), nSamples);
+        
+        d_d = polyder(PD(:,i)); %first derivative w.r.t. t of d(t)
+        d_dd = polyder(d_d); %second derivative w.r.t. t of d(t)
+        
+        s_d = polyder(PS(:,i)); %first derivative w.r.t. t of s(t) = v(t)
+        
+        %now the samples for the curvature can be calculated
+        d_d_samples = polyval(d_d, tt);
+        d_dd_samples = polyval(d_dd, tt);
+        s_d_samples = polyval(s_d,tt);
+        
+        kappas_xy= abs(kappa) + abs(d_dd_samples./s_d_samples);
+        kappa_xy_max = max(kappas_xy);
+        
+        if kappa_xy_max > kappaMax
+            %the curvature could be (according to our approximation) to big
+            notD(i) = 1;
+        end
+        
+        
+        vs_x2 = s_d_samples.^2 + d_d_samples.^2;
+        vx_max2 = max(vs_x2);
+        
+        
+        if vx_max2*kappa_xy_max > aOrthMax
+            %the orthogonal acceleration is too much for the grip
+            notD(i) = notD(i)+2; %must be 2. 2+1 = 3 (all), 0 + 2= 2 (only acc.)
+        end
+        
     end
     
     
-    %MAXIMALE ORTH: BESCHLEUNIGUNG
-    r = roots(d_dd)';%get all roots of SECOND derivative
-    
-    ind = imag(r) == 0;%only real roots
-    r = r(ind);
-    
-    ind = (r>0) & (r < T(i)); %only roots in interval
-    r = r(ind);
-    
-    ts_d_2 = [0 r T(i)]; %also max at the border
-    d_d_ts = polyval(d_d, ts_d_2); %HERE ONE NEEDS THE SECOND DERIVATIVE
-    
-    d_d_max = max(d_d_ts); %get the maximal value of the polynomial on the interval
-    
-    vx_max = sqrt(s_d_max^2+d_d_max^2);
-    
-    if vx_max^2*kappa_xy_max > aOrthMax
-        %the orthogonal acceleration is too much for the grip
-        notD(i) = notD(i)+2; %must be 2. 2+1 = 3 (all), 0 + 2= 2 (only acc.)
-    end
 end
 
 
 
 %% check for collision
-for i = 1:n
-    %s(t) should be an increasing function. This is guranteed because we
-    %calculate the min of the 1st derivative above and throw an error if
-    %this is non positive
+if polyrootfind
     
-    abstandMinusSafety_poly = [0 0 0 dataVeh(2) dataVeh(1)-safetyS]' - PS(:,i);
-    
-    r = roots(abstandMinusSafety_poly);
-    
-    ind = imag(r) == 0;%only real roots
-    r = r(ind);
-    
-    ind = (r>0) & (r < T(i)); %only roots in interval
-    r = r(ind);
-    
-    if (isempty(r)) && (polyval(abstandMinusSafety_poly, T(i)/2) > 0)
-        %all good no collsion possible
-    elseif (isempty(r)) && (polyval(abstandMinusSafety_poly, T(i)/2) <= 0)
-        %fix collsion
-        coll(i) = 1;
-    elseif (length(r) == 1) && (polyval(abstandMinusSafety_poly, r(1)/2) > 0)
-        %one unique possible collision possible
-        d_r = polyval(PD(:,i),r(1));
+    for i = 1:n
+        %s(t) should be an increasing function. This is guranteed because we
+        %calculate the min of the 1st derivative above and throw an error if
+        %this is non positive
         
-        I = dataVeh(3);
+        abstandMinusSafety_poly = [0 0 0 dataVeh(2) dataVeh(1)-safetyS]' - PS(:,i);
         
-        if (I == -1) && (d_r < safetyD)
+        r = roots(abstandMinusSafety_poly);
+        
+        ind = imag(r) == 0;%only real roots
+        r = r(ind);
+        
+        ind = (r>0) & (r < T(i)); %only roots in interval
+        r = r(ind);
+        
+        if (isempty(r)) && (polyval(abstandMinusSafety_poly, T(i)/2) > 0)
+            %all good no collsion possible
+        elseif (isempty(r)) && (polyval(abstandMinusSafety_poly, T(i)/2) <= 0)
+            %fix collsion
             coll(i) = 1;
+        elseif (length(r) == 1) && (polyval(abstandMinusSafety_poly, r(1)/2) > 0)
+            %one unique possible collision possible
+            d_r = polyval(PD(:,i),r(1));
+            
+            I = dataVeh(3);
+            
+            if (I == -1) && (d_r < safetyD)
+                coll(i) = 1;
+            end
+            
+            if (I ==  1) && (d_r > safetyD)
+                coll(i) = 1;
+            end
+        elseif (length(r) == 1) && (polyval(abstandMinusSafety_poly, r(1)/2) > 0)
+            %there is a collision directly at the start
+            coll(i) = -1;
+        else
+            flag = -3;
+            return;
         end
-        
-        if (I ==  1) && (d_r > safetyD)
-            coll(i) = 1;
-        end
-    elseif (length(r) == 1) && (polyval(abstandMinusSafety_poly, r(1)/2) > 0)
-        %there is a collision directly at the start
-        coll(i) = -1;
-    else
-        flag = -3;
-        return;
     end
+    
+end
+
+if ~polyrootfind
+    for i = 1:n
+        I = dataVeh(3);%just for readability
+        
+        tt = linspace(0, T(i), nSamples);
+        dd = polyval(PD(:,i),tt);
+        ss = polyval(PS(:,i),tt);
+        
+        for k = 1:nSamples
+            if (I == -1) && (dd(k) < safetyD)
+                abstand = dataVeh(1) + dataVeh(2)*tt(k) - ss(k); %anfangsabstand + geschw. Auto * t - position unser Auto
+                if abstand < safetyS
+                    coll(i) = 1; %more than one collsion doesn't matter
+                end
+            end
+            
+            if (I ==  1) && (dd(k) > safetyD)
+                abstand = dataVeh(1) + dataVeh(2)*tt(k) - ss(k); %anfangsabstand + geschw. Auto * t - position unser Auto
+                if abstand < safetyS
+                    coll(i) = 1; %more than one collsion doesn't matter
+                end
+            end
+        end
+        
+    end
+    
 end

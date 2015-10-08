@@ -2,7 +2,7 @@
  * File: otg_smart_pspdT.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 07-Oct-2015 17:18:09
+ * C/C++ source code generated on  : 08-Oct-2015 13:10:03
  */
 
 /* Include Files */
@@ -271,7 +271,8 @@ void otg_smart_pspdT(double absTOL, short maxIter, const double S[3], const
   }
 
   otg_smart_objFun(Ts, S, D, kj, kT, ks, kd, dataVeh, safetyS, safetyD, kappa,
-                   kappaMax, aOrthMax, Cs, notD, coll, flag1);
+                   kappaMax, aOrthMax, Cs, notD, coll);
+  *flag1 = 1.0;
   iter = 1;
   do {
     exitg4 = 0;
@@ -287,7 +288,7 @@ void otg_smart_pspdT(double absTOL, short maxIter, const double S[3], const
         coll[i1] = b_coll[i1];
       }
 
-      if ((*flag1 < 0.0) || (*flag2 <= 0.0)) {
+      if (*flag2 <= 0.0) {
         *flag3 = -10.0;
         exitg4 = 1;
       } else if ((fabs(b_Ts[2] - b_Ts[0]) < absTOL) && (b_notD[1] == 0.0) &&
@@ -322,7 +323,7 @@ void otg_smart_pspdT(double absTOL, short maxIter, const double S[3], const
         if (Tstart == 1.0) {
           /* the drivable one is unique */
           *flag3 = -1.1;
-          c_eml_li_find(indOk, ii_data, ii_size);
+          eml_li_find(indOk, ii_data, ii_size);
           T_size[0] = 1;
           T_size[1] = ii_size[1];
           k = ii_size[0] * ii_size[1];
@@ -388,7 +389,7 @@ void otg_smart_pspdT(double absTOL, short maxIter, const double S[3], const
   emxInit_real_T(&r2, 2);
   emxInit_real_T(&r3, 2);
   emxInit_real_T(&r4, 2);
-  if ((*flag1 < 0.0) || (*flag2 <= 0.0) || (*flag3 <= 0.0)) {
+  if ((*flag2 <= 0.0) || (*flag3 <= 0.0)) {
   } else {
     /*  get the coefficients */
     /* This is the OTG = Optimal trajectory generation package. This is based on */
@@ -729,7 +730,7 @@ void otg_smart_pspdT(double absTOL, short maxIter, const double S[3], const
     /* too lazy, should be ok */
     c_otg_smart_objFun(T_data, T_size, S, D, kj, kT, ks, kd, dataVeh, safetyS,
                        safetyD, kappa, kappaMax, aOrthMax, indOk_data,
-                       indOk_size, Cs, c_size, Ts, ii_size, &Tstart);
+                       indOk_size, Cs, c_size, Ts, ii_size);
     if ((Cs[0] == 0.0) && (Ts[0] == 0.0)) {
       *flagAll = 1.0;
     }

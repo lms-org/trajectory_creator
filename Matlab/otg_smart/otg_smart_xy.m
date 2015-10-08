@@ -96,6 +96,8 @@ D = [-cos(phi)*y0,-(cosphi_d*y0+cos(phi)*y0_d),-(cosphi_dd*y0+2*cosphi_d*y0_d+co
 %% coefficients
 [flag1, flag2, flag3, flagAll, ps, pd, T, TOL] = otg_smart_pspdT(absTOL, maxIter, S, D, kj, kT, ks, kd, dataVeh, safetyS, safetyD, kappa, kappaMax, aOrthMax);
 
+T = T(1);
+
 if flagAll == -1
     return;
 end

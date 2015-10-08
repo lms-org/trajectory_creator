@@ -2,20 +2,19 @@
  * File: mrdivide.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 07-Oct-2015 17:18:09
+ * C/C++ source code generated on  : 08-Oct-2015 13:10:03
  */
 
 /* Include Files */
 #include "rt_nonfinite.h"
 #include "otg_smart_xy.h"
 #include "mrdivide.h"
-#include "otg_smart_objFun.h"
-#include "otg_smart_xy_rtwutil.h"
 
 /* Function Declarations */
 static double eml_qrsolve(const double A_data[], const int A_size[1], double
   B_data[]);
 static double eml_xnrm2(int n, const double x_data[]);
+static double rt_hypotd_snf(double u0, double u1);
 
 /* Function Definitions */
 
@@ -207,6 +206,33 @@ static double eml_xnrm2(int n, const double x_data[])
 }
 
 /*
+ * Arguments    : double u0
+ *                double u1
+ * Return Type  : double
+ */
+static double rt_hypotd_snf(double u0, double u1)
+{
+  double y;
+  double a;
+  double b;
+  a = fabs(u0);
+  b = fabs(u1);
+  if (a < b) {
+    a /= b;
+    y = b * sqrt(a * a + 1.0);
+  } else if (a > b) {
+    b /= a;
+    y = a * sqrt(b * b + 1.0);
+  } else if (rtIsNaN(b)) {
+    y = b;
+  } else {
+    y = a * 1.4142135623730951;
+  }
+
+  return y;
+}
+
+/*
  * Arguments    : double A_data[]
  *                int A_size[2]
  *                const double B_data[]
@@ -219,7 +245,7 @@ void mrdivide(double A_data[], int A_size[2], const double B_data[], const int
   double b_B_data[3];
   int b_B_size[1];
   int loop_ub;
-  int i6;
+  int i9;
   double b_A_data[3];
   double d2;
   if ((A_size[1] == 0) || (B_size[1] == 0)) {
@@ -234,13 +260,13 @@ void mrdivide(double A_data[], int A_size[2], const double B_data[], const int
   } else {
     b_B_size[0] = B_size[1];
     loop_ub = B_size[1];
-    for (i6 = 0; i6 < loop_ub; i6++) {
-      b_B_data[i6] = B_data[B_size[0] * i6];
+    for (i9 = 0; i9 < loop_ub; i9++) {
+      b_B_data[i9] = B_data[B_size[0] * i9];
     }
 
     loop_ub = A_size[1];
-    for (i6 = 0; i6 < loop_ub; i6++) {
-      b_A_data[i6] = A_data[A_size[0] * i6];
+    for (i9 = 0; i9 < loop_ub; i9++) {
+      b_A_data[i9] = A_data[A_size[0] * i9];
     }
 
     d2 = eml_qrsolve(b_B_data, b_B_size, b_A_data);

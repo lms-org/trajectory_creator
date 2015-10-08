@@ -2,7 +2,7 @@
  * File: otg_smart_xy_rtwutil.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 07-Oct-2015 17:18:09
+ * C/C++ source code generated on  : 08-Oct-2015 13:10:03
  */
 
 /* Include Files */
@@ -11,33 +11,6 @@
 #include "otg_smart_xy_rtwutil.h"
 
 /* Function Definitions */
-
-/*
- * Arguments    : double u0
- *                double u1
- * Return Type  : double
- */
-double rt_hypotd_snf(double u0, double u1)
-{
-  double y;
-  double a;
-  double b;
-  a = fabs(u0);
-  b = fabs(u1);
-  if (a < b) {
-    a /= b;
-    y = b * sqrt(a * a + 1.0);
-  } else if (a > b) {
-    b /= a;
-    y = a * sqrt(b * b + 1.0);
-  } else if (rtIsNaN(b)) {
-    y = b;
-  } else {
-    y = a * 1.4142135623730951;
-  }
-
-  return y;
-}
 
 /*
  * Arguments    : double u0

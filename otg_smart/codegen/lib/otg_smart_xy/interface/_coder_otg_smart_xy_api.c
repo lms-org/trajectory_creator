@@ -2,7 +2,7 @@
  * File: _coder_otg_smart_xy_api.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 07-Oct-2015 17:18:09
+ * C/C++ source code generated on  : 08-Oct-2015 13:10:03
  */
 
 /* Include Files */
@@ -23,8 +23,6 @@ static real_T (*f_emlrt_marshallIn(const emlrtStack *sp, const mxArray *u, const
   emlrtMsgIdentifier *parentId))[3];
 static const mxArray *emlrt_marshallOut(const real_T u);
 static const mxArray *b_emlrt_marshallOut(const emxArray_real_T *u);
-static const mxArray *c_emlrt_marshallOut(const real_T u_data[], const int32_T
-  u_size[2]);
 static real_T g_emlrt_marshallIn(const emlrtStack *sp, const mxArray *src, const
   emlrtMsgIdentifier *msgId);
 static int16_T h_emlrt_marshallIn(const emlrtStack *sp, const mxArray *src,
@@ -88,7 +86,6 @@ void otg_smart_xy_atexit(void)
  */
 void otg_smart_xy_api(const mxArray *prhs[20], const mxArray *plhs[8])
 {
-  real_T (*T_data)[3];
   emxArray_real_T *x;
   emxArray_real_T *y;
   real_T absTOL;
@@ -112,7 +109,7 @@ void otg_smart_xy_api(const mxArray *prhs[20], const mxArray *plhs[8])
   real_T ax0;
   real_T w;
   real_T TOL;
-  int32_T T_size[2];
+  real_T T;
   real_T flagAll;
   real_T flag3;
   real_T flag2;
@@ -120,7 +117,6 @@ void otg_smart_xy_api(const mxArray *prhs[20], const mxArray *plhs[8])
   emlrtStack st = { NULL, NULL, NULL };
 
   st.tls = emlrtRootTLSGlobal;
-  T_data = (real_T (*)[3])mxMalloc(sizeof(real_T [3]));
   emlrtHeapReferenceStackEnterFcnR2012b(&st);
   emxInit_real_T(&st, &x, 2, true);
   emxInit_real_T(&st, &y, 2, true);
@@ -151,7 +147,7 @@ void otg_smart_xy_api(const mxArray *prhs[20], const mxArray *plhs[8])
   /* Invoke the target function */
   otg_smart_xy(absTOL, maxIter, v1, d1, kj, kT, ks, kd, *dataVeh, safetyS,
                safetyD, kappaMax, aOrthMax, m, kappa, b_y0, phi, vx0, ax0, w,
-               &flag1, &flag2, &flag3, &flagAll, x, y, *T_data, T_size, &TOL);
+               &flag1, &flag2, &flag3, &flagAll, x, y, &T, &TOL);
 
   /* Marshall function outputs */
   plhs[0] = emlrt_marshallOut(flag1);
@@ -160,7 +156,7 @@ void otg_smart_xy_api(const mxArray *prhs[20], const mxArray *plhs[8])
   plhs[3] = emlrt_marshallOut(flagAll);
   plhs[4] = b_emlrt_marshallOut(x);
   plhs[5] = b_emlrt_marshallOut(y);
-  plhs[6] = c_emlrt_marshallOut(*T_data, T_size);
+  plhs[6] = emlrt_marshallOut(T);
   plhs[7] = emlrt_marshallOut(TOL);
   y->canFreeData = false;
   emxFree_real_T(&y);
@@ -300,26 +296,6 @@ static const mxArray *b_emlrt_marshallOut(const emxArray_real_T *u)
 }
 
 /*
- * Arguments    : const real_T u_data[]
- *                const int32_T u_size[2]
- * Return Type  : const mxArray *
- */
-static const mxArray *c_emlrt_marshallOut(const real_T u_data[], const int32_T
-  u_size[2])
-{
-  const mxArray *y;
-  static const int32_T iv1[2] = { 0, 0 };
-
-  const mxArray *m2;
-  y = NULL;
-  m2 = emlrtCreateNumericArray(2, iv1, mxDOUBLE_CLASS, mxREAL);
-  mxSetData((mxArray *)m2, (void *)u_data);
-  emlrtSetDimensions((mxArray *)m2, u_size, 2);
-  emlrtAssign(&y, m2);
-  return y;
-}
-
-/*
  * Arguments    : const emlrtStack *sp
  *                const mxArray *src
  *                const emlrtMsgIdentifier *msgId
@@ -361,9 +337,9 @@ static real_T (*i_emlrt_marshallIn(const emlrtStack *sp, const mxArray *src,
   const emlrtMsgIdentifier *msgId))[3]
 {
   real_T (*ret)[3];
-  int32_T iv2[1];
-  iv2[0] = 3;
-  emlrtCheckBuiltInR2012b(sp, msgId, src, "double", false, 1U, iv2);
+  int32_T iv1[1];
+  iv1[0] = 3;
+  emlrtCheckBuiltInR2012b(sp, msgId, src, "double", false, 1U, iv1);
   ret = (real_T (*)[3])mxGetData(src);
   emlrtDestroyArray(&src);
   return ret;

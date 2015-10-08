@@ -13,7 +13,7 @@
 <a name="2"><font color="#888888 "><i>    2   </i></font></a><font color="#117755"><I> * File: otg_smart_xy.c</i></font>
 <a name="3"><font color="#888888 "><i>    3   </i></font></a><font color="#117755"><I> *</i></font>
 <a name="4"><font color="#888888 "><i>    4   </i></font></a><font color="#117755"><I> * MATLAB Coder version            : 2.7</i></font>
-<a name="5"><font color="#888888 "><i>    5   </i></font></a><font color="#117755"><I> * C/C++ source code generated on  : 07-Oct-2015 17:18:09</i></font>
+<a name="5"><font color="#888888 "><i>    5   </i></font></a><font color="#117755"><I> * C/C++ source code generated on  : 08-Oct-2015 13:10:03</i></font>
 <a name="6"><font color="#888888 "><i>    6   </i></font></a><font color="#117755"><I> */</i></font>
 <a name="7"><font color="#888888 "><i>    7   </i></font></a>
 <a name="8"><font color="#888888 "><i>    8   </i></font></a><font color="#117755"><i>/* Include Files */</i></font>
@@ -134,26 +134,26 @@
 <a name="123"><font color="#888888 "><i>  123   </i></font></a><font color="#117755"><I> *                double *flagAll</i></font>
 <a name="124"><font color="#888888 "><i>  124   </i></font></a><font color="#117755"><I> *                emxArray_real_T *x</i></font>
 <a name="125"><font color="#888888 "><i>  125   </i></font></a><font color="#117755"><I> *                emxArray_real_T *y</i></font>
-<a name="126"><font color="#888888 "><i>  126   </i></font></a><font color="#117755"><I> *                double T_data[]</i></font>
-<a name="127"><font color="#888888 "><i>  127   </i></font></a><font color="#117755"><I> *                int T_size[2]</i></font>
-<a name="128"><font color="#888888 "><i>  128   </i></font></a><font color="#117755"><I> *                double *TOL</i></font>
-<a name="129"><font color="#888888 "><i>  129   </i></font></a><font color="#117755"><I> * Return Type  : void</i></font>
-<a name="130"><font color="#888888 "><i>  130   </i></font></a><font color="#117755"><I> */</i></font>
-<a name="131"><font color="#888888 "><i>  131   </i></font></a><font color="#112266"><b>void</b></font> <a name="fcn_otg_smart_xy">otg_smart_xy</a>(<font color="#112266"><b>double</b></font> absTOL, <font color="#112266"><b>short</b></font> maxIter, <font color="#112266"><b>double</b></font> v1, <font color="#112266"><b>double</b></font> d1, <font color="#112266"><b>double</b></font> kj,
-<a name="132"><font color="#888888 "><i>  132   </i></font></a>                  <font color="#112266"><b>double</b></font> kT, <font color="#112266"><b>double</b></font> ks, <font color="#112266"><b>double</b></font> kd, <font color="#112266"><b>const</b></font> <font color="#112266"><b>double</b></font> dataVeh[3],
-<a name="133"><font color="#888888 "><i>  133   </i></font></a>                  <font color="#112266"><b>double</b></font> safetyS, <font color="#112266"><b>double</b></font> safetyD, <font color="#112266"><b>double</b></font> kappaMax, <font color="#112266"><b>double</b></font>
-<a name="134"><font color="#888888 "><i>  134   </i></font></a>                  aOrthMax, <font color="#112266"><b>short</b></font> m, <font color="#112266"><b>double</b></font> kappa, <font color="#112266"><b>double</b></font> b_y0, <font color="#112266"><b>double</b></font> phi,
-<a name="135"><font color="#888888 "><i>  135   </i></font></a>                  <font color="#112266"><b>double</b></font> vx0, <font color="#112266"><b>double</b></font> ax0, <font color="#112266"><b>double</b></font> w, <font color="#112266"><b>double</b></font> *flag1, <font color="#112266"><b>double</b></font> *flag2,
-<a name="136"><font color="#888888 "><i>  136   </i></font></a>                  <font color="#112266"><b>double</b></font> *flag3, <font color="#112266"><b>double</b></font> *flagAll, <a href="otg_smart_xy_types_h.html#type_emxArray_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray_real_T');" target="_self"><font color="#1122aa">emxArray_real_T</font></a> *x,
-<a name="137"><font color="#888888 "><i>  137   </i></font></a>                  <a href="otg_smart_xy_types_h.html#type_emxArray_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray_real_T');" target="_self"><font color="#1122aa">emxArray_real_T</font></a> *y, <font color="#112266"><b>double</b></font> T_data[], <font color="#112266"><b>int</b></font> T_size[2], <font color="#112266"><b>double</b></font>
-<a name="138"><font color="#888888 "><i>  138   </i></font></a>                  *TOL)
-<a name="139"><font color="#888888 "><i>  139   </i></font></a><b>{</b>
-<a name="140"><font color="#888888 "><i>  140   </i></font></a>  <font color="#112266"><b>int</b></font> ss;
-<a name="141"><font color="#888888 "><i>  141   </i></font></a>  <font color="#112266"><b>int</b></font> loop_ub;
-<a name="142"><font color="#888888 "><i>  142   </i></font></a>  <font color="#112266"><b>double</b></font> cosphi_d;
-<a name="143"><font color="#888888 "><i>  143   </i></font></a>  <font color="#112266"><b>double</b></font> y0_d;
-<a name="144"><font color="#888888 "><i>  144   </i></font></a>  <font color="#112266"><b>double</b></font> D[4];
-<a name="145"><font color="#888888 "><i>  145   </i></font></a>  <font color="#112266"><b>double</b></font> dv0[3];
+<a name="126"><font color="#888888 "><i>  126   </i></font></a><font color="#117755"><I> *                double *T</i></font>
+<a name="127"><font color="#888888 "><i>  127   </i></font></a><font color="#117755"><I> *                double *TOL</i></font>
+<a name="128"><font color="#888888 "><i>  128   </i></font></a><font color="#117755"><I> * Return Type  : void</i></font>
+<a name="129"><font color="#888888 "><i>  129   </i></font></a><font color="#117755"><I> */</i></font>
+<a name="130"><font color="#888888 "><i>  130   </i></font></a><font color="#112266"><b>void</b></font> <a name="fcn_otg_smart_xy">otg_smart_xy</a>(<font color="#112266"><b>double</b></font> absTOL, <font color="#112266"><b>short</b></font> maxIter, <font color="#112266"><b>double</b></font> v1, <font color="#112266"><b>double</b></font> d1, <font color="#112266"><b>double</b></font> kj,
+<a name="131"><font color="#888888 "><i>  131   </i></font></a>                  <font color="#112266"><b>double</b></font> kT, <font color="#112266"><b>double</b></font> ks, <font color="#112266"><b>double</b></font> kd, <font color="#112266"><b>const</b></font> <font color="#112266"><b>double</b></font> dataVeh[3],
+<a name="132"><font color="#888888 "><i>  132   </i></font></a>                  <font color="#112266"><b>double</b></font> safetyS, <font color="#112266"><b>double</b></font> safetyD, <font color="#112266"><b>double</b></font> kappaMax, <font color="#112266"><b>double</b></font>
+<a name="133"><font color="#888888 "><i>  133   </i></font></a>                  aOrthMax, <font color="#112266"><b>short</b></font> m, <font color="#112266"><b>double</b></font> kappa, <font color="#112266"><b>double</b></font> b_y0, <font color="#112266"><b>double</b></font> phi,
+<a name="134"><font color="#888888 "><i>  134   </i></font></a>                  <font color="#112266"><b>double</b></font> vx0, <font color="#112266"><b>double</b></font> ax0, <font color="#112266"><b>double</b></font> w, <font color="#112266"><b>double</b></font> *flag1, <font color="#112266"><b>double</b></font> *flag2,
+<a name="135"><font color="#888888 "><i>  135   </i></font></a>                  <font color="#112266"><b>double</b></font> *flag3, <font color="#112266"><b>double</b></font> *flagAll, <a href="otg_smart_xy_types_h.html#type_emxArray_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray_real_T');" target="_self"><font color="#1122aa">emxArray_real_T</font></a> *x,
+<a name="136"><font color="#888888 "><i>  136   </i></font></a>                  <a href="otg_smart_xy_types_h.html#type_emxArray_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray_real_T');" target="_self"><font color="#1122aa">emxArray_real_T</font></a> *y, <font color="#112266"><b>double</b></font> *T, <font color="#112266"><b>double</b></font> *TOL)
+<a name="137"><font color="#888888 "><i>  137   </i></font></a><b>{</b>
+<a name="138"><font color="#888888 "><i>  138   </i></font></a>  <font color="#112266"><b>int</b></font> ss;
+<a name="139"><font color="#888888 "><i>  139   </i></font></a>  <font color="#112266"><b>int</b></font> loop_ub;
+<a name="140"><font color="#888888 "><i>  140   </i></font></a>  <font color="#112266"><b>double</b></font> cosphi_d;
+<a name="141"><font color="#888888 "><i>  141   </i></font></a>  <font color="#112266"><b>double</b></font> y0_d;
+<a name="142"><font color="#888888 "><i>  142   </i></font></a>  <font color="#112266"><b>double</b></font> D[4];
+<a name="143"><font color="#888888 "><i>  143   </i></font></a>  <font color="#112266"><b>double</b></font> dv0[3];
+<a name="144"><font color="#888888 "><i>  144   </i></font></a>  <font color="#112266"><b>int</b></font> T_size[2];
+<a name="145"><font color="#888888 "><i>  145   </i></font></a>  <font color="#112266"><b>double</b></font> T_data[3];
 <a name="146"><font color="#888888 "><i>  146   </i></font></a>  <font color="#112266"><b>int</b></font> pd_size[2];
 <a name="147"><font color="#888888 "><i>  147   </i></font></a>  <font color="#112266"><b>double</b></font> pd_data[36];
 <a name="148"><font color="#888888 "><i>  148   </i></font></a>  <font color="#112266"><b>int</b></font> ps_size[2];
@@ -211,217 +211,218 @@
 <a name="200"><font color="#888888 "><i>  200   </i></font></a>                  &amp;y0_d);
 <a name="201"><font color="#888888 "><i>  201   </i></font></a>  *flagAll = cosphi_d;
 <a name="202"><font color="#888888 "><i>  202   </i></font></a>  *TOL = y0_d;
-<a name="203"><font color="#888888 "><i>  203   </i></font></a>  <font color="#112266"><b>if</b></font> (cosphi_d == -1.0) <b>{</b>
-<a name="204"><font color="#888888 "><i>  204   </i></font></a>  <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="205"><font color="#888888 "><i>  205   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;tt, 2);
-<a name="206"><font color="#888888 "><i>  206   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;b_ss, 2);
-<a name="207"><font color="#888888 "><i>  207   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;dd, 2);
-<a name="208"><font color="#888888 "><i>  208   </i></font></a>
-<a name="209"><font color="#888888 "><i>  209   </i></font></a>    <font color="#117755"><i>/* % calculate tt */</i></font>
-<a name="210"><font color="#888888 "><i>  210   </i></font></a>    <a href="linspace_c.html#fcn_linspace" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_linspace');" target="_self"><font color="#1122aa">linspace</font></a>(T_data[0], m, tt);
-<a name="211"><font color="#888888 "><i>  211   </i></font></a>
-<a name="212"><font color="#888888 "><i>  212   </i></font></a>    <font color="#117755"><i>/* % calc s and d at the times */</i></font>
-<a name="213"><font color="#888888 "><i>  213   </i></font></a>    <a href="polyval_c.html#fcn_b_polyval" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_polyval');" target="_self"><font color="#1122aa">b_polyval</font></a>(ps_data, ps_size, tt, b_ss);
-<a name="214"><font color="#888888 "><i>  214   </i></font></a>    <a href="polyval_c.html#fcn_b_polyval" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_polyval');" target="_self"><font color="#1122aa">b_polyval</font></a>(pd_data, pd_size, tt, dd);
-<a name="215"><font color="#888888 "><i>  215   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;XY, 2);
-<a name="216"><font color="#888888 "><i>  216   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;xy_car, 2);
-<a name="217"><font color="#888888 "><i>  217   </i></font></a>    <font color="#112266"><b>if</b></font> (kappa &gt; 0.0) <b>{</b>
-<a name="218"><font color="#888888 "><i>  218   </i></font></a>      ss = tt-&gt;size[0] * tt-&gt;size[1];
-<a name="219"><font color="#888888 "><i>  219   </i></font></a>      tt-&gt;size[0] = 1;
-<a name="220"><font color="#888888 "><i>  220   </i></font></a>      tt-&gt;size[1] = b_ss-&gt;size[1];
-<a name="221"><font color="#888888 "><i>  221   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)tt, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="222"><font color="#888888 "><i>  222   </i></font></a>      loop_ub = b_ss-&gt;size[0] * b_ss-&gt;size[1];
-<a name="223"><font color="#888888 "><i>  223   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="224"><font color="#888888 "><i>  224   </i></font></a>        tt-&gt;data[ss] = kappa * b_ss-&gt;data[ss];
-<a name="225"><font color="#888888 "><i>  225   </i></font></a>      <b>}</b>
-<a name="226"><font color="#888888 "><i>  226   </i></font></a>
-<a name="227"><font color="#888888 "><i>  227   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;r0, 2);
-<a name="228"><font color="#888888 "><i>  228   </i></font></a>      <a href="sin_c.html#fcn_b_sin" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_sin');" target="_self"><font color="#1122aa">b_sin</font></a>(tt);
-<a name="229"><font color="#888888 "><i>  229   </i></font></a>      ss = r0-&gt;size[0] * r0-&gt;size[1];
-<a name="230"><font color="#888888 "><i>  230   </i></font></a>      r0-&gt;size[0] = 1;
-<a name="231"><font color="#888888 "><i>  231   </i></font></a>      r0-&gt;size[1] = b_ss-&gt;size[1];
-<a name="232"><font color="#888888 "><i>  232   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)r0, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="233"><font color="#888888 "><i>  233   </i></font></a>      loop_ub = b_ss-&gt;size[0] * b_ss-&gt;size[1];
-<a name="234"><font color="#888888 "><i>  234   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="235"><font color="#888888 "><i>  235   </i></font></a>        r0-&gt;data[ss] = kappa * b_ss-&gt;data[ss];
-<a name="236"><font color="#888888 "><i>  236   </i></font></a>      <b>}</b>
-<a name="237"><font color="#888888 "><i>  237   </i></font></a>
-<a name="238"><font color="#888888 "><i>  238   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;c_ss, 2);
-<a name="239"><font color="#888888 "><i>  239   </i></font></a>      <a href="cos_c.html#fcn_b_cos" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_cos');" target="_self"><font color="#1122aa">b_cos</font></a>(r0);
-<a name="240"><font color="#888888 "><i>  240   </i></font></a>      ss = c_ss-&gt;size[0] * c_ss-&gt;size[1];
-<a name="241"><font color="#888888 "><i>  241   </i></font></a>      c_ss-&gt;size[0] = 1;
-<a name="242"><font color="#888888 "><i>  242   </i></font></a>      c_ss-&gt;size[1] = b_ss-&gt;size[1];
-<a name="243"><font color="#888888 "><i>  243   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)c_ss, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="244"><font color="#888888 "><i>  244   </i></font></a>      loop_ub = b_ss-&gt;size[0] * b_ss-&gt;size[1];
-<a name="245"><font color="#888888 "><i>  245   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="246"><font color="#888888 "><i>  246   </i></font></a>        c_ss-&gt;data[ss] = kappa * b_ss-&gt;data[ss];
-<a name="247"><font color="#888888 "><i>  247   </i></font></a>      <b>}</b>
-<a name="248"><font color="#888888 "><i>  248   </i></font></a>
-<a name="249"><font color="#888888 "><i>  249   </i></font></a>      <a href="sin_c.html#fcn_b_sin" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_sin');" target="_self"><font color="#1122aa">b_sin</font></a>(c_ss);
-<a name="250"><font color="#888888 "><i>  250   </i></font></a>      ss = c_ss-&gt;size[0] * c_ss-&gt;size[1];
-<a name="251"><font color="#888888 "><i>  251   </i></font></a>      c_ss-&gt;size[0] = 1;
-<a name="252"><font color="#888888 "><i>  252   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)c_ss, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="253"><font color="#888888 "><i>  253   </i></font></a>      ss = c_ss-&gt;size[0];
-<a name="254"><font color="#888888 "><i>  254   </i></font></a>      i0 = c_ss-&gt;size[1];
-<a name="255"><font color="#888888 "><i>  255   </i></font></a>      loop_ub = ss * i0;
-<a name="256"><font color="#888888 "><i>  256   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="257"><font color="#888888 "><i>  257   </i></font></a>        c_ss-&gt;data[ss] = -c_ss-&gt;data[ss];
-<a name="258"><font color="#888888 "><i>  258   </i></font></a>      <b>}</b>
-<a name="259"><font color="#888888 "><i>  259   </i></font></a>
-<a name="260"><font color="#888888 "><i>  260   </i></font></a>      ss = b_ss-&gt;size[0] * b_ss-&gt;size[1];
-<a name="261"><font color="#888888 "><i>  261   </i></font></a>      b_ss-&gt;size[0] = 1;
-<a name="262"><font color="#888888 "><i>  262   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)b_ss, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="263"><font color="#888888 "><i>  263   </i></font></a>      ss = b_ss-&gt;size[0];
-<a name="264"><font color="#888888 "><i>  264   </i></font></a>      loop_ub = b_ss-&gt;size[1];
-<a name="265"><font color="#888888 "><i>  265   </i></font></a>      loop_ub *= ss;
-<a name="266"><font color="#888888 "><i>  266   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="267"><font color="#888888 "><i>  267   </i></font></a>        b_ss-&gt;data[ss] *= kappa;
-<a name="268"><font color="#888888 "><i>  268   </i></font></a>      <b>}</b>
-<a name="269"><font color="#888888 "><i>  269   </i></font></a>
-<a name="270"><font color="#888888 "><i>  270   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;b_tt, 2);
-<a name="271"><font color="#888888 "><i>  271   </i></font></a>      <a href="cos_c.html#fcn_b_cos" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_cos');" target="_self"><font color="#1122aa">b_cos</font></a>(b_ss);
-<a name="272"><font color="#888888 "><i>  272   </i></font></a>      <a href="repmat_c.html#fcn_repmat" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_repmat');" target="_self"><font color="#1122aa">repmat</font></a>(dd, xy_car);
-<a name="273"><font color="#888888 "><i>  273   </i></font></a>      cosphi_d = 1.0 / kappa;
-<a name="274"><font color="#888888 "><i>  274   </i></font></a>      ss = b_tt-&gt;size[0] * b_tt-&gt;size[1];
-<a name="275"><font color="#888888 "><i>  275   </i></font></a>      b_tt-&gt;size[0] = 2;
-<a name="276"><font color="#888888 "><i>  276   </i></font></a>      b_tt-&gt;size[1] = tt-&gt;size[1];
-<a name="277"><font color="#888888 "><i>  277   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)b_tt, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="278"><font color="#888888 "><i>  278   </i></font></a>      loop_ub = tt-&gt;size[1];
-<a name="279"><font color="#888888 "><i>  279   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="280"><font color="#888888 "><i>  280   </i></font></a>        b_tt-&gt;data[b_tt-&gt;size[0] * ss] = tt-&gt;data[tt-&gt;size[0] * ss];
-<a name="281"><font color="#888888 "><i>  281   </i></font></a>      <b>}</b>
-<a name="282"><font color="#888888 "><i>  282   </i></font></a>
-<a name="283"><font color="#888888 "><i>  283   </i></font></a>      loop_ub = r0-&gt;size[1];
-<a name="284"><font color="#888888 "><i>  284   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="285"><font color="#888888 "><i>  285   </i></font></a>        b_tt-&gt;data[1 + b_tt-&gt;size[0] * ss] = 1.0 - r0-&gt;data[r0-&gt;size[0] * ss];
-<a name="286"><font color="#888888 "><i>  286   </i></font></a>      <b>}</b>
-<a name="287"><font color="#888888 "><i>  287   </i></font></a>
-<a name="288"><font color="#888888 "><i>  288   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;r0);
-<a name="289"><font color="#888888 "><i>  289   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;r1, 2);
-<a name="290"><font color="#888888 "><i>  290   </i></font></a>      ss = r1-&gt;size[0] * r1-&gt;size[1];
-<a name="291"><font color="#888888 "><i>  291   </i></font></a>      r1-&gt;size[0] = 2;
-<a name="292"><font color="#888888 "><i>  292   </i></font></a>      r1-&gt;size[1] = c_ss-&gt;size[1];
-<a name="293"><font color="#888888 "><i>  293   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)r1, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="294"><font color="#888888 "><i>  294   </i></font></a>      loop_ub = c_ss-&gt;size[1];
-<a name="295"><font color="#888888 "><i>  295   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="296"><font color="#888888 "><i>  296   </i></font></a>        r1-&gt;data[r1-&gt;size[0] * ss] = c_ss-&gt;data[c_ss-&gt;size[0] * ss];
-<a name="297"><font color="#888888 "><i>  297   </i></font></a>      <b>}</b>
-<a name="298"><font color="#888888 "><i>  298   </i></font></a>
-<a name="299"><font color="#888888 "><i>  299   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;c_ss);
-<a name="300"><font color="#888888 "><i>  300   </i></font></a>      loop_ub = b_ss-&gt;size[1];
-<a name="301"><font color="#888888 "><i>  301   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="302"><font color="#888888 "><i>  302   </i></font></a>        r1-&gt;data[1 + r1-&gt;size[0] * ss] = b_ss-&gt;data[b_ss-&gt;size[0] * ss];
-<a name="303"><font color="#888888 "><i>  303   </i></font></a>      <b>}</b>
-<a name="304"><font color="#888888 "><i>  304   </i></font></a>
-<a name="305"><font color="#888888 "><i>  305   </i></font></a>      ss = XY-&gt;size[0] * XY-&gt;size[1];
-<a name="306"><font color="#888888 "><i>  306   </i></font></a>      XY-&gt;size[0] = 2;
-<a name="307"><font color="#888888 "><i>  307   </i></font></a>      XY-&gt;size[1] = b_tt-&gt;size[1];
-<a name="308"><font color="#888888 "><i>  308   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)XY, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="309"><font color="#888888 "><i>  309   </i></font></a>      loop_ub = b_tt-&gt;size[1];
-<a name="310"><font color="#888888 "><i>  310   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="311"><font color="#888888 "><i>  311   </i></font></a>        <font color="#112266"><b>for</b></font> (i0 = 0; i0 &lt; 2; i0++) <b>{</b>
-<a name="312"><font color="#888888 "><i>  312   </i></font></a>          XY-&gt;data[i0 + XY-&gt;size[0] * ss] = cosphi_d * b_tt-&gt;data[i0 +
-<a name="313"><font color="#888888 "><i>  313   </i></font></a>            b_tt-&gt;size[0] * ss] + r1-&gt;data[i0 + r1-&gt;size[0] * ss] * xy_car-&gt;
-<a name="314"><font color="#888888 "><i>  314   </i></font></a>            data[i0 + xy_car-&gt;size[0] * ss];
-<a name="315"><font color="#888888 "><i>  315   </i></font></a>        <b>}</b>
-<a name="316"><font color="#888888 "><i>  316   </i></font></a>      <b>}</b>
-<a name="317"><font color="#888888 "><i>  317   </i></font></a>
-<a name="318"><font color="#888888 "><i>  318   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;r1);
-<a name="319"><font color="#888888 "><i>  319   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;b_tt);
-<a name="320"><font color="#888888 "><i>  320   </i></font></a>    <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="321"><font color="#888888 "><i>  321   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;r0, 2);
-<a name="322"><font color="#888888 "><i>  322   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;c_ss, 2);
-<a name="323"><font color="#888888 "><i>  323   </i></font></a>      <a href="repmat_c.html#fcn_b_repmat" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_repmat');" target="_self"><font color="#1122aa">b_repmat</font></a>(m, xy_car);
-<a name="324"><font color="#888888 "><i>  324   </i></font></a>      <a href="repmat_c.html#fcn_repmat" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_repmat');" target="_self"><font color="#1122aa">repmat</font></a>(dd, r0);
-<a name="325"><font color="#888888 "><i>  325   </i></font></a>      ss = c_ss-&gt;size[0] * c_ss-&gt;size[1];
-<a name="326"><font color="#888888 "><i>  326   </i></font></a>      c_ss-&gt;size[0] = 2;
-<a name="327"><font color="#888888 "><i>  327   </i></font></a>      c_ss-&gt;size[1] = b_ss-&gt;size[1];
-<a name="328"><font color="#888888 "><i>  328   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)c_ss, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="329"><font color="#888888 "><i>  329   </i></font></a>      loop_ub = b_ss-&gt;size[1];
-<a name="330"><font color="#888888 "><i>  330   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="331"><font color="#888888 "><i>  331   </i></font></a>        c_ss-&gt;data[c_ss-&gt;size[0] * ss] = b_ss-&gt;data[b_ss-&gt;size[0] * ss];
-<a name="332"><font color="#888888 "><i>  332   </i></font></a>      <b>}</b>
-<a name="333"><font color="#888888 "><i>  333   </i></font></a>
-<a name="334"><font color="#888888 "><i>  334   </i></font></a>      loop_ub = m;
-<a name="335"><font color="#888888 "><i>  335   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="336"><font color="#888888 "><i>  336   </i></font></a>        c_ss-&gt;data[1 + c_ss-&gt;size[0] * ss] = 0.0;
-<a name="337"><font color="#888888 "><i>  337   </i></font></a>      <b>}</b>
-<a name="338"><font color="#888888 "><i>  338   </i></font></a>
-<a name="339"><font color="#888888 "><i>  339   </i></font></a>      ss = XY-&gt;size[0] * XY-&gt;size[1];
-<a name="340"><font color="#888888 "><i>  340   </i></font></a>      XY-&gt;size[0] = 2;
-<a name="341"><font color="#888888 "><i>  341   </i></font></a>      XY-&gt;size[1] = c_ss-&gt;size[1];
-<a name="342"><font color="#888888 "><i>  342   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)XY, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="343"><font color="#888888 "><i>  343   </i></font></a>      loop_ub = c_ss-&gt;size[1];
-<a name="344"><font color="#888888 "><i>  344   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="345"><font color="#888888 "><i>  345   </i></font></a>        <font color="#112266"><b>for</b></font> (i0 = 0; i0 &lt; 2; i0++) <b>{</b>
-<a name="346"><font color="#888888 "><i>  346   </i></font></a>          XY-&gt;data[i0 + XY-&gt;size[0] * ss] = c_ss-&gt;data[i0 + c_ss-&gt;size[0] * ss]
-<a name="347"><font color="#888888 "><i>  347   </i></font></a>            + xy_car-&gt;data[i0 + xy_car-&gt;size[0] * ss] * r0-&gt;data[i0 + r0-&gt;size[0]
-<a name="348"><font color="#888888 "><i>  348   </i></font></a>            * ss];
-<a name="349"><font color="#888888 "><i>  349   </i></font></a>        <b>}</b>
-<a name="350"><font color="#888888 "><i>  350   </i></font></a>      <b>}</b>
-<a name="351"><font color="#888888 "><i>  351   </i></font></a>
-<a name="352"><font color="#888888 "><i>  352   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;c_ss);
-<a name="353"><font color="#888888 "><i>  353   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;r0);
-<a name="354"><font color="#888888 "><i>  354   </i></font></a>    <b>}</b>
-<a name="355"><font color="#888888 "><i>  355   </i></font></a>
-<a name="356"><font color="#888888 "><i>  356   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;dd);
-<a name="357"><font color="#888888 "><i>  357   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;b_ss);
-<a name="358"><font color="#888888 "><i>  358   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;tt);
-<a name="359"><font color="#888888 "><i>  359   </i></font></a>    ss = xy_car-&gt;size[0] * xy_car-&gt;size[1];
-<a name="360"><font color="#888888 "><i>  360   </i></font></a>    xy_car-&gt;size[0] = 2;
-<a name="361"><font color="#888888 "><i>  361   </i></font></a>    xy_car-&gt;size[1] = m;
-<a name="362"><font color="#888888 "><i>  362   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)xy_car, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="363"><font color="#888888 "><i>  363   </i></font></a>    loop_ub = m &lt;&lt; 1;
-<a name="364"><font color="#888888 "><i>  364   </i></font></a>    <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="365"><font color="#888888 "><i>  365   </i></font></a>      xy_car-&gt;data[ss] = 0.0;
-<a name="366"><font color="#888888 "><i>  366   </i></font></a>    <b>}</b>
-<a name="367"><font color="#888888 "><i>  367   </i></font></a>
-<a name="368"><font color="#888888 "><i>  368   </i></font></a>    R[0] = cos(phi);
-<a name="369"><font color="#888888 "><i>  369   </i></font></a>    R[2] = -sin(phi);
-<a name="370"><font color="#888888 "><i>  370   </i></font></a>    R[1] = sin(phi);
-<a name="371"><font color="#888888 "><i>  371   </i></font></a>    R[3] = cos(phi);
-<a name="372"><font color="#888888 "><i>  372   </i></font></a>    <font color="#112266"><b>for</b></font> (k = 1; k &lt;= m; k++) <b>{</b>
-<a name="373"><font color="#888888 "><i>  373   </i></font></a>      dv1[0] = -sin(phi);
-<a name="374"><font color="#888888 "><i>  374   </i></font></a>      dv1[1] = cos(phi);
-<a name="375"><font color="#888888 "><i>  375   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; 2; ss++) <b>{</b>
-<a name="376"><font color="#888888 "><i>  376   </i></font></a>        cosphi_d = 0.0;
-<a name="377"><font color="#888888 "><i>  377   </i></font></a>        <font color="#112266"><b>for</b></font> (i0 = 0; i0 &lt; 2; i0++) <b>{</b>
-<a name="378"><font color="#888888 "><i>  378   </i></font></a>          cosphi_d += R[ss + (i0 &lt;&lt; 1)] * XY-&gt;data[i0 + XY-&gt;size[0] * (k - 1)];
-<a name="379"><font color="#888888 "><i>  379   </i></font></a>        <b>}</b>
-<a name="380"><font color="#888888 "><i>  380   </i></font></a>
-<a name="381"><font color="#888888 "><i>  381   </i></font></a>        xy_car-&gt;data[ss + xy_car-&gt;size[0] * (k - 1)] = cosphi_d + dv1[ss] * -D[0];
-<a name="382"><font color="#888888 "><i>  382   </i></font></a>      <b>}</b>
-<a name="383"><font color="#888888 "><i>  383   </i></font></a>    <b>}</b>
-<a name="384"><font color="#888888 "><i>  384   </i></font></a>
-<a name="385"><font color="#888888 "><i>  385   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;XY);
-<a name="386"><font color="#888888 "><i>  386   </i></font></a>    loop_ub = xy_car-&gt;size[1];
-<a name="387"><font color="#888888 "><i>  387   </i></font></a>    ss = x-&gt;size[0] * x-&gt;size[1];
-<a name="388"><font color="#888888 "><i>  388   </i></font></a>    x-&gt;size[0] = 1;
-<a name="389"><font color="#888888 "><i>  389   </i></font></a>    x-&gt;size[1] = loop_ub;
-<a name="390"><font color="#888888 "><i>  390   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)x, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="391"><font color="#888888 "><i>  391   </i></font></a>    <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="392"><font color="#888888 "><i>  392   </i></font></a>      x-&gt;data[x-&gt;size[0] * ss] = xy_car-&gt;data[xy_car-&gt;size[0] * ss];
-<a name="393"><font color="#888888 "><i>  393   </i></font></a>    <b>}</b>
-<a name="394"><font color="#888888 "><i>  394   </i></font></a>
-<a name="395"><font color="#888888 "><i>  395   </i></font></a>    loop_ub = xy_car-&gt;size[1];
-<a name="396"><font color="#888888 "><i>  396   </i></font></a>    ss = y-&gt;size[0] * y-&gt;size[1];
-<a name="397"><font color="#888888 "><i>  397   </i></font></a>    y-&gt;size[0] = 1;
-<a name="398"><font color="#888888 "><i>  398   </i></font></a>    y-&gt;size[1] = loop_ub;
-<a name="399"><font color="#888888 "><i>  399   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)y, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
-<a name="400"><font color="#888888 "><i>  400   </i></font></a>    <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
-<a name="401"><font color="#888888 "><i>  401   </i></font></a>      y-&gt;data[y-&gt;size[0] * ss] = xy_car-&gt;data[1 + xy_car-&gt;size[0] * ss];
-<a name="402"><font color="#888888 "><i>  402   </i></font></a>    <b>}</b>
-<a name="403"><font color="#888888 "><i>  403   </i></font></a>
-<a name="404"><font color="#888888 "><i>  404   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;xy_car);
-<a name="405"><font color="#888888 "><i>  405   </i></font></a>  <b>}</b>
-<a name="406"><font color="#888888 "><i>  406   </i></font></a><b>}</b>
-<a name="407"><font color="#888888 "><i>  407   </i></font></a>
-<a name="408"><font color="#888888 "><i>  408   </i></font></a><font color="#117755"><i>/*</i></font>
-<a name="409"><font color="#888888 "><i>  409   </i></font></a><font color="#117755"><I> * File trailer for otg_smart_xy.c</i></font>
-<a name="410"><font color="#888888 "><i>  410   </i></font></a><font color="#117755"><I> *</i></font>
-<a name="411"><font color="#888888 "><i>  411   </i></font></a><font color="#117755"><I> * [EOF]</i></font>
-<a name="412"><font color="#888888 "><i>  412   </i></font></a><font color="#117755"><I> */</i></font>
-<a name="413"><font color="#888888 "><i>  413   </i></font></a></pre>
+<a name="203"><font color="#888888 "><i>  203   </i></font></a>  *T = T_data[0];
+<a name="204"><font color="#888888 "><i>  204   </i></font></a>  <font color="#112266"><b>if</b></font> (cosphi_d == -1.0) <b>{</b>
+<a name="205"><font color="#888888 "><i>  205   </i></font></a>  <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="206"><font color="#888888 "><i>  206   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;tt, 2);
+<a name="207"><font color="#888888 "><i>  207   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;b_ss, 2);
+<a name="208"><font color="#888888 "><i>  208   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;dd, 2);
+<a name="209"><font color="#888888 "><i>  209   </i></font></a>
+<a name="210"><font color="#888888 "><i>  210   </i></font></a>    <font color="#117755"><i>/* % calculate tt */</i></font>
+<a name="211"><font color="#888888 "><i>  211   </i></font></a>    <a href="linspace_c.html#fcn_b_linspace" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_linspace');" target="_self"><font color="#1122aa">b_linspace</font></a>(T_data[0], m, tt);
+<a name="212"><font color="#888888 "><i>  212   </i></font></a>
+<a name="213"><font color="#888888 "><i>  213   </i></font></a>    <font color="#117755"><i>/* % calc s and d at the times */</i></font>
+<a name="214"><font color="#888888 "><i>  214   </i></font></a>    <a href="polyval_c.html#fcn_d_polyval" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_d_polyval');" target="_self"><font color="#1122aa">d_polyval</font></a>(ps_data, ps_size, tt, b_ss);
+<a name="215"><font color="#888888 "><i>  215   </i></font></a>    <a href="polyval_c.html#fcn_d_polyval" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_d_polyval');" target="_self"><font color="#1122aa">d_polyval</font></a>(pd_data, pd_size, tt, dd);
+<a name="216"><font color="#888888 "><i>  216   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;XY, 2);
+<a name="217"><font color="#888888 "><i>  217   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;xy_car, 2);
+<a name="218"><font color="#888888 "><i>  218   </i></font></a>    <font color="#112266"><b>if</b></font> (kappa &gt; 0.0) <b>{</b>
+<a name="219"><font color="#888888 "><i>  219   </i></font></a>      ss = tt-&gt;size[0] * tt-&gt;size[1];
+<a name="220"><font color="#888888 "><i>  220   </i></font></a>      tt-&gt;size[0] = 1;
+<a name="221"><font color="#888888 "><i>  221   </i></font></a>      tt-&gt;size[1] = b_ss-&gt;size[1];
+<a name="222"><font color="#888888 "><i>  222   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)tt, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="223"><font color="#888888 "><i>  223   </i></font></a>      loop_ub = b_ss-&gt;size[0] * b_ss-&gt;size[1];
+<a name="224"><font color="#888888 "><i>  224   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="225"><font color="#888888 "><i>  225   </i></font></a>        tt-&gt;data[ss] = kappa * b_ss-&gt;data[ss];
+<a name="226"><font color="#888888 "><i>  226   </i></font></a>      <b>}</b>
+<a name="227"><font color="#888888 "><i>  227   </i></font></a>
+<a name="228"><font color="#888888 "><i>  228   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;r0, 2);
+<a name="229"><font color="#888888 "><i>  229   </i></font></a>      <a href="sin_c.html#fcn_b_sin" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_sin');" target="_self"><font color="#1122aa">b_sin</font></a>(tt);
+<a name="230"><font color="#888888 "><i>  230   </i></font></a>      ss = r0-&gt;size[0] * r0-&gt;size[1];
+<a name="231"><font color="#888888 "><i>  231   </i></font></a>      r0-&gt;size[0] = 1;
+<a name="232"><font color="#888888 "><i>  232   </i></font></a>      r0-&gt;size[1] = b_ss-&gt;size[1];
+<a name="233"><font color="#888888 "><i>  233   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)r0, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="234"><font color="#888888 "><i>  234   </i></font></a>      loop_ub = b_ss-&gt;size[0] * b_ss-&gt;size[1];
+<a name="235"><font color="#888888 "><i>  235   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="236"><font color="#888888 "><i>  236   </i></font></a>        r0-&gt;data[ss] = kappa * b_ss-&gt;data[ss];
+<a name="237"><font color="#888888 "><i>  237   </i></font></a>      <b>}</b>
+<a name="238"><font color="#888888 "><i>  238   </i></font></a>
+<a name="239"><font color="#888888 "><i>  239   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;c_ss, 2);
+<a name="240"><font color="#888888 "><i>  240   </i></font></a>      <a href="cos_c.html#fcn_b_cos" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_cos');" target="_self"><font color="#1122aa">b_cos</font></a>(r0);
+<a name="241"><font color="#888888 "><i>  241   </i></font></a>      ss = c_ss-&gt;size[0] * c_ss-&gt;size[1];
+<a name="242"><font color="#888888 "><i>  242   </i></font></a>      c_ss-&gt;size[0] = 1;
+<a name="243"><font color="#888888 "><i>  243   </i></font></a>      c_ss-&gt;size[1] = b_ss-&gt;size[1];
+<a name="244"><font color="#888888 "><i>  244   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)c_ss, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="245"><font color="#888888 "><i>  245   </i></font></a>      loop_ub = b_ss-&gt;size[0] * b_ss-&gt;size[1];
+<a name="246"><font color="#888888 "><i>  246   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="247"><font color="#888888 "><i>  247   </i></font></a>        c_ss-&gt;data[ss] = kappa * b_ss-&gt;data[ss];
+<a name="248"><font color="#888888 "><i>  248   </i></font></a>      <b>}</b>
+<a name="249"><font color="#888888 "><i>  249   </i></font></a>
+<a name="250"><font color="#888888 "><i>  250   </i></font></a>      <a href="sin_c.html#fcn_b_sin" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_sin');" target="_self"><font color="#1122aa">b_sin</font></a>(c_ss);
+<a name="251"><font color="#888888 "><i>  251   </i></font></a>      ss = c_ss-&gt;size[0] * c_ss-&gt;size[1];
+<a name="252"><font color="#888888 "><i>  252   </i></font></a>      c_ss-&gt;size[0] = 1;
+<a name="253"><font color="#888888 "><i>  253   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)c_ss, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="254"><font color="#888888 "><i>  254   </i></font></a>      ss = c_ss-&gt;size[0];
+<a name="255"><font color="#888888 "><i>  255   </i></font></a>      i0 = c_ss-&gt;size[1];
+<a name="256"><font color="#888888 "><i>  256   </i></font></a>      loop_ub = ss * i0;
+<a name="257"><font color="#888888 "><i>  257   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="258"><font color="#888888 "><i>  258   </i></font></a>        c_ss-&gt;data[ss] = -c_ss-&gt;data[ss];
+<a name="259"><font color="#888888 "><i>  259   </i></font></a>      <b>}</b>
+<a name="260"><font color="#888888 "><i>  260   </i></font></a>
+<a name="261"><font color="#888888 "><i>  261   </i></font></a>      ss = b_ss-&gt;size[0] * b_ss-&gt;size[1];
+<a name="262"><font color="#888888 "><i>  262   </i></font></a>      b_ss-&gt;size[0] = 1;
+<a name="263"><font color="#888888 "><i>  263   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)b_ss, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="264"><font color="#888888 "><i>  264   </i></font></a>      ss = b_ss-&gt;size[0];
+<a name="265"><font color="#888888 "><i>  265   </i></font></a>      loop_ub = b_ss-&gt;size[1];
+<a name="266"><font color="#888888 "><i>  266   </i></font></a>      loop_ub *= ss;
+<a name="267"><font color="#888888 "><i>  267   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="268"><font color="#888888 "><i>  268   </i></font></a>        b_ss-&gt;data[ss] *= kappa;
+<a name="269"><font color="#888888 "><i>  269   </i></font></a>      <b>}</b>
+<a name="270"><font color="#888888 "><i>  270   </i></font></a>
+<a name="271"><font color="#888888 "><i>  271   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;b_tt, 2);
+<a name="272"><font color="#888888 "><i>  272   </i></font></a>      <a href="cos_c.html#fcn_b_cos" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_cos');" target="_self"><font color="#1122aa">b_cos</font></a>(b_ss);
+<a name="273"><font color="#888888 "><i>  273   </i></font></a>      <a href="repmat_c.html#fcn_repmat" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_repmat');" target="_self"><font color="#1122aa">repmat</font></a>(dd, xy_car);
+<a name="274"><font color="#888888 "><i>  274   </i></font></a>      cosphi_d = 1.0 / kappa;
+<a name="275"><font color="#888888 "><i>  275   </i></font></a>      ss = b_tt-&gt;size[0] * b_tt-&gt;size[1];
+<a name="276"><font color="#888888 "><i>  276   </i></font></a>      b_tt-&gt;size[0] = 2;
+<a name="277"><font color="#888888 "><i>  277   </i></font></a>      b_tt-&gt;size[1] = tt-&gt;size[1];
+<a name="278"><font color="#888888 "><i>  278   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)b_tt, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="279"><font color="#888888 "><i>  279   </i></font></a>      loop_ub = tt-&gt;size[1];
+<a name="280"><font color="#888888 "><i>  280   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="281"><font color="#888888 "><i>  281   </i></font></a>        b_tt-&gt;data[b_tt-&gt;size[0] * ss] = tt-&gt;data[tt-&gt;size[0] * ss];
+<a name="282"><font color="#888888 "><i>  282   </i></font></a>      <b>}</b>
+<a name="283"><font color="#888888 "><i>  283   </i></font></a>
+<a name="284"><font color="#888888 "><i>  284   </i></font></a>      loop_ub = r0-&gt;size[1];
+<a name="285"><font color="#888888 "><i>  285   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="286"><font color="#888888 "><i>  286   </i></font></a>        b_tt-&gt;data[1 + b_tt-&gt;size[0] * ss] = 1.0 - r0-&gt;data[r0-&gt;size[0] * ss];
+<a name="287"><font color="#888888 "><i>  287   </i></font></a>      <b>}</b>
+<a name="288"><font color="#888888 "><i>  288   </i></font></a>
+<a name="289"><font color="#888888 "><i>  289   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;r0);
+<a name="290"><font color="#888888 "><i>  290   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;r1, 2);
+<a name="291"><font color="#888888 "><i>  291   </i></font></a>      ss = r1-&gt;size[0] * r1-&gt;size[1];
+<a name="292"><font color="#888888 "><i>  292   </i></font></a>      r1-&gt;size[0] = 2;
+<a name="293"><font color="#888888 "><i>  293   </i></font></a>      r1-&gt;size[1] = c_ss-&gt;size[1];
+<a name="294"><font color="#888888 "><i>  294   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)r1, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="295"><font color="#888888 "><i>  295   </i></font></a>      loop_ub = c_ss-&gt;size[1];
+<a name="296"><font color="#888888 "><i>  296   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="297"><font color="#888888 "><i>  297   </i></font></a>        r1-&gt;data[r1-&gt;size[0] * ss] = c_ss-&gt;data[c_ss-&gt;size[0] * ss];
+<a name="298"><font color="#888888 "><i>  298   </i></font></a>      <b>}</b>
+<a name="299"><font color="#888888 "><i>  299   </i></font></a>
+<a name="300"><font color="#888888 "><i>  300   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;c_ss);
+<a name="301"><font color="#888888 "><i>  301   </i></font></a>      loop_ub = b_ss-&gt;size[1];
+<a name="302"><font color="#888888 "><i>  302   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="303"><font color="#888888 "><i>  303   </i></font></a>        r1-&gt;data[1 + r1-&gt;size[0] * ss] = b_ss-&gt;data[b_ss-&gt;size[0] * ss];
+<a name="304"><font color="#888888 "><i>  304   </i></font></a>      <b>}</b>
+<a name="305"><font color="#888888 "><i>  305   </i></font></a>
+<a name="306"><font color="#888888 "><i>  306   </i></font></a>      ss = XY-&gt;size[0] * XY-&gt;size[1];
+<a name="307"><font color="#888888 "><i>  307   </i></font></a>      XY-&gt;size[0] = 2;
+<a name="308"><font color="#888888 "><i>  308   </i></font></a>      XY-&gt;size[1] = b_tt-&gt;size[1];
+<a name="309"><font color="#888888 "><i>  309   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)XY, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="310"><font color="#888888 "><i>  310   </i></font></a>      loop_ub = b_tt-&gt;size[1];
+<a name="311"><font color="#888888 "><i>  311   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="312"><font color="#888888 "><i>  312   </i></font></a>        <font color="#112266"><b>for</b></font> (i0 = 0; i0 &lt; 2; i0++) <b>{</b>
+<a name="313"><font color="#888888 "><i>  313   </i></font></a>          XY-&gt;data[i0 + XY-&gt;size[0] * ss] = cosphi_d * b_tt-&gt;data[i0 +
+<a name="314"><font color="#888888 "><i>  314   </i></font></a>            b_tt-&gt;size[0] * ss] + r1-&gt;data[i0 + r1-&gt;size[0] * ss] * xy_car-&gt;
+<a name="315"><font color="#888888 "><i>  315   </i></font></a>            data[i0 + xy_car-&gt;size[0] * ss];
+<a name="316"><font color="#888888 "><i>  316   </i></font></a>        <b>}</b>
+<a name="317"><font color="#888888 "><i>  317   </i></font></a>      <b>}</b>
+<a name="318"><font color="#888888 "><i>  318   </i></font></a>
+<a name="319"><font color="#888888 "><i>  319   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;r1);
+<a name="320"><font color="#888888 "><i>  320   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;b_tt);
+<a name="321"><font color="#888888 "><i>  321   </i></font></a>    <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="322"><font color="#888888 "><i>  322   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;r0, 2);
+<a name="323"><font color="#888888 "><i>  323   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxInit_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxInit_real_T');" target="_self"><font color="#1122aa">emxInit_real_T</font></a>(&amp;c_ss, 2);
+<a name="324"><font color="#888888 "><i>  324   </i></font></a>      <a href="repmat_c.html#fcn_b_repmat" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_repmat');" target="_self"><font color="#1122aa">b_repmat</font></a>(m, xy_car);
+<a name="325"><font color="#888888 "><i>  325   </i></font></a>      <a href="repmat_c.html#fcn_repmat" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_repmat');" target="_self"><font color="#1122aa">repmat</font></a>(dd, r0);
+<a name="326"><font color="#888888 "><i>  326   </i></font></a>      ss = c_ss-&gt;size[0] * c_ss-&gt;size[1];
+<a name="327"><font color="#888888 "><i>  327   </i></font></a>      c_ss-&gt;size[0] = 2;
+<a name="328"><font color="#888888 "><i>  328   </i></font></a>      c_ss-&gt;size[1] = b_ss-&gt;size[1];
+<a name="329"><font color="#888888 "><i>  329   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)c_ss, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="330"><font color="#888888 "><i>  330   </i></font></a>      loop_ub = b_ss-&gt;size[1];
+<a name="331"><font color="#888888 "><i>  331   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="332"><font color="#888888 "><i>  332   </i></font></a>        c_ss-&gt;data[c_ss-&gt;size[0] * ss] = b_ss-&gt;data[b_ss-&gt;size[0] * ss];
+<a name="333"><font color="#888888 "><i>  333   </i></font></a>      <b>}</b>
+<a name="334"><font color="#888888 "><i>  334   </i></font></a>
+<a name="335"><font color="#888888 "><i>  335   </i></font></a>      loop_ub = m;
+<a name="336"><font color="#888888 "><i>  336   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="337"><font color="#888888 "><i>  337   </i></font></a>        c_ss-&gt;data[1 + c_ss-&gt;size[0] * ss] = 0.0;
+<a name="338"><font color="#888888 "><i>  338   </i></font></a>      <b>}</b>
+<a name="339"><font color="#888888 "><i>  339   </i></font></a>
+<a name="340"><font color="#888888 "><i>  340   </i></font></a>      ss = XY-&gt;size[0] * XY-&gt;size[1];
+<a name="341"><font color="#888888 "><i>  341   </i></font></a>      XY-&gt;size[0] = 2;
+<a name="342"><font color="#888888 "><i>  342   </i></font></a>      XY-&gt;size[1] = c_ss-&gt;size[1];
+<a name="343"><font color="#888888 "><i>  343   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)XY, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="344"><font color="#888888 "><i>  344   </i></font></a>      loop_ub = c_ss-&gt;size[1];
+<a name="345"><font color="#888888 "><i>  345   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="346"><font color="#888888 "><i>  346   </i></font></a>        <font color="#112266"><b>for</b></font> (i0 = 0; i0 &lt; 2; i0++) <b>{</b>
+<a name="347"><font color="#888888 "><i>  347   </i></font></a>          XY-&gt;data[i0 + XY-&gt;size[0] * ss] = c_ss-&gt;data[i0 + c_ss-&gt;size[0] * ss]
+<a name="348"><font color="#888888 "><i>  348   </i></font></a>            + xy_car-&gt;data[i0 + xy_car-&gt;size[0] * ss] * r0-&gt;data[i0 + r0-&gt;size[0]
+<a name="349"><font color="#888888 "><i>  349   </i></font></a>            * ss];
+<a name="350"><font color="#888888 "><i>  350   </i></font></a>        <b>}</b>
+<a name="351"><font color="#888888 "><i>  351   </i></font></a>      <b>}</b>
+<a name="352"><font color="#888888 "><i>  352   </i></font></a>
+<a name="353"><font color="#888888 "><i>  353   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;c_ss);
+<a name="354"><font color="#888888 "><i>  354   </i></font></a>      <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;r0);
+<a name="355"><font color="#888888 "><i>  355   </i></font></a>    <b>}</b>
+<a name="356"><font color="#888888 "><i>  356   </i></font></a>
+<a name="357"><font color="#888888 "><i>  357   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;dd);
+<a name="358"><font color="#888888 "><i>  358   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;b_ss);
+<a name="359"><font color="#888888 "><i>  359   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;tt);
+<a name="360"><font color="#888888 "><i>  360   </i></font></a>    ss = xy_car-&gt;size[0] * xy_car-&gt;size[1];
+<a name="361"><font color="#888888 "><i>  361   </i></font></a>    xy_car-&gt;size[0] = 2;
+<a name="362"><font color="#888888 "><i>  362   </i></font></a>    xy_car-&gt;size[1] = m;
+<a name="363"><font color="#888888 "><i>  363   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)xy_car, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="364"><font color="#888888 "><i>  364   </i></font></a>    loop_ub = m &lt;&lt; 1;
+<a name="365"><font color="#888888 "><i>  365   </i></font></a>    <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="366"><font color="#888888 "><i>  366   </i></font></a>      xy_car-&gt;data[ss] = 0.0;
+<a name="367"><font color="#888888 "><i>  367   </i></font></a>    <b>}</b>
+<a name="368"><font color="#888888 "><i>  368   </i></font></a>
+<a name="369"><font color="#888888 "><i>  369   </i></font></a>    R[0] = cos(phi);
+<a name="370"><font color="#888888 "><i>  370   </i></font></a>    R[2] = -sin(phi);
+<a name="371"><font color="#888888 "><i>  371   </i></font></a>    R[1] = sin(phi);
+<a name="372"><font color="#888888 "><i>  372   </i></font></a>    R[3] = cos(phi);
+<a name="373"><font color="#888888 "><i>  373   </i></font></a>    <font color="#112266"><b>for</b></font> (k = 1; k &lt;= m; k++) <b>{</b>
+<a name="374"><font color="#888888 "><i>  374   </i></font></a>      dv1[0] = -sin(phi);
+<a name="375"><font color="#888888 "><i>  375   </i></font></a>      dv1[1] = cos(phi);
+<a name="376"><font color="#888888 "><i>  376   </i></font></a>      <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; 2; ss++) <b>{</b>
+<a name="377"><font color="#888888 "><i>  377   </i></font></a>        cosphi_d = 0.0;
+<a name="378"><font color="#888888 "><i>  378   </i></font></a>        <font color="#112266"><b>for</b></font> (i0 = 0; i0 &lt; 2; i0++) <b>{</b>
+<a name="379"><font color="#888888 "><i>  379   </i></font></a>          cosphi_d += R[ss + (i0 &lt;&lt; 1)] * XY-&gt;data[i0 + XY-&gt;size[0] * (k - 1)];
+<a name="380"><font color="#888888 "><i>  380   </i></font></a>        <b>}</b>
+<a name="381"><font color="#888888 "><i>  381   </i></font></a>
+<a name="382"><font color="#888888 "><i>  382   </i></font></a>        xy_car-&gt;data[ss + xy_car-&gt;size[0] * (k - 1)] = cosphi_d + dv1[ss] * -D[0];
+<a name="383"><font color="#888888 "><i>  383   </i></font></a>      <b>}</b>
+<a name="384"><font color="#888888 "><i>  384   </i></font></a>    <b>}</b>
+<a name="385"><font color="#888888 "><i>  385   </i></font></a>
+<a name="386"><font color="#888888 "><i>  386   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;XY);
+<a name="387"><font color="#888888 "><i>  387   </i></font></a>    loop_ub = xy_car-&gt;size[1];
+<a name="388"><font color="#888888 "><i>  388   </i></font></a>    ss = x-&gt;size[0] * x-&gt;size[1];
+<a name="389"><font color="#888888 "><i>  389   </i></font></a>    x-&gt;size[0] = 1;
+<a name="390"><font color="#888888 "><i>  390   </i></font></a>    x-&gt;size[1] = loop_ub;
+<a name="391"><font color="#888888 "><i>  391   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)x, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="392"><font color="#888888 "><i>  392   </i></font></a>    <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="393"><font color="#888888 "><i>  393   </i></font></a>      x-&gt;data[x-&gt;size[0] * ss] = xy_car-&gt;data[xy_car-&gt;size[0] * ss];
+<a name="394"><font color="#888888 "><i>  394   </i></font></a>    <b>}</b>
+<a name="395"><font color="#888888 "><i>  395   </i></font></a>
+<a name="396"><font color="#888888 "><i>  396   </i></font></a>    loop_ub = xy_car-&gt;size[1];
+<a name="397"><font color="#888888 "><i>  397   </i></font></a>    ss = y-&gt;size[0] * y-&gt;size[1];
+<a name="398"><font color="#888888 "><i>  398   </i></font></a>    y-&gt;size[0] = 1;
+<a name="399"><font color="#888888 "><i>  399   </i></font></a>    y-&gt;size[1] = loop_ub;
+<a name="400"><font color="#888888 "><i>  400   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxEnsureCapacity" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxEnsureCapacity');" target="_self"><font color="#1122aa">emxEnsureCapacity</font></a>((<a href="otg_smart_xy_types_h.html#type_emxArray__common" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_emxArray__common');" target="_self"><font color="#1122aa">emxArray__common</font></a> *)y, ss, (<font color="#112266"><b>int</b></font>)<font color="#112266"><b>sizeof</b></font>(<font color="#112266"><b>double</b></font>));
+<a name="401"><font color="#888888 "><i>  401   </i></font></a>    <font color="#112266"><b>for</b></font> (ss = 0; ss &lt; loop_ub; ss++) <b>{</b>
+<a name="402"><font color="#888888 "><i>  402   </i></font></a>      y-&gt;data[y-&gt;size[0] * ss] = xy_car-&gt;data[1 + xy_car-&gt;size[0] * ss];
+<a name="403"><font color="#888888 "><i>  403   </i></font></a>    <b>}</b>
+<a name="404"><font color="#888888 "><i>  404   </i></font></a>
+<a name="405"><font color="#888888 "><i>  405   </i></font></a>    <a href="otg_smart_xy_emxutil_c.html#fcn_emxFree_real_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_emxFree_real_T');" target="_self"><font color="#1122aa">emxFree_real_T</font></a>(&amp;xy_car);
+<a name="406"><font color="#888888 "><i>  406   </i></font></a>  <b>}</b>
+<a name="407"><font color="#888888 "><i>  407   </i></font></a><b>}</b>
+<a name="408"><font color="#888888 "><i>  408   </i></font></a>
+<a name="409"><font color="#888888 "><i>  409   </i></font></a><font color="#117755"><i>/*</i></font>
+<a name="410"><font color="#888888 "><i>  410   </i></font></a><font color="#117755"><I> * File trailer for otg_smart_xy.c</i></font>
+<a name="411"><font color="#888888 "><i>  411   </i></font></a><font color="#117755"><I> *</i></font>
+<a name="412"><font color="#888888 "><i>  412   </i></font></a><font color="#117755"><I> * [EOF]</i></font>
+<a name="413"><font color="#888888 "><i>  413   </i></font></a><font color="#117755"><I> */</i></font>
+<a name="414"><font color="#888888 "><i>  414   </i></font></a></pre>
 </td></tr></table>
 </p>
 </body>

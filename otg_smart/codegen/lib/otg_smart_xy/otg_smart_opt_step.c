@@ -2,7 +2,7 @@
  * File: otg_smart_opt_step.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 07-Oct-2015 17:18:09
+ * C/C++ source code generated on  : 08-Oct-2015 13:10:03
  */
 
 /* Include Files */
@@ -19,7 +19,7 @@
  *                int y_size[2]
  * Return Type  : void
  */
-void c_eml_li_find(const boolean_T x[3], int y_data[], int y_size[2])
+void eml_li_find(const boolean_T x[3], int y_data[], int y_size[2])
 {
   int k;
   int i;
@@ -218,21 +218,17 @@ void otg_smart_opt_step(const double Ts[3], double Cs[3], const double notD[3],
             Ts_new[1] = Ts[2];
             Ts_new[2] = Ts[2] + (Ts[2] - Ts[0]);
             b_otg_smart_objFun(Ts_new[2], S, D, kj, kT, ks, kd, dataVeh, safetyS,
-                               safetyD, kappa, kappaMax, aOrthMax, &y, &Ta, &Tb,
-                               flag1);
-            if (*flag1 < 0.0) {
-              /* something in the subroutine went wrong */
-            } else {
-              Cs_new[0] = Cs[1];
-              Cs_new[1] = Cs[2];
-              Cs_new[2] = y;
-              notD_new[0] = notD[1];
-              notD_new[1] = notD[2];
-              notD_new[2] = Ta;
-              coll_new[0] = coll[1];
-              coll_new[1] = coll[2];
-              coll_new[2] = Tb;
-            }
+                               safetyD, kappa, kappaMax, aOrthMax, &y, &Ta, &Tb);
+            *flag1 = 1.0;
+            Cs_new[0] = Cs[1];
+            Cs_new[1] = Cs[2];
+            Cs_new[2] = y;
+            notD_new[0] = notD[1];
+            notD_new[1] = notD[2];
+            notD_new[2] = Ta;
+            coll_new[0] = coll[1];
+            coll_new[1] = coll[2];
+            coll_new[2] = Tb;
           } else {
             /* % all collidiong */
             if ((coll[0] > 0.0) && (coll[1] > 0.0) && (coll[2] > 0.0)) {
@@ -243,20 +239,17 @@ void otg_smart_opt_step(const double Ts[3], double Cs[3], const double notD[3],
               Ts_new[2] = Ts[1];
               b_otg_smart_objFun(Ts_new[0], S, D, kj, kT, ks, kd, dataVeh,
                                  safetyS, safetyD, kappa, kappaMax, aOrthMax, &y,
-                                 &Ta, &Tb, flag1);
-              if (*flag1 < 0.0) {
-                /* something in the subroutine went wrong */
-              } else {
-                Cs_new[0] = y;
-                Cs_new[1] = Cs[0];
-                Cs_new[2] = Cs[1];
-                notD_new[0] = Ta;
-                notD_new[1] = notD[0];
-                notD_new[2] = notD[1];
-                coll_new[0] = Tb;
-                coll_new[1] = 1.0;
-                coll_new[2] = 1.0;
-              }
+                                 &Ta, &Tb);
+              *flag1 = 1.0;
+              Cs_new[0] = y;
+              Cs_new[1] = Cs[0];
+              Cs_new[2] = Cs[1];
+              notD_new[0] = Ta;
+              notD_new[1] = notD[0];
+              notD_new[2] = notD[1];
+              coll_new[0] = Tb;
+              coll_new[1] = 1.0;
+              coll_new[2] = 1.0;
             } else {
               /* % Test all the cases */
               /* workaround for cpp not offering a value inf: if one trajectory is not */
@@ -291,7 +284,7 @@ void otg_smart_opt_step(const double Ts[3], double Cs[3], const double notD[3],
                 x[ixstart] = ((notD[ixstart] > 0.0) || (coll[ixstart] > 0.0));
               }
 
-              c_eml_li_find(x, tmp_data, tmp_size);
+              eml_li_find(x, tmp_data, tmp_size);
               ix = tmp_size[0] * tmp_size[1];
               for (ixstart = 0; ixstart < ix; ixstart++) {
                 Cs[tmp_data[ixstart] - 1] = y;
@@ -305,20 +298,17 @@ void otg_smart_opt_step(const double Ts[3], double Cs[3], const double notD[3],
                 Ts_new[2] = Ts[1];
                 b_otg_smart_objFun(Ts_new[0], S, D, kj, kT, ks, kd, dataVeh,
                                    safetyS, safetyD, kappa, kappaMax, aOrthMax,
-                                   &y, &Ta, &Tb, flag1);
-                if (*flag1 < 0.0) {
-                  /* something in the subroutine went wrong */
-                } else {
-                  Cs_new[0] = y;
-                  Cs_new[1] = Cs[0];
-                  Cs_new[2] = Cs[1];
-                  notD_new[0] = Ta;
-                  notD_new[1] = notD[0];
-                  notD_new[2] = notD[1];
-                  coll_new[0] = Tb;
-                  coll_new[1] = coll[0];
-                  coll_new[2] = coll[1];
-                }
+                                   &y, &Ta, &Tb);
+                *flag1 = 1.0;
+                Cs_new[0] = y;
+                Cs_new[1] = Cs[0];
+                Cs_new[2] = Cs[1];
+                notD_new[0] = Ta;
+                notD_new[1] = notD[0];
+                notD_new[2] = notD[1];
+                coll_new[0] = Tb;
+                coll_new[1] = coll[0];
+                coll_new[2] = coll[1];
               } else if ((Cs[0] >= Cs[1]) && (Cs[1] > Cs[2])) {
                 Ts_new[0] = Ts[1];
                 Ts_new[1] = Ts[2];
@@ -327,92 +317,82 @@ void otg_smart_opt_step(const double Ts[3], double Cs[3], const double notD[3],
                 /* fibonacci growth */
                 b_otg_smart_objFun(Ts_new[2], S, D, kj, kT, ks, kd, dataVeh,
                                    safetyS, safetyD, kappa, kappaMax, aOrthMax,
-                                   &y, &Ta, &Tb, flag1);
-                if (*flag1 < 0.0) {
-                  /* something in the subroutine went wrong */
-                } else {
-                  Cs_new[0] = Cs[1];
-                  Cs_new[1] = Cs[2];
-                  Cs_new[2] = y;
-                  notD_new[0] = notD[1];
-                  notD_new[1] = notD[2];
-                  notD_new[2] = Ta;
-                  coll_new[0] = coll[1];
-                  coll_new[1] = coll[2];
-                  coll_new[2] = Tb;
-                }
+                                   &y, &Ta, &Tb);
+                *flag1 = 1.0;
+                Cs_new[0] = Cs[1];
+                Cs_new[1] = Cs[2];
+                Cs_new[2] = y;
+                notD_new[0] = notD[1];
+                notD_new[1] = notD[2];
+                notD_new[2] = Ta;
+                coll_new[0] = coll[1];
+                coll_new[1] = coll[2];
+                coll_new[2] = Tb;
               } else {
                 if ((Cs[0] >= Cs[1]) && (Cs[1] <= Cs[2])) {
                   Ta = (Ts[0] + Ts[1]) / 2.0;
                   Tb = (Ts[1] + Ts[2]) / 2.0;
                   b_otg_smart_objFun(Ta, S, D, kj, kT, ks, kd, dataVeh, safetyS,
                                      safetyD, kappa, kappaMax, aOrthMax, &Ca,
-                                     &notDa, &colla, flag1);
-                  if (*flag1 < 0.0) {
-                    /* something in the subroutine went wrong */
+                                     &notDa, &colla);
+                  b_otg_smart_objFun(Tb, S, D, kj, kT, ks, kd, dataVeh, safetyS,
+                                     safetyD, kappa, kappaMax, aOrthMax, &Cb,
+                                     &notDb, &collb);
+                  *flag1 = 1.0;
+                  if ((notDa > 0.0) || (colla > 0.0)) {
+                    Ca = y;
+                  }
+
+                  if ((notDb > 0.0) || (collb > 0.0)) {
+                    Cb = y;
+                  }
+
+                  if (Cb < Cs[1]) {
+                    /* out of the five points the minumum must be somewhere between the */
+                    /* three outter right ones */
+                    Ts_new[0] = Ts[1];
+                    Ts_new[1] = Tb;
+                    Ts_new[2] = Ts[2];
+                    Cs_new[0] = Cs[1];
+                    Cs_new[1] = Cb;
+                    Cs_new[2] = Cs[2];
+                    notD_new[0] = notD[1];
+                    notD_new[1] = notDb;
+                    notD_new[2] = notD[2];
+                    coll_new[0] = coll[1];
+                    coll_new[1] = collb;
+                    coll_new[2] = coll[2];
+                  } else if (Ca < Cs[1]) {
+                    /* out of the five points the minumum must be somewhere between the */
+                    /* three outter left ones */
+                    Ts_new[0] = Ts[0];
+                    Ts_new[1] = Ta;
+                    Ts_new[2] = Ts[1];
+                    Cs_new[0] = Cs[0];
+                    Cs_new[1] = Ca;
+                    Cs_new[2] = Cs[1];
+                    notD_new[0] = notD[0];
+                    notD_new[1] = notDa;
+                    notD_new[2] = notD[1];
+                    coll_new[0] = coll[0];
+                    coll_new[1] = colla;
+                    coll_new[2] = coll[1];
                   } else {
-                    b_otg_smart_objFun(Tb, S, D, kj, kT, ks, kd, dataVeh,
-                                       safetyS, safetyD, kappa, kappaMax,
-                                       aOrthMax, &Cb, &notDb, &collb, flag1);
-                    if (*flag1 < 0.0) {
-                      /* something in the subroutine went wrong */
-                    } else {
-                      if ((notDa > 0.0) || (colla > 0.0)) {
-                        Ca = y;
-                      }
-
-                      if ((notDb > 0.0) || (collb > 0.0)) {
-                        Cb = y;
-                      }
-
-                      if (Cb < Cs[1]) {
-                        /* out of the five points the minumum must be somewhere between the */
-                        /* three outter right ones */
-                        Ts_new[0] = Ts[1];
-                        Ts_new[1] = Tb;
-                        Ts_new[2] = Ts[2];
-                        Cs_new[0] = Cs[1];
-                        Cs_new[1] = Cb;
-                        Cs_new[2] = Cs[2];
-                        notD_new[0] = notD[1];
-                        notD_new[1] = notDb;
-                        notD_new[2] = notD[2];
-                        coll_new[0] = coll[1];
-                        coll_new[1] = collb;
-                        coll_new[2] = coll[2];
-                      } else if (Ca < Cs[1]) {
-                        /* out of the five points the minumum must be somewhere between the */
-                        /* three outter left ones */
-                        Ts_new[0] = Ts[0];
-                        Ts_new[1] = Ta;
-                        Ts_new[2] = Ts[1];
-                        Cs_new[0] = Cs[0];
-                        Cs_new[1] = Ca;
-                        Cs_new[2] = Cs[1];
-                        notD_new[0] = notD[0];
-                        notD_new[1] = notDa;
-                        notD_new[2] = notD[1];
-                        coll_new[0] = coll[0];
-                        coll_new[1] = colla;
-                        coll_new[2] = coll[1];
-                      } else {
-                        if ((Ca >= Cs[1]) && (Cb >= Cs[1])) {
-                          /* out of the five points the minumum must be somewhere between the */
-                          /* three middle ones */
-                          Ts_new[0] = Ta;
-                          Ts_new[1] = Ts[1];
-                          Ts_new[2] = Tb;
-                          Cs_new[0] = Ca;
-                          Cs_new[1] = Cs[1];
-                          Cs_new[2] = Cb;
-                          notD_new[0] = notDa;
-                          notD_new[1] = notD[1];
-                          notD_new[2] = notDb;
-                          coll_new[0] = colla;
-                          coll_new[1] = coll[1];
-                          coll_new[2] = collb;
-                        }
-                      }
+                    if ((Ca >= Cs[1]) && (Cb >= Cs[1])) {
+                      /* out of the five points the minumum must be somewhere between the */
+                      /* three middle ones */
+                      Ts_new[0] = Ta;
+                      Ts_new[1] = Ts[1];
+                      Ts_new[2] = Tb;
+                      Cs_new[0] = Ca;
+                      Cs_new[1] = Cs[1];
+                      Cs_new[2] = Cb;
+                      notD_new[0] = notDa;
+                      notD_new[1] = notD[1];
+                      notD_new[2] = notDb;
+                      coll_new[0] = colla;
+                      coll_new[1] = coll[1];
+                      coll_new[2] = collb;
                     }
                   }
                 }

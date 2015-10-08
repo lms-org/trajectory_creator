@@ -2,7 +2,7 @@
  * File: otg_smart_xy.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 07-Oct-2015 17:18:09
+ * C/C++ source code generated on  : 08-Oct-2015 13:10:03
  */
 
 /* Include Files */
@@ -123,8 +123,7 @@
  *                double *flagAll
  *                emxArray_real_T *x
  *                emxArray_real_T *y
- *                double T_data[]
- *                int T_size[2]
+ *                double *T
  *                double *TOL
  * Return Type  : void
  */
@@ -134,8 +133,7 @@ void otg_smart_xy(double absTOL, short maxIter, double v1, double d1, double kj,
                   aOrthMax, short m, double kappa, double b_y0, double phi,
                   double vx0, double ax0, double w, double *flag1, double *flag2,
                   double *flag3, double *flagAll, emxArray_real_T *x,
-                  emxArray_real_T *y, double T_data[], int T_size[2], double
-                  *TOL)
+                  emxArray_real_T *y, double *T, double *TOL)
 {
   int ss;
   int loop_ub;
@@ -143,6 +141,8 @@ void otg_smart_xy(double absTOL, short maxIter, double v1, double d1, double kj,
   double y0_d;
   double D[4];
   double dv0[3];
+  int T_size[2];
+  double T_data[3];
   int pd_size[2];
   double pd_data[36];
   int ps_size[2];
@@ -200,6 +200,7 @@ void otg_smart_xy(double absTOL, short maxIter, double v1, double d1, double kj,
                   &y0_d);
   *flagAll = cosphi_d;
   *TOL = y0_d;
+  *T = T_data[0];
   if (cosphi_d == -1.0) {
   } else {
     emxInit_real_T(&tt, 2);
@@ -207,11 +208,11 @@ void otg_smart_xy(double absTOL, short maxIter, double v1, double d1, double kj,
     emxInit_real_T(&dd, 2);
 
     /* % calculate tt */
-    linspace(T_data[0], m, tt);
+    b_linspace(T_data[0], m, tt);
 
     /* % calc s and d at the times */
-    b_polyval(ps_data, ps_size, tt, b_ss);
-    b_polyval(pd_data, pd_size, tt, dd);
+    d_polyval(ps_data, ps_size, tt, b_ss);
+    d_polyval(pd_data, pd_size, tt, dd);
     emxInit_real_T(&XY, 2);
     emxInit_real_T(&xy_car, 2);
     if (kappa > 0.0) {

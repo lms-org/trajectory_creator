@@ -13,7 +13,7 @@
 <a name="2"><font color="#888888 "><i>    2   </i></font></a><font color="#117755"><I> * File: otg_smart_opt_step.c</i></font>
 <a name="3"><font color="#888888 "><i>    3   </i></font></a><font color="#117755"><I> *</i></font>
 <a name="4"><font color="#888888 "><i>    4   </i></font></a><font color="#117755"><I> * MATLAB Coder version            : 2.7</i></font>
-<a name="5"><font color="#888888 "><i>    5   </i></font></a><font color="#117755"><I> * C/C++ source code generated on  : 07-Oct-2015 17:18:09</i></font>
+<a name="5"><font color="#888888 "><i>    5   </i></font></a><font color="#117755"><I> * C/C++ source code generated on  : 08-Oct-2015 13:10:03</i></font>
 <a name="6"><font color="#888888 "><i>    6   </i></font></a><font color="#117755"><I> */</i></font>
 <a name="7"><font color="#888888 "><i>    7   </i></font></a>
 <a name="8"><font color="#888888 "><i>    8   </i></font></a><font color="#117755"><i>/* Include Files */</i></font>
@@ -30,7 +30,7 @@
 <a name="19"><font color="#888888 "><i>   19   </i></font></a><font color="#117755"><I> *                int y_size[2]</i></font>
 <a name="20"><font color="#888888 "><i>   20   </i></font></a><font color="#117755"><I> * Return Type  : void</i></font>
 <a name="21"><font color="#888888 "><i>   21   </i></font></a><font color="#117755"><I> */</i></font>
-<a name="22"><font color="#888888 "><i>   22   </i></font></a><font color="#112266"><b>void</b></font> <a name="fcn_c_eml_li_find">c_eml_li_find</a>(<font color="#112266"><b>const</b></font> <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> x[3], <font color="#112266"><b>int</b></font> y_data[], <font color="#112266"><b>int</b></font> y_size[2])
+<a name="22"><font color="#888888 "><i>   22   </i></font></a><font color="#112266"><b>void</b></font> <a name="fcn_eml_li_find">eml_li_find</a>(<font color="#112266"><b>const</b></font> <a href="rtwtypes_h.html#type_boolean_T" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'type_boolean_T');" target="_self"><font color="#1122aa">boolean_T</font></a> x[3], <font color="#112266"><b>int</b></font> y_data[], <font color="#112266"><b>int</b></font> y_size[2])
 <a name="23"><font color="#888888 "><i>   23   </i></font></a><b>{</b>
 <a name="24"><font color="#888888 "><i>   24   </i></font></a>  <font color="#112266"><b>int</b></font> k;
 <a name="25"><font color="#888888 "><i>   25   </i></font></a>  <font color="#112266"><b>int</b></font> i;
@@ -229,219 +229,199 @@
 <a name="218"><font color="#888888 "><i>  218   </i></font></a>            Ts_new[1] = Ts[2];
 <a name="219"><font color="#888888 "><i>  219   </i></font></a>            Ts_new[2] = Ts[2] + (Ts[2] - Ts[0]);
 <a name="220"><font color="#888888 "><i>  220   </i></font></a>            <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Ts_new[2], S, D, kj, kT, ks, kd, dataVeh, safetyS,
-<a name="221"><font color="#888888 "><i>  221   </i></font></a>                               safetyD, kappa, kappaMax, aOrthMax, &amp;y, &amp;Ta, &amp;Tb,
-<a name="222"><font color="#888888 "><i>  222   </i></font></a>                               flag1);
-<a name="223"><font color="#888888 "><i>  223   </i></font></a>            <font color="#112266"><b>if</b></font> (*flag1 &lt; 0.0) <b>{</b>
-<a name="224"><font color="#888888 "><i>  224   </i></font></a>              <font color="#117755"><i>/* something in the subroutine went wrong */</i></font>
-<a name="225"><font color="#888888 "><i>  225   </i></font></a>            <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="226"><font color="#888888 "><i>  226   </i></font></a>              Cs_new[0] = Cs[1];
-<a name="227"><font color="#888888 "><i>  227   </i></font></a>              Cs_new[1] = Cs[2];
-<a name="228"><font color="#888888 "><i>  228   </i></font></a>              Cs_new[2] = y;
-<a name="229"><font color="#888888 "><i>  229   </i></font></a>              notD_new[0] = notD[1];
-<a name="230"><font color="#888888 "><i>  230   </i></font></a>              notD_new[1] = notD[2];
-<a name="231"><font color="#888888 "><i>  231   </i></font></a>              notD_new[2] = Ta;
-<a name="232"><font color="#888888 "><i>  232   </i></font></a>              coll_new[0] = coll[1];
-<a name="233"><font color="#888888 "><i>  233   </i></font></a>              coll_new[1] = coll[2];
-<a name="234"><font color="#888888 "><i>  234   </i></font></a>              coll_new[2] = Tb;
-<a name="235"><font color="#888888 "><i>  235   </i></font></a>            <b>}</b>
-<a name="236"><font color="#888888 "><i>  236   </i></font></a>          <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="237"><font color="#888888 "><i>  237   </i></font></a>            <font color="#117755"><i>/* % all collidiong */</i></font>
-<a name="238"><font color="#888888 "><i>  238   </i></font></a>            <font color="#112266"><b>if</b></font> ((coll[0] &gt; 0.0) &amp;&amp; (coll[1] &gt; 0.0) &amp;&amp; (coll[2] &gt; 0.0)) <b>{</b>
-<a name="239"><font color="#888888 "><i>  239   </i></font></a>              Ts_new[0] = Ts[0] - (Ts[2] - Ts[0]);
-<a name="240"><font color="#888888 "><i>  240   </i></font></a>
-<a name="241"><font color="#888888 "><i>  241   </i></font></a>              <font color="#117755"><i>/* fibonacci growth */</i></font>
-<a name="242"><font color="#888888 "><i>  242   </i></font></a>              Ts_new[1] = Ts[0];
-<a name="243"><font color="#888888 "><i>  243   </i></font></a>              Ts_new[2] = Ts[1];
-<a name="244"><font color="#888888 "><i>  244   </i></font></a>              <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Ts_new[0], S, D, kj, kT, ks, kd, dataVeh,
-<a name="245"><font color="#888888 "><i>  245   </i></font></a>                                 safetyS, safetyD, kappa, kappaMax, aOrthMax, &amp;y,
-<a name="246"><font color="#888888 "><i>  246   </i></font></a>                                 &amp;Ta, &amp;Tb, flag1);
-<a name="247"><font color="#888888 "><i>  247   </i></font></a>              <font color="#112266"><b>if</b></font> (*flag1 &lt; 0.0) <b>{</b>
-<a name="248"><font color="#888888 "><i>  248   </i></font></a>                <font color="#117755"><i>/* something in the subroutine went wrong */</i></font>
-<a name="249"><font color="#888888 "><i>  249   </i></font></a>              <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="250"><font color="#888888 "><i>  250   </i></font></a>                Cs_new[0] = y;
-<a name="251"><font color="#888888 "><i>  251   </i></font></a>                Cs_new[1] = Cs[0];
-<a name="252"><font color="#888888 "><i>  252   </i></font></a>                Cs_new[2] = Cs[1];
-<a name="253"><font color="#888888 "><i>  253   </i></font></a>                notD_new[0] = Ta;
-<a name="254"><font color="#888888 "><i>  254   </i></font></a>                notD_new[1] = notD[0];
-<a name="255"><font color="#888888 "><i>  255   </i></font></a>                notD_new[2] = notD[1];
-<a name="256"><font color="#888888 "><i>  256   </i></font></a>                coll_new[0] = Tb;
-<a name="257"><font color="#888888 "><i>  257   </i></font></a>                coll_new[1] = 1.0;
-<a name="258"><font color="#888888 "><i>  258   </i></font></a>                coll_new[2] = 1.0;
-<a name="259"><font color="#888888 "><i>  259   </i></font></a>              <b>}</b>
-<a name="260"><font color="#888888 "><i>  260   </i></font></a>            <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="261"><font color="#888888 "><i>  261   </i></font></a>              <font color="#117755"><i>/* % Test all the cases */</i></font>
-<a name="262"><font color="#888888 "><i>  262   </i></font></a>              <font color="#117755"><i>/* workaround for cpp not offering a value inf: if one trajectory is not */</i></font>
-<a name="263"><font color="#888888 "><i>  263   </i></font></a>              <font color="#117755"><i>/* drivable or colliding set its c value to double the max */</i></font>
-<a name="264"><font color="#888888 "><i>  264   </i></font></a>              ixstart = 1;
-<a name="265"><font color="#888888 "><i>  265   </i></font></a>              y = Cs[0];
-<a name="266"><font color="#888888 "><i>  266   </i></font></a>              <font color="#112266"><b>if</b></font> (<a href="rt_nonfinite_c.html#fcn_rtIsNaN" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtIsNaN');" target="_self"><font color="#1122aa">rtIsNaN</font></a>(Cs[0])) <b>{</b>
-<a name="267"><font color="#888888 "><i>  267   </i></font></a>                ix = 2;
-<a name="268"><font color="#888888 "><i>  268   </i></font></a>                exitg1 = false;
-<a name="269"><font color="#888888 "><i>  269   </i></font></a>                <font color="#112266"><b>while</b></font> ((!exitg1) &amp;&amp; (ix &lt; 4)) <b>{</b>
-<a name="270"><font color="#888888 "><i>  270   </i></font></a>                  ixstart = ix;
-<a name="271"><font color="#888888 "><i>  271   </i></font></a>                  <font color="#112266"><b>if</b></font> (!<a href="rt_nonfinite_c.html#fcn_rtIsNaN" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtIsNaN');" target="_self"><font color="#1122aa">rtIsNaN</font></a>(Cs[ix - 1])) <b>{</b>
-<a name="272"><font color="#888888 "><i>  272   </i></font></a>                    y = Cs[ix - 1];
-<a name="273"><font color="#888888 "><i>  273   </i></font></a>                    exitg1 = true;
-<a name="274"><font color="#888888 "><i>  274   </i></font></a>                  <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="275"><font color="#888888 "><i>  275   </i></font></a>                    ix++;
-<a name="276"><font color="#888888 "><i>  276   </i></font></a>                  <b>}</b>
-<a name="277"><font color="#888888 "><i>  277   </i></font></a>                <b>}</b>
-<a name="278"><font color="#888888 "><i>  278   </i></font></a>              <b>}</b>
-<a name="279"><font color="#888888 "><i>  279   </i></font></a>
-<a name="280"><font color="#888888 "><i>  280   </i></font></a>              <font color="#112266"><b>if</b></font> (ixstart &lt; 3) <b>{</b>
-<a name="281"><font color="#888888 "><i>  281   </i></font></a>                <font color="#112266"><b>while</b></font> (ixstart + 1 &lt; 4) <b>{</b>
-<a name="282"><font color="#888888 "><i>  282   </i></font></a>                  <font color="#112266"><b>if</b></font> (Cs[ixstart] &gt; y) <b>{</b>
-<a name="283"><font color="#888888 "><i>  283   </i></font></a>                    y = Cs[ixstart];
-<a name="284"><font color="#888888 "><i>  284   </i></font></a>                  <b>}</b>
-<a name="285"><font color="#888888 "><i>  285   </i></font></a>
-<a name="286"><font color="#888888 "><i>  286   </i></font></a>                  ixstart++;
-<a name="287"><font color="#888888 "><i>  287   </i></font></a>                <b>}</b>
-<a name="288"><font color="#888888 "><i>  288   </i></font></a>              <b>}</b>
-<a name="289"><font color="#888888 "><i>  289   </i></font></a>
-<a name="290"><font color="#888888 "><i>  290   </i></font></a>              <font color="#112266"><b>for</b></font> (ixstart = 0; ixstart &lt; 3; ixstart++) <b>{</b>
-<a name="291"><font color="#888888 "><i>  291   </i></font></a>                x[ixstart] = ((notD[ixstart] &gt; 0.0) || (coll[ixstart] &gt; 0.0));
-<a name="292"><font color="#888888 "><i>  292   </i></font></a>              <b>}</b>
-<a name="293"><font color="#888888 "><i>  293   </i></font></a>
-<a name="294"><font color="#888888 "><i>  294   </i></font></a>              <a href="#fcn_c_eml_li_find" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_c_eml_li_find');" target="_self"><font color="#1122aa">c_eml_li_find</font></a>(x, tmp_data, tmp_size);
-<a name="295"><font color="#888888 "><i>  295   </i></font></a>              ix = tmp_size[0] * tmp_size[1];
-<a name="296"><font color="#888888 "><i>  296   </i></font></a>              <font color="#112266"><b>for</b></font> (ixstart = 0; ixstart &lt; ix; ixstart++) <b>{</b>
-<a name="297"><font color="#888888 "><i>  297   </i></font></a>                Cs[tmp_data[ixstart] - 1] = y;
-<a name="298"><font color="#888888 "><i>  298   </i></font></a>              <b>}</b>
-<a name="299"><font color="#888888 "><i>  299   </i></font></a>
-<a name="300"><font color="#888888 "><i>  300   </i></font></a>              <font color="#112266"><b>if</b></font> ((Cs[0] &lt; Cs[1]) &amp;&amp; (Cs[1] &lt;= Cs[2])) <b>{</b>
-<a name="301"><font color="#888888 "><i>  301   </i></font></a>                Ts_new[0] = Ts[0] - (Ts[2] - Ts[0]);
-<a name="302"><font color="#888888 "><i>  302   </i></font></a>
-<a name="303"><font color="#888888 "><i>  303   </i></font></a>                <font color="#117755"><i>/* fibonacci growth */</i></font>
-<a name="304"><font color="#888888 "><i>  304   </i></font></a>                Ts_new[1] = Ts[0];
-<a name="305"><font color="#888888 "><i>  305   </i></font></a>                Ts_new[2] = Ts[1];
-<a name="306"><font color="#888888 "><i>  306   </i></font></a>                <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Ts_new[0], S, D, kj, kT, ks, kd, dataVeh,
-<a name="307"><font color="#888888 "><i>  307   </i></font></a>                                   safetyS, safetyD, kappa, kappaMax, aOrthMax,
-<a name="308"><font color="#888888 "><i>  308   </i></font></a>                                   &amp;y, &amp;Ta, &amp;Tb, flag1);
-<a name="309"><font color="#888888 "><i>  309   </i></font></a>                <font color="#112266"><b>if</b></font> (*flag1 &lt; 0.0) <b>{</b>
-<a name="310"><font color="#888888 "><i>  310   </i></font></a>                  <font color="#117755"><i>/* something in the subroutine went wrong */</i></font>
-<a name="311"><font color="#888888 "><i>  311   </i></font></a>                <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="312"><font color="#888888 "><i>  312   </i></font></a>                  Cs_new[0] = y;
-<a name="313"><font color="#888888 "><i>  313   </i></font></a>                  Cs_new[1] = Cs[0];
-<a name="314"><font color="#888888 "><i>  314   </i></font></a>                  Cs_new[2] = Cs[1];
-<a name="315"><font color="#888888 "><i>  315   </i></font></a>                  notD_new[0] = Ta;
-<a name="316"><font color="#888888 "><i>  316   </i></font></a>                  notD_new[1] = notD[0];
-<a name="317"><font color="#888888 "><i>  317   </i></font></a>                  notD_new[2] = notD[1];
-<a name="318"><font color="#888888 "><i>  318   </i></font></a>                  coll_new[0] = Tb;
-<a name="319"><font color="#888888 "><i>  319   </i></font></a>                  coll_new[1] = coll[0];
-<a name="320"><font color="#888888 "><i>  320   </i></font></a>                  coll_new[2] = coll[1];
-<a name="321"><font color="#888888 "><i>  321   </i></font></a>                <b>}</b>
-<a name="322"><font color="#888888 "><i>  322   </i></font></a>              <b>}</b> <font color="#112266"><b>else</b></font> <font color="#112266"><b>if</b></font> ((Cs[0] &gt;= Cs[1]) &amp;&amp; (Cs[1] &gt; Cs[2])) <b>{</b>
-<a name="323"><font color="#888888 "><i>  323   </i></font></a>                Ts_new[0] = Ts[1];
-<a name="324"><font color="#888888 "><i>  324   </i></font></a>                Ts_new[1] = Ts[2];
-<a name="325"><font color="#888888 "><i>  325   </i></font></a>                Ts_new[2] = Ts[2] + (Ts[2] - Ts[0]);
-<a name="326"><font color="#888888 "><i>  326   </i></font></a>
-<a name="327"><font color="#888888 "><i>  327   </i></font></a>                <font color="#117755"><i>/* fibonacci growth */</i></font>
-<a name="328"><font color="#888888 "><i>  328   </i></font></a>                <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Ts_new[2], S, D, kj, kT, ks, kd, dataVeh,
-<a name="329"><font color="#888888 "><i>  329   </i></font></a>                                   safetyS, safetyD, kappa, kappaMax, aOrthMax,
-<a name="330"><font color="#888888 "><i>  330   </i></font></a>                                   &amp;y, &amp;Ta, &amp;Tb, flag1);
-<a name="331"><font color="#888888 "><i>  331   </i></font></a>                <font color="#112266"><b>if</b></font> (*flag1 &lt; 0.0) <b>{</b>
-<a name="332"><font color="#888888 "><i>  332   </i></font></a>                  <font color="#117755"><i>/* something in the subroutine went wrong */</i></font>
-<a name="333"><font color="#888888 "><i>  333   </i></font></a>                <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="334"><font color="#888888 "><i>  334   </i></font></a>                  Cs_new[0] = Cs[1];
-<a name="335"><font color="#888888 "><i>  335   </i></font></a>                  Cs_new[1] = Cs[2];
-<a name="336"><font color="#888888 "><i>  336   </i></font></a>                  Cs_new[2] = y;
-<a name="337"><font color="#888888 "><i>  337   </i></font></a>                  notD_new[0] = notD[1];
-<a name="338"><font color="#888888 "><i>  338   </i></font></a>                  notD_new[1] = notD[2];
-<a name="339"><font color="#888888 "><i>  339   </i></font></a>                  notD_new[2] = Ta;
-<a name="340"><font color="#888888 "><i>  340   </i></font></a>                  coll_new[0] = coll[1];
-<a name="341"><font color="#888888 "><i>  341   </i></font></a>                  coll_new[1] = coll[2];
-<a name="342"><font color="#888888 "><i>  342   </i></font></a>                  coll_new[2] = Tb;
-<a name="343"><font color="#888888 "><i>  343   </i></font></a>                <b>}</b>
-<a name="344"><font color="#888888 "><i>  344   </i></font></a>              <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="345"><font color="#888888 "><i>  345   </i></font></a>                <font color="#112266"><b>if</b></font> ((Cs[0] &gt;= Cs[1]) &amp;&amp; (Cs[1] &lt;= Cs[2])) <b>{</b>
-<a name="346"><font color="#888888 "><i>  346   </i></font></a>                  Ta = (Ts[0] + Ts[1]) / 2.0;
-<a name="347"><font color="#888888 "><i>  347   </i></font></a>                  Tb = (Ts[1] + Ts[2]) / 2.0;
-<a name="348"><font color="#888888 "><i>  348   </i></font></a>                  <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Ta, S, D, kj, kT, ks, kd, dataVeh, safetyS,
-<a name="349"><font color="#888888 "><i>  349   </i></font></a>                                     safetyD, kappa, kappaMax, aOrthMax, &amp;Ca,
-<a name="350"><font color="#888888 "><i>  350   </i></font></a>                                     &amp;notDa, &amp;colla, flag1);
-<a name="351"><font color="#888888 "><i>  351   </i></font></a>                  <font color="#112266"><b>if</b></font> (*flag1 &lt; 0.0) <b>{</b>
-<a name="352"><font color="#888888 "><i>  352   </i></font></a>                    <font color="#117755"><i>/* something in the subroutine went wrong */</i></font>
-<a name="353"><font color="#888888 "><i>  353   </i></font></a>                  <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="354"><font color="#888888 "><i>  354   </i></font></a>                    <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Tb, S, D, kj, kT, ks, kd, dataVeh,
-<a name="355"><font color="#888888 "><i>  355   </i></font></a>                                       safetyS, safetyD, kappa, kappaMax,
-<a name="356"><font color="#888888 "><i>  356   </i></font></a>                                       aOrthMax, &amp;Cb, &amp;notDb, &amp;collb, flag1);
-<a name="357"><font color="#888888 "><i>  357   </i></font></a>                    <font color="#112266"><b>if</b></font> (*flag1 &lt; 0.0) <b>{</b>
-<a name="358"><font color="#888888 "><i>  358   </i></font></a>                      <font color="#117755"><i>/* something in the subroutine went wrong */</i></font>
-<a name="359"><font color="#888888 "><i>  359   </i></font></a>                    <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="360"><font color="#888888 "><i>  360   </i></font></a>                      <font color="#112266"><b>if</b></font> ((notDa &gt; 0.0) || (colla &gt; 0.0)) <b>{</b>
-<a name="361"><font color="#888888 "><i>  361   </i></font></a>                        Ca = y;
-<a name="362"><font color="#888888 "><i>  362   </i></font></a>                      <b>}</b>
-<a name="363"><font color="#888888 "><i>  363   </i></font></a>
-<a name="364"><font color="#888888 "><i>  364   </i></font></a>                      <font color="#112266"><b>if</b></font> ((notDb &gt; 0.0) || (collb &gt; 0.0)) <b>{</b>
-<a name="365"><font color="#888888 "><i>  365   </i></font></a>                        Cb = y;
-<a name="366"><font color="#888888 "><i>  366   </i></font></a>                      <b>}</b>
-<a name="367"><font color="#888888 "><i>  367   </i></font></a>
-<a name="368"><font color="#888888 "><i>  368   </i></font></a>                      <font color="#112266"><b>if</b></font> (Cb &lt; Cs[1]) <b>{</b>
-<a name="369"><font color="#888888 "><i>  369   </i></font></a>                        <font color="#117755"><i>/* out of the five points the minumum must be somewhere between the */</i></font>
-<a name="370"><font color="#888888 "><i>  370   </i></font></a>                        <font color="#117755"><i>/* three outter right ones */</i></font>
-<a name="371"><font color="#888888 "><i>  371   </i></font></a>                        Ts_new[0] = Ts[1];
-<a name="372"><font color="#888888 "><i>  372   </i></font></a>                        Ts_new[1] = Tb;
-<a name="373"><font color="#888888 "><i>  373   </i></font></a>                        Ts_new[2] = Ts[2];
-<a name="374"><font color="#888888 "><i>  374   </i></font></a>                        Cs_new[0] = Cs[1];
-<a name="375"><font color="#888888 "><i>  375   </i></font></a>                        Cs_new[1] = Cb;
-<a name="376"><font color="#888888 "><i>  376   </i></font></a>                        Cs_new[2] = Cs[2];
-<a name="377"><font color="#888888 "><i>  377   </i></font></a>                        notD_new[0] = notD[1];
-<a name="378"><font color="#888888 "><i>  378   </i></font></a>                        notD_new[1] = notDb;
-<a name="379"><font color="#888888 "><i>  379   </i></font></a>                        notD_new[2] = notD[2];
-<a name="380"><font color="#888888 "><i>  380   </i></font></a>                        coll_new[0] = coll[1];
-<a name="381"><font color="#888888 "><i>  381   </i></font></a>                        coll_new[1] = collb;
-<a name="382"><font color="#888888 "><i>  382   </i></font></a>                        coll_new[2] = coll[2];
-<a name="383"><font color="#888888 "><i>  383   </i></font></a>                      <b>}</b> <font color="#112266"><b>else</b></font> <font color="#112266"><b>if</b></font> (Ca &lt; Cs[1]) <b>{</b>
-<a name="384"><font color="#888888 "><i>  384   </i></font></a>                        <font color="#117755"><i>/* out of the five points the minumum must be somewhere between the */</i></font>
-<a name="385"><font color="#888888 "><i>  385   </i></font></a>                        <font color="#117755"><i>/* three outter left ones */</i></font>
-<a name="386"><font color="#888888 "><i>  386   </i></font></a>                        Ts_new[0] = Ts[0];
-<a name="387"><font color="#888888 "><i>  387   </i></font></a>                        Ts_new[1] = Ta;
-<a name="388"><font color="#888888 "><i>  388   </i></font></a>                        Ts_new[2] = Ts[1];
-<a name="389"><font color="#888888 "><i>  389   </i></font></a>                        Cs_new[0] = Cs[0];
-<a name="390"><font color="#888888 "><i>  390   </i></font></a>                        Cs_new[1] = Ca;
-<a name="391"><font color="#888888 "><i>  391   </i></font></a>                        Cs_new[2] = Cs[1];
-<a name="392"><font color="#888888 "><i>  392   </i></font></a>                        notD_new[0] = notD[0];
-<a name="393"><font color="#888888 "><i>  393   </i></font></a>                        notD_new[1] = notDa;
-<a name="394"><font color="#888888 "><i>  394   </i></font></a>                        notD_new[2] = notD[1];
-<a name="395"><font color="#888888 "><i>  395   </i></font></a>                        coll_new[0] = coll[0];
-<a name="396"><font color="#888888 "><i>  396   </i></font></a>                        coll_new[1] = colla;
-<a name="397"><font color="#888888 "><i>  397   </i></font></a>                        coll_new[2] = coll[1];
-<a name="398"><font color="#888888 "><i>  398   </i></font></a>                      <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
-<a name="399"><font color="#888888 "><i>  399   </i></font></a>                        <font color="#112266"><b>if</b></font> ((Ca &gt;= Cs[1]) &amp;&amp; (Cb &gt;= Cs[1])) <b>{</b>
-<a name="400"><font color="#888888 "><i>  400   </i></font></a>                          <font color="#117755"><i>/* out of the five points the minumum must be somewhere between the */</i></font>
-<a name="401"><font color="#888888 "><i>  401   </i></font></a>                          <font color="#117755"><i>/* three middle ones */</i></font>
-<a name="402"><font color="#888888 "><i>  402   </i></font></a>                          Ts_new[0] = Ta;
-<a name="403"><font color="#888888 "><i>  403   </i></font></a>                          Ts_new[1] = Ts[1];
-<a name="404"><font color="#888888 "><i>  404   </i></font></a>                          Ts_new[2] = Tb;
-<a name="405"><font color="#888888 "><i>  405   </i></font></a>                          Cs_new[0] = Ca;
-<a name="406"><font color="#888888 "><i>  406   </i></font></a>                          Cs_new[1] = Cs[1];
-<a name="407"><font color="#888888 "><i>  407   </i></font></a>                          Cs_new[2] = Cb;
-<a name="408"><font color="#888888 "><i>  408   </i></font></a>                          notD_new[0] = notDa;
-<a name="409"><font color="#888888 "><i>  409   </i></font></a>                          notD_new[1] = notD[1];
-<a name="410"><font color="#888888 "><i>  410   </i></font></a>                          notD_new[2] = notDb;
-<a name="411"><font color="#888888 "><i>  411   </i></font></a>                          coll_new[0] = colla;
-<a name="412"><font color="#888888 "><i>  412   </i></font></a>                          coll_new[1] = coll[1];
-<a name="413"><font color="#888888 "><i>  413   </i></font></a>                          coll_new[2] = collb;
-<a name="414"><font color="#888888 "><i>  414   </i></font></a>                        <b>}</b>
-<a name="415"><font color="#888888 "><i>  415   </i></font></a>                      <b>}</b>
-<a name="416"><font color="#888888 "><i>  416   </i></font></a>                    <b>}</b>
-<a name="417"><font color="#888888 "><i>  417   </i></font></a>                  <b>}</b>
-<a name="418"><font color="#888888 "><i>  418   </i></font></a>                <b>}</b>
-<a name="419"><font color="#888888 "><i>  419   </i></font></a>              <b>}</b>
-<a name="420"><font color="#888888 "><i>  420   </i></font></a>            <b>}</b>
-<a name="421"><font color="#888888 "><i>  421   </i></font></a>          <b>}</b>
-<a name="422"><font color="#888888 "><i>  422   </i></font></a>        <b>}</b>
-<a name="423"><font color="#888888 "><i>  423   </i></font></a>      <b>}</b>
-<a name="424"><font color="#888888 "><i>  424   </i></font></a>    <b>}</b>
-<a name="425"><font color="#888888 "><i>  425   </i></font></a>  <b>}</b>
-<a name="426"><font color="#888888 "><i>  426   </i></font></a><b>}</b>
-<a name="427"><font color="#888888 "><i>  427   </i></font></a>
-<a name="428"><font color="#888888 "><i>  428   </i></font></a><font color="#117755"><i>/*</i></font>
-<a name="429"><font color="#888888 "><i>  429   </i></font></a><font color="#117755"><I> * File trailer for otg_smart_opt_step.c</i></font>
-<a name="430"><font color="#888888 "><i>  430   </i></font></a><font color="#117755"><I> *</i></font>
-<a name="431"><font color="#888888 "><i>  431   </i></font></a><font color="#117755"><I> * [EOF]</i></font>
-<a name="432"><font color="#888888 "><i>  432   </i></font></a><font color="#117755"><I> */</i></font>
-<a name="433"><font color="#888888 "><i>  433   </i></font></a></pre>
+<a name="221"><font color="#888888 "><i>  221   </i></font></a>                               safetyD, kappa, kappaMax, aOrthMax, &amp;y, &amp;Ta, &amp;Tb);
+<a name="222"><font color="#888888 "><i>  222   </i></font></a>            *flag1 = 1.0;
+<a name="223"><font color="#888888 "><i>  223   </i></font></a>            Cs_new[0] = Cs[1];
+<a name="224"><font color="#888888 "><i>  224   </i></font></a>            Cs_new[1] = Cs[2];
+<a name="225"><font color="#888888 "><i>  225   </i></font></a>            Cs_new[2] = y;
+<a name="226"><font color="#888888 "><i>  226   </i></font></a>            notD_new[0] = notD[1];
+<a name="227"><font color="#888888 "><i>  227   </i></font></a>            notD_new[1] = notD[2];
+<a name="228"><font color="#888888 "><i>  228   </i></font></a>            notD_new[2] = Ta;
+<a name="229"><font color="#888888 "><i>  229   </i></font></a>            coll_new[0] = coll[1];
+<a name="230"><font color="#888888 "><i>  230   </i></font></a>            coll_new[1] = coll[2];
+<a name="231"><font color="#888888 "><i>  231   </i></font></a>            coll_new[2] = Tb;
+<a name="232"><font color="#888888 "><i>  232   </i></font></a>          <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="233"><font color="#888888 "><i>  233   </i></font></a>            <font color="#117755"><i>/* % all collidiong */</i></font>
+<a name="234"><font color="#888888 "><i>  234   </i></font></a>            <font color="#112266"><b>if</b></font> ((coll[0] &gt; 0.0) &amp;&amp; (coll[1] &gt; 0.0) &amp;&amp; (coll[2] &gt; 0.0)) <b>{</b>
+<a name="235"><font color="#888888 "><i>  235   </i></font></a>              Ts_new[0] = Ts[0] - (Ts[2] - Ts[0]);
+<a name="236"><font color="#888888 "><i>  236   </i></font></a>
+<a name="237"><font color="#888888 "><i>  237   </i></font></a>              <font color="#117755"><i>/* fibonacci growth */</i></font>
+<a name="238"><font color="#888888 "><i>  238   </i></font></a>              Ts_new[1] = Ts[0];
+<a name="239"><font color="#888888 "><i>  239   </i></font></a>              Ts_new[2] = Ts[1];
+<a name="240"><font color="#888888 "><i>  240   </i></font></a>              <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Ts_new[0], S, D, kj, kT, ks, kd, dataVeh,
+<a name="241"><font color="#888888 "><i>  241   </i></font></a>                                 safetyS, safetyD, kappa, kappaMax, aOrthMax, &amp;y,
+<a name="242"><font color="#888888 "><i>  242   </i></font></a>                                 &amp;Ta, &amp;Tb);
+<a name="243"><font color="#888888 "><i>  243   </i></font></a>              *flag1 = 1.0;
+<a name="244"><font color="#888888 "><i>  244   </i></font></a>              Cs_new[0] = y;
+<a name="245"><font color="#888888 "><i>  245   </i></font></a>              Cs_new[1] = Cs[0];
+<a name="246"><font color="#888888 "><i>  246   </i></font></a>              Cs_new[2] = Cs[1];
+<a name="247"><font color="#888888 "><i>  247   </i></font></a>              notD_new[0] = Ta;
+<a name="248"><font color="#888888 "><i>  248   </i></font></a>              notD_new[1] = notD[0];
+<a name="249"><font color="#888888 "><i>  249   </i></font></a>              notD_new[2] = notD[1];
+<a name="250"><font color="#888888 "><i>  250   </i></font></a>              coll_new[0] = Tb;
+<a name="251"><font color="#888888 "><i>  251   </i></font></a>              coll_new[1] = 1.0;
+<a name="252"><font color="#888888 "><i>  252   </i></font></a>              coll_new[2] = 1.0;
+<a name="253"><font color="#888888 "><i>  253   </i></font></a>            <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="254"><font color="#888888 "><i>  254   </i></font></a>              <font color="#117755"><i>/* % Test all the cases */</i></font>
+<a name="255"><font color="#888888 "><i>  255   </i></font></a>              <font color="#117755"><i>/* workaround for cpp not offering a value inf: if one trajectory is not */</i></font>
+<a name="256"><font color="#888888 "><i>  256   </i></font></a>              <font color="#117755"><i>/* drivable or colliding set its c value to double the max */</i></font>
+<a name="257"><font color="#888888 "><i>  257   </i></font></a>              ixstart = 1;
+<a name="258"><font color="#888888 "><i>  258   </i></font></a>              y = Cs[0];
+<a name="259"><font color="#888888 "><i>  259   </i></font></a>              <font color="#112266"><b>if</b></font> (<a href="rt_nonfinite_c.html#fcn_rtIsNaN" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtIsNaN');" target="_self"><font color="#1122aa">rtIsNaN</font></a>(Cs[0])) <b>{</b>
+<a name="260"><font color="#888888 "><i>  260   </i></font></a>                ix = 2;
+<a name="261"><font color="#888888 "><i>  261   </i></font></a>                exitg1 = false;
+<a name="262"><font color="#888888 "><i>  262   </i></font></a>                <font color="#112266"><b>while</b></font> ((!exitg1) &amp;&amp; (ix &lt; 4)) <b>{</b>
+<a name="263"><font color="#888888 "><i>  263   </i></font></a>                  ixstart = ix;
+<a name="264"><font color="#888888 "><i>  264   </i></font></a>                  <font color="#112266"><b>if</b></font> (!<a href="rt_nonfinite_c.html#fcn_rtIsNaN" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_rtIsNaN');" target="_self"><font color="#1122aa">rtIsNaN</font></a>(Cs[ix - 1])) <b>{</b>
+<a name="265"><font color="#888888 "><i>  265   </i></font></a>                    y = Cs[ix - 1];
+<a name="266"><font color="#888888 "><i>  266   </i></font></a>                    exitg1 = true;
+<a name="267"><font color="#888888 "><i>  267   </i></font></a>                  <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="268"><font color="#888888 "><i>  268   </i></font></a>                    ix++;
+<a name="269"><font color="#888888 "><i>  269   </i></font></a>                  <b>}</b>
+<a name="270"><font color="#888888 "><i>  270   </i></font></a>                <b>}</b>
+<a name="271"><font color="#888888 "><i>  271   </i></font></a>              <b>}</b>
+<a name="272"><font color="#888888 "><i>  272   </i></font></a>
+<a name="273"><font color="#888888 "><i>  273   </i></font></a>              <font color="#112266"><b>if</b></font> (ixstart &lt; 3) <b>{</b>
+<a name="274"><font color="#888888 "><i>  274   </i></font></a>                <font color="#112266"><b>while</b></font> (ixstart + 1 &lt; 4) <b>{</b>
+<a name="275"><font color="#888888 "><i>  275   </i></font></a>                  <font color="#112266"><b>if</b></font> (Cs[ixstart] &gt; y) <b>{</b>
+<a name="276"><font color="#888888 "><i>  276   </i></font></a>                    y = Cs[ixstart];
+<a name="277"><font color="#888888 "><i>  277   </i></font></a>                  <b>}</b>
+<a name="278"><font color="#888888 "><i>  278   </i></font></a>
+<a name="279"><font color="#888888 "><i>  279   </i></font></a>                  ixstart++;
+<a name="280"><font color="#888888 "><i>  280   </i></font></a>                <b>}</b>
+<a name="281"><font color="#888888 "><i>  281   </i></font></a>              <b>}</b>
+<a name="282"><font color="#888888 "><i>  282   </i></font></a>
+<a name="283"><font color="#888888 "><i>  283   </i></font></a>              <font color="#112266"><b>for</b></font> (ixstart = 0; ixstart &lt; 3; ixstart++) <b>{</b>
+<a name="284"><font color="#888888 "><i>  284   </i></font></a>                x[ixstart] = ((notD[ixstart] &gt; 0.0) || (coll[ixstart] &gt; 0.0));
+<a name="285"><font color="#888888 "><i>  285   </i></font></a>              <b>}</b>
+<a name="286"><font color="#888888 "><i>  286   </i></font></a>
+<a name="287"><font color="#888888 "><i>  287   </i></font></a>              <a href="#fcn_eml_li_find" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_eml_li_find');" target="_self"><font color="#1122aa">eml_li_find</font></a>(x, tmp_data, tmp_size);
+<a name="288"><font color="#888888 "><i>  288   </i></font></a>              ix = tmp_size[0] * tmp_size[1];
+<a name="289"><font color="#888888 "><i>  289   </i></font></a>              <font color="#112266"><b>for</b></font> (ixstart = 0; ixstart &lt; ix; ixstart++) <b>{</b>
+<a name="290"><font color="#888888 "><i>  290   </i></font></a>                Cs[tmp_data[ixstart] - 1] = y;
+<a name="291"><font color="#888888 "><i>  291   </i></font></a>              <b>}</b>
+<a name="292"><font color="#888888 "><i>  292   </i></font></a>
+<a name="293"><font color="#888888 "><i>  293   </i></font></a>              <font color="#112266"><b>if</b></font> ((Cs[0] &lt; Cs[1]) &amp;&amp; (Cs[1] &lt;= Cs[2])) <b>{</b>
+<a name="294"><font color="#888888 "><i>  294   </i></font></a>                Ts_new[0] = Ts[0] - (Ts[2] - Ts[0]);
+<a name="295"><font color="#888888 "><i>  295   </i></font></a>
+<a name="296"><font color="#888888 "><i>  296   </i></font></a>                <font color="#117755"><i>/* fibonacci growth */</i></font>
+<a name="297"><font color="#888888 "><i>  297   </i></font></a>                Ts_new[1] = Ts[0];
+<a name="298"><font color="#888888 "><i>  298   </i></font></a>                Ts_new[2] = Ts[1];
+<a name="299"><font color="#888888 "><i>  299   </i></font></a>                <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Ts_new[0], S, D, kj, kT, ks, kd, dataVeh,
+<a name="300"><font color="#888888 "><i>  300   </i></font></a>                                   safetyS, safetyD, kappa, kappaMax, aOrthMax,
+<a name="301"><font color="#888888 "><i>  301   </i></font></a>                                   &amp;y, &amp;Ta, &amp;Tb);
+<a name="302"><font color="#888888 "><i>  302   </i></font></a>                *flag1 = 1.0;
+<a name="303"><font color="#888888 "><i>  303   </i></font></a>                Cs_new[0] = y;
+<a name="304"><font color="#888888 "><i>  304   </i></font></a>                Cs_new[1] = Cs[0];
+<a name="305"><font color="#888888 "><i>  305   </i></font></a>                Cs_new[2] = Cs[1];
+<a name="306"><font color="#888888 "><i>  306   </i></font></a>                notD_new[0] = Ta;
+<a name="307"><font color="#888888 "><i>  307   </i></font></a>                notD_new[1] = notD[0];
+<a name="308"><font color="#888888 "><i>  308   </i></font></a>                notD_new[2] = notD[1];
+<a name="309"><font color="#888888 "><i>  309   </i></font></a>                coll_new[0] = Tb;
+<a name="310"><font color="#888888 "><i>  310   </i></font></a>                coll_new[1] = coll[0];
+<a name="311"><font color="#888888 "><i>  311   </i></font></a>                coll_new[2] = coll[1];
+<a name="312"><font color="#888888 "><i>  312   </i></font></a>              <b>}</b> <font color="#112266"><b>else</b></font> <font color="#112266"><b>if</b></font> ((Cs[0] &gt;= Cs[1]) &amp;&amp; (Cs[1] &gt; Cs[2])) <b>{</b>
+<a name="313"><font color="#888888 "><i>  313   </i></font></a>                Ts_new[0] = Ts[1];
+<a name="314"><font color="#888888 "><i>  314   </i></font></a>                Ts_new[1] = Ts[2];
+<a name="315"><font color="#888888 "><i>  315   </i></font></a>                Ts_new[2] = Ts[2] + (Ts[2] - Ts[0]);
+<a name="316"><font color="#888888 "><i>  316   </i></font></a>
+<a name="317"><font color="#888888 "><i>  317   </i></font></a>                <font color="#117755"><i>/* fibonacci growth */</i></font>
+<a name="318"><font color="#888888 "><i>  318   </i></font></a>                <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Ts_new[2], S, D, kj, kT, ks, kd, dataVeh,
+<a name="319"><font color="#888888 "><i>  319   </i></font></a>                                   safetyS, safetyD, kappa, kappaMax, aOrthMax,
+<a name="320"><font color="#888888 "><i>  320   </i></font></a>                                   &amp;y, &amp;Ta, &amp;Tb);
+<a name="321"><font color="#888888 "><i>  321   </i></font></a>                *flag1 = 1.0;
+<a name="322"><font color="#888888 "><i>  322   </i></font></a>                Cs_new[0] = Cs[1];
+<a name="323"><font color="#888888 "><i>  323   </i></font></a>                Cs_new[1] = Cs[2];
+<a name="324"><font color="#888888 "><i>  324   </i></font></a>                Cs_new[2] = y;
+<a name="325"><font color="#888888 "><i>  325   </i></font></a>                notD_new[0] = notD[1];
+<a name="326"><font color="#888888 "><i>  326   </i></font></a>                notD_new[1] = notD[2];
+<a name="327"><font color="#888888 "><i>  327   </i></font></a>                notD_new[2] = Ta;
+<a name="328"><font color="#888888 "><i>  328   </i></font></a>                coll_new[0] = coll[1];
+<a name="329"><font color="#888888 "><i>  329   </i></font></a>                coll_new[1] = coll[2];
+<a name="330"><font color="#888888 "><i>  330   </i></font></a>                coll_new[2] = Tb;
+<a name="331"><font color="#888888 "><i>  331   </i></font></a>              <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="332"><font color="#888888 "><i>  332   </i></font></a>                <font color="#112266"><b>if</b></font> ((Cs[0] &gt;= Cs[1]) &amp;&amp; (Cs[1] &lt;= Cs[2])) <b>{</b>
+<a name="333"><font color="#888888 "><i>  333   </i></font></a>                  Ta = (Ts[0] + Ts[1]) / 2.0;
+<a name="334"><font color="#888888 "><i>  334   </i></font></a>                  Tb = (Ts[1] + Ts[2]) / 2.0;
+<a name="335"><font color="#888888 "><i>  335   </i></font></a>                  <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Ta, S, D, kj, kT, ks, kd, dataVeh, safetyS,
+<a name="336"><font color="#888888 "><i>  336   </i></font></a>                                     safetyD, kappa, kappaMax, aOrthMax, &amp;Ca,
+<a name="337"><font color="#888888 "><i>  337   </i></font></a>                                     &amp;notDa, &amp;colla);
+<a name="338"><font color="#888888 "><i>  338   </i></font></a>                  <a href="otg_smart_objFun_c.html#fcn_b_otg_smart_objFun" onclick="if (top) if (top.docHiliteMe) top.docHiliteMe(window, 'fcn_b_otg_smart_objFun');" target="_self"><font color="#1122aa">b_otg_smart_objFun</font></a>(Tb, S, D, kj, kT, ks, kd, dataVeh, safetyS,
+<a name="339"><font color="#888888 "><i>  339   </i></font></a>                                     safetyD, kappa, kappaMax, aOrthMax, &amp;Cb,
+<a name="340"><font color="#888888 "><i>  340   </i></font></a>                                     &amp;notDb, &amp;collb);
+<a name="341"><font color="#888888 "><i>  341   </i></font></a>                  *flag1 = 1.0;
+<a name="342"><font color="#888888 "><i>  342   </i></font></a>                  <font color="#112266"><b>if</b></font> ((notDa &gt; 0.0) || (colla &gt; 0.0)) <b>{</b>
+<a name="343"><font color="#888888 "><i>  343   </i></font></a>                    Ca = y;
+<a name="344"><font color="#888888 "><i>  344   </i></font></a>                  <b>}</b>
+<a name="345"><font color="#888888 "><i>  345   </i></font></a>
+<a name="346"><font color="#888888 "><i>  346   </i></font></a>                  <font color="#112266"><b>if</b></font> ((notDb &gt; 0.0) || (collb &gt; 0.0)) <b>{</b>
+<a name="347"><font color="#888888 "><i>  347   </i></font></a>                    Cb = y;
+<a name="348"><font color="#888888 "><i>  348   </i></font></a>                  <b>}</b>
+<a name="349"><font color="#888888 "><i>  349   </i></font></a>
+<a name="350"><font color="#888888 "><i>  350   </i></font></a>                  <font color="#112266"><b>if</b></font> (Cb &lt; Cs[1]) <b>{</b>
+<a name="351"><font color="#888888 "><i>  351   </i></font></a>                    <font color="#117755"><i>/* out of the five points the minumum must be somewhere between the */</i></font>
+<a name="352"><font color="#888888 "><i>  352   </i></font></a>                    <font color="#117755"><i>/* three outter right ones */</i></font>
+<a name="353"><font color="#888888 "><i>  353   </i></font></a>                    Ts_new[0] = Ts[1];
+<a name="354"><font color="#888888 "><i>  354   </i></font></a>                    Ts_new[1] = Tb;
+<a name="355"><font color="#888888 "><i>  355   </i></font></a>                    Ts_new[2] = Ts[2];
+<a name="356"><font color="#888888 "><i>  356   </i></font></a>                    Cs_new[0] = Cs[1];
+<a name="357"><font color="#888888 "><i>  357   </i></font></a>                    Cs_new[1] = Cb;
+<a name="358"><font color="#888888 "><i>  358   </i></font></a>                    Cs_new[2] = Cs[2];
+<a name="359"><font color="#888888 "><i>  359   </i></font></a>                    notD_new[0] = notD[1];
+<a name="360"><font color="#888888 "><i>  360   </i></font></a>                    notD_new[1] = notDb;
+<a name="361"><font color="#888888 "><i>  361   </i></font></a>                    notD_new[2] = notD[2];
+<a name="362"><font color="#888888 "><i>  362   </i></font></a>                    coll_new[0] = coll[1];
+<a name="363"><font color="#888888 "><i>  363   </i></font></a>                    coll_new[1] = collb;
+<a name="364"><font color="#888888 "><i>  364   </i></font></a>                    coll_new[2] = coll[2];
+<a name="365"><font color="#888888 "><i>  365   </i></font></a>                  <b>}</b> <font color="#112266"><b>else</b></font> <font color="#112266"><b>if</b></font> (Ca &lt; Cs[1]) <b>{</b>
+<a name="366"><font color="#888888 "><i>  366   </i></font></a>                    <font color="#117755"><i>/* out of the five points the minumum must be somewhere between the */</i></font>
+<a name="367"><font color="#888888 "><i>  367   </i></font></a>                    <font color="#117755"><i>/* three outter left ones */</i></font>
+<a name="368"><font color="#888888 "><i>  368   </i></font></a>                    Ts_new[0] = Ts[0];
+<a name="369"><font color="#888888 "><i>  369   </i></font></a>                    Ts_new[1] = Ta;
+<a name="370"><font color="#888888 "><i>  370   </i></font></a>                    Ts_new[2] = Ts[1];
+<a name="371"><font color="#888888 "><i>  371   </i></font></a>                    Cs_new[0] = Cs[0];
+<a name="372"><font color="#888888 "><i>  372   </i></font></a>                    Cs_new[1] = Ca;
+<a name="373"><font color="#888888 "><i>  373   </i></font></a>                    Cs_new[2] = Cs[1];
+<a name="374"><font color="#888888 "><i>  374   </i></font></a>                    notD_new[0] = notD[0];
+<a name="375"><font color="#888888 "><i>  375   </i></font></a>                    notD_new[1] = notDa;
+<a name="376"><font color="#888888 "><i>  376   </i></font></a>                    notD_new[2] = notD[1];
+<a name="377"><font color="#888888 "><i>  377   </i></font></a>                    coll_new[0] = coll[0];
+<a name="378"><font color="#888888 "><i>  378   </i></font></a>                    coll_new[1] = colla;
+<a name="379"><font color="#888888 "><i>  379   </i></font></a>                    coll_new[2] = coll[1];
+<a name="380"><font color="#888888 "><i>  380   </i></font></a>                  <b>}</b> <font color="#112266"><b>else</b></font> <b>{</b>
+<a name="381"><font color="#888888 "><i>  381   </i></font></a>                    <font color="#112266"><b>if</b></font> ((Ca &gt;= Cs[1]) &amp;&amp; (Cb &gt;= Cs[1])) <b>{</b>
+<a name="382"><font color="#888888 "><i>  382   </i></font></a>                      <font color="#117755"><i>/* out of the five points the minumum must be somewhere between the */</i></font>
+<a name="383"><font color="#888888 "><i>  383   </i></font></a>                      <font color="#117755"><i>/* three middle ones */</i></font>
+<a name="384"><font color="#888888 "><i>  384   </i></font></a>                      Ts_new[0] = Ta;
+<a name="385"><font color="#888888 "><i>  385   </i></font></a>                      Ts_new[1] = Ts[1];
+<a name="386"><font color="#888888 "><i>  386   </i></font></a>                      Ts_new[2] = Tb;
+<a name="387"><font color="#888888 "><i>  387   </i></font></a>                      Cs_new[0] = Ca;
+<a name="388"><font color="#888888 "><i>  388   </i></font></a>                      Cs_new[1] = Cs[1];
+<a name="389"><font color="#888888 "><i>  389   </i></font></a>                      Cs_new[2] = Cb;
+<a name="390"><font color="#888888 "><i>  390   </i></font></a>                      notD_new[0] = notDa;
+<a name="391"><font color="#888888 "><i>  391   </i></font></a>                      notD_new[1] = notD[1];
+<a name="392"><font color="#888888 "><i>  392   </i></font></a>                      notD_new[2] = notDb;
+<a name="393"><font color="#888888 "><i>  393   </i></font></a>                      coll_new[0] = colla;
+<a name="394"><font color="#888888 "><i>  394   </i></font></a>                      coll_new[1] = coll[1];
+<a name="395"><font color="#888888 "><i>  395   </i></font></a>                      coll_new[2] = collb;
+<a name="396"><font color="#888888 "><i>  396   </i></font></a>                    <b>}</b>
+<a name="397"><font color="#888888 "><i>  397   </i></font></a>                  <b>}</b>
+<a name="398"><font color="#888888 "><i>  398   </i></font></a>                <b>}</b>
+<a name="399"><font color="#888888 "><i>  399   </i></font></a>              <b>}</b>
+<a name="400"><font color="#888888 "><i>  400   </i></font></a>            <b>}</b>
+<a name="401"><font color="#888888 "><i>  401   </i></font></a>          <b>}</b>
+<a name="402"><font color="#888888 "><i>  402   </i></font></a>        <b>}</b>
+<a name="403"><font color="#888888 "><i>  403   </i></font></a>      <b>}</b>
+<a name="404"><font color="#888888 "><i>  404   </i></font></a>    <b>}</b>
+<a name="405"><font color="#888888 "><i>  405   </i></font></a>  <b>}</b>
+<a name="406"><font color="#888888 "><i>  406   </i></font></a><b>}</b>
+<a name="407"><font color="#888888 "><i>  407   </i></font></a>
+<a name="408"><font color="#888888 "><i>  408   </i></font></a><font color="#117755"><i>/*</i></font>
+<a name="409"><font color="#888888 "><i>  409   </i></font></a><font color="#117755"><I> * File trailer for otg_smart_opt_step.c</i></font>
+<a name="410"><font color="#888888 "><i>  410   </i></font></a><font color="#117755"><I> *</i></font>
+<a name="411"><font color="#888888 "><i>  411   </i></font></a><font color="#117755"><I> * [EOF]</i></font>
+<a name="412"><font color="#888888 "><i>  412   </i></font></a><font color="#117755"><I> */</i></font>
+<a name="413"><font color="#888888 "><i>  413   </i></font></a></pre>
 </td></tr></table>
 </p>
 </body>
