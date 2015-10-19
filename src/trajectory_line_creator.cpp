@@ -12,8 +12,6 @@ bool TrajectoryLineCreator::initialize() {
     envObstacles = datamanager()->readChannel<street_environment::EnvironmentObjects>(this,"ENVIRONMENT_OBSTACLE");
     road = datamanager()->readChannel<street_environment::RoadLane>(this,"ROAD");
     trajectory = datamanager()->writeChannel<lms::math::polyLine2f>(this,"LINE");
-    //TODO für was hat der das car?
-    car = datamanager()->writeChannel<sensor_utils::Car>(this,"CAR");
     config = getConfig();
     kappa_old = 0;
 

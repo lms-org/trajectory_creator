@@ -18,7 +18,6 @@ private:
     const street_environment::RoadLane *road;
     lms::math::polyLine2f *trajectory;
     const lms::ModuleConfig *config;
-    sensor_utils::Car *car;
     float kappa_old;
 
 };
