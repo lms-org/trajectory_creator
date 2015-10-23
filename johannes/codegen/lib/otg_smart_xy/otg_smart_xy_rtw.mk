@@ -2,7 +2,7 @@
 ## Makefile generated for MATLAB file/project 'otg_smart_xy'. 
 ## 
 ## Makefile     : otg_smart_xy_rtw.mk
-## Generated on : Fri Oct 23 13:29:12 2015
+## Generated on : Fri Oct 23 14:11:05 2015
 ## MATLAB Coder version: 2.7 (R2014b)
 ## 
 ## Build Info:
@@ -112,32 +112,39 @@ ECHO                = @echo
 MV                  = @mv
 RUN                 =
 
-#--------------------------------------
-# "Faster Runs" Build Configuration
-#--------------------------------------
+#--------------------------------
+# "Debug" Build Configuration
+#--------------------------------
 
-ARFLAGS              = ruvs
+ARFLAGS              = ruvs \
+                       $(ARDEBUG)
 CFLAGS               = -c -isysroot $(XCODE_SDK_ROOT) -arch $(ARCHS) $(ANSI_OPTS) \
-                       -O3 -fno-loop-optimize
+                       -O0 \
+                       $(CDEBUG)
 CPPFLAGS             = -c -isysroot $(XCODE_SDK_ROOT) -arch $(ARCHS) $(CPP_ANSI_OPTS) \
-                       -O3 -fno-loop-optimize
-CPP_LDFLAGS          = -arch $(ARCHS) -isysroot $(XCODE_SDK_ROOT) -L"$(MATLAB_ARCH_BIN)"
+                       -O0 \
+                       $(CPPDEBUG)
+CPP_LDFLAGS          = -arch $(ARCHS) -isysroot $(XCODE_SDK_ROOT) -L"$(MATLAB_ARCH_BIN)" \
+                       $(CPPLDDEBUG)
 CPP_SHAREDLIB_LDFLAGS  = -dynamiclib -isysroot $(XCODE_SDK_ROOT) -L"$(MATLAB_ARCH_BIN)" \
-                         -Wl,$(LD_NAMESPACE) $(LD_UNDEFS)
+                         -Wl,$(LD_NAMESPACE) $(LD_UNDEFS) \
+                         $(CPPLDDEBUG)
 DOWNLOAD_FLAGS       =
 EXECUTE_FLAGS        =
-LDFLAGS              = -arch $(ARCHS) -isysroot $(XCODE_SDK_ROOT) -L"$(MATLAB_ARCH_BIN)"
+LDFLAGS              = -arch $(ARCHS) -isysroot $(XCODE_SDK_ROOT) -L"$(MATLAB_ARCH_BIN)" \
+                       $(LDDEBUG)
 MEX_CFLAGS           = -MATLAB_ARCH=$(ARCH) $(INCLUDES) \
                          \
                        COPTIMFLAGS="$(ANSI_OPTS)  \
-                       -O3 -fno-loop-optimize \
+                       -O0 \
                         $(DEFINES)" \
                          \
                        -silent
 MEX_LDFLAGS          = LDFLAGS=='$$LDFLAGS'
 MAKE_FLAGS           = -f $(MAKEFILE)
 SHAREDLIB_LDFLAGS    = -dynamiclib -isysroot $(XCODE_SDK_ROOT) -L"$(MATLAB_ARCH_BIN)" \
-                       -Wl,$(LD_NAMESPACE) $(LD_UNDEFS)
+                       -Wl,$(LD_NAMESPACE) $(LD_UNDEFS) \
+                       $(LDDEBUG)
 
 #--------------------
 # File extensions
@@ -186,7 +193,7 @@ DEFINES = $(DEFINES_STANDARD)
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_xy_rtwutil.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_xy_initialize.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_xy_terminate.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_xy.c $(START_DIR)/codegen/lib/otg_smart_xy/power.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_pspdT.c $(START_DIR)/codegen/lib/otg_smart_xy/mrdivide.c $(START_DIR)/codegen/lib/otg_smart_xy/rdivide.c $(START_DIR)/codegen/lib/otg_smart_xy/abs.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_objFun.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_ps.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_pd.c $(START_DIR)/codegen/lib/otg_smart_xy/linspace.c $(START_DIR)/codegen/lib/otg_smart_xy/polyder.c $(START_DIR)/codegen/lib/otg_smart_xy/polyval.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_opt_step.c $(START_DIR)/codegen/lib/otg_smart_xy/repmat.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_xy_emxutil.c $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_xy_emxAPI.c $(START_DIR)/codegen/lib/otg_smart_xy/rt_nonfinite.c $(START_DIR)/codegen/lib/otg_smart_xy/rtGetNaN.c $(START_DIR)/codegen/lib/otg_smart_xy/rtGetInf.c
+SRCS = $(START_DIR)/codegen/lib/otg_smart_xy/otg_smart_xy.c $(START_DIR)/codegen/lib/otg_smart_xy/rt_nonfinite.c $(START_DIR)/codegen/lib/otg_smart_xy/rtGetNaN.c $(START_DIR)/codegen/lib/otg_smart_xy/rtGetInf.c
 
 ALL_SRCS = $(SRCS)
 
@@ -194,7 +201,7 @@ ALL_SRCS = $(SRCS)
 ## OBJECTS
 ###########################################################################
 
-OBJS = otg_smart_xy_rtwutil.o otg_smart_xy_initialize.o otg_smart_xy_terminate.o otg_smart_xy.o power.o otg_smart_pspdT.o mrdivide.o rdivide.o abs.o otg_smart_objFun.o otg_ps.o otg_pd.o linspace.o polyder.o polyval.o otg_smart_opt_step.o repmat.o otg_smart_xy_emxutil.o otg_smart_xy_emxAPI.o rt_nonfinite.o rtGetNaN.o rtGetInf.o
+OBJS = otg_smart_xy.o rt_nonfinite.o rtGetNaN.o rtGetInf.o
 
 ALL_OBJS = $(OBJS)
 

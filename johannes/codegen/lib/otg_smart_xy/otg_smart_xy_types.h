@@ -2,7 +2,7 @@
  * File: otg_smart_xy_types.h 
  *  
  * MATLAB Coder version            : 2.7 
- * C/C++ source code generated on  : 23-Oct-2015 13:28:58 
+ * C/C++ source code generated on  : 23-Oct-2015 14:10:50 
  */
 
 #ifndef __OTG_SMART_XY_TYPES_H__
@@ -12,21 +12,6 @@
 #include "rtwtypes.h"
 
 /* Type Definitions */ 
-#ifndef struct_emxArray__common
-#define struct_emxArray__common
-struct emxArray__common
-{
-    void *data;
-    int *size;
-    int allocatedSize;
-    int numDimensions;
-    boolean_T canFreeData;
-};
-#endif /*struct_emxArray__common*/
-#ifndef typedef_emxArray__common
-#define typedef_emxArray__common
-typedef struct emxArray__common emxArray__common;
-#endif /*typedef_emxArray__common*/
 #ifndef struct_emxArray_int32_T_1x3
 #define struct_emxArray_int32_T_1x3
 struct emxArray_int32_T_1x3

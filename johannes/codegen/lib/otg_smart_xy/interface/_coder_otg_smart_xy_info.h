@@ -2,7 +2,7 @@
  * File: _coder_otg_smart_xy_info.h 
  *  
  * MATLAB Coder version            : 2.7 
- * C/C++ source code generated on  : 23-Oct-2015 13:28:58 
+ * C/C++ source code generated on  : 23-Oct-2015 14:10:50 
  */
 
 #ifndef ___CODER_OTG_SMART_XY_INFO_H__

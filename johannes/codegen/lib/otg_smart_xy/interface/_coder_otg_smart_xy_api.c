@@ -2,7 +2,7 @@
  * File: _coder_otg_smart_xy_api.c
  *
  * MATLAB Coder version            : 2.7
- * C/C++ source code generated on  : 23-Oct-2015 13:28:58
+ * C/C++ source code generated on  : 23-Oct-2015 14:10:50
  */
 
 /* Include Files */
@@ -104,7 +104,7 @@ void otg_smart_xy_api(const mxArray *prhs[20], const mxArray *plhs[8])
   real_T safetyD;
   real_T kappaMax;
   real_T aOrthMax;
-  real_T m;
+  int32_T m;
   real_T kappa;
   real_T b_y0;
   real_T phi;
@@ -140,7 +140,7 @@ void otg_smart_xy_api(const mxArray *prhs[20], const mxArray *plhs[8])
   safetyD = emlrt_marshallIn(&st, emlrtAliasP(prhs[10]), "safetyD");
   kappaMax = emlrt_marshallIn(&st, emlrtAliasP(prhs[11]), "kappaMax");
   aOrthMax = emlrt_marshallIn(&st, emlrtAliasP(prhs[12]), "aOrthMax");
-  m = emlrt_marshallIn(&st, emlrtAliasP(prhs[13]), "m");
+  m = c_emlrt_marshallIn(&st, emlrtAliasP(prhs[13]), "m");
   kappa = emlrt_marshallIn(&st, emlrtAliasP(prhs[14]), "kappa");
   b_y0 = emlrt_marshallIn(&st, emlrtAliasP(prhs[15]), "y0");
   phi = emlrt_marshallIn(&st, emlrtAliasP(prhs[16]), "phi");
