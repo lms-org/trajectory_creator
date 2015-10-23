@@ -5,6 +5,7 @@
 #include "lms/math/polyline.h"
 #include "street_environment/road.h"
 #include "sensor_utils/car.h"
+#include "trajectory_generator.h"
 
 class TrajectoryLineCreator : public lms::Module {
 public:
@@ -19,6 +20,8 @@ private:
     lms::math::polyLine2f *trajectory;
     const lms::ModuleConfig *config;
     float kappa_old;
+
+    trajectory_generator* generator;
 
 };
 

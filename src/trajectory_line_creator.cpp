@@ -3,11 +3,6 @@
 #include "lms/math/math.h"
 #include "street_environment/obstacle.h"
 
-extern "C"{
-#include "lib/otg_xy_reallyDumb/otg_xy_reallyDumb.h"
-#include "lib/otg_xy_reallyDumb/otg_xy_reallyDumb_emxAPI.h"
-}
-
 bool TrajectoryLineCreator::initialize() {
     envObstacles = datamanager()->readChannel<street_environment::EnvironmentObjects>(this,"ENVIRONMENT_OBSTACLE");
     road = datamanager()->readChannel<street_environment::RoadLane>(this,"ROAD");
@@ -15,19 +10,27 @@ bool TrajectoryLineCreator::initialize() {
     config = getConfig();
     kappa_old = 0;
 
+    generator = new trajectory_generator(logger);
+
     return true;
 }
 
 bool TrajectoryLineCreator::deinitialize() {
+
+    delete generator;
+
     return true;
 }
 bool TrajectoryLineCreator::cycle() {
 
+    logger.info("cycle");
+    /*
     //clear old trajectory
     trajectory->points().clear();
     if(!advancedTrajectory()){
         simpleTrajectory();
     }
+     */
     return true;
 }
 
@@ -67,6 +70,7 @@ bool TrajectoryLineCreator::advancedTrajectory(){
 
     int obstacle_count = envObstacles->objects.size();
 
+    /*
     emxArray_real_T *dataVeh = emxCreate_real_T(3,obstacle_count);
     for(int i = 0; i < obstacle_count; i++){
         const std::shared_ptr<street_environment::EnvironmentObject> &obj = envObstacles->objects[i];
@@ -125,6 +129,7 @@ bool TrajectoryLineCreator::advancedTrajectory(){
         lms::math::vertex2f result(x->data[i],y->data[i]);
         trajectory->points().push_back(result);
     }
+     */
     return true;
 
     //OUTPUT
