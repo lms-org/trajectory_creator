@@ -1,12 +1,13 @@
 set ( SOURCES
         "src/trajectory_line_creator.cpp"
-        src/trajectory_generator.cpp
+#        "src/trajectory_generator.cpp"
 	"src/interface.cpp"
 )
 
 set (HEADERS
         "include/trajectory_line_creator.h"
-         include/trajectory_generator.h)
+#       "include/trajectory_generator.h"
+)
 
 
 include_directories("include" /usr/local/opt/eigen/include/eigen3)

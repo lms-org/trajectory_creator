@@ -2,6 +2,7 @@
 #include "lms/datamanager.h"
 #include "lms/math/math.h"
 #include "street_environment/obstacle.h"
+#include "street_environment/crossing.h"
 
 bool TrajectoryLineCreator::initialize() {
     envObstacles = datamanager()->readChannel<street_environment::EnvironmentObjects>(this,"ENVIRONMENT_OBSTACLE");
@@ -10,27 +11,27 @@ bool TrajectoryLineCreator::initialize() {
     config = getConfig();
     kappa_old = 0;
 
-    generator = new trajectory_generator(logger);
+    //   generator = new trajectory_generator(logger);
 
     return true;
 }
 
 bool TrajectoryLineCreator::deinitialize() {
 
-    delete generator;
+    //    delete generator;
 
     return true;
 }
 bool TrajectoryLineCreator::cycle() {
-
-    logger.info("cycle");
-    /*
     //clear old trajectory
     trajectory->points().clear();
-    if(!advancedTrajectory()){
-        simpleTrajectory();
-    }
-     */
+    //calculate data for creating the trajectory
+    float trajectoryMaxLength = 1;
+    float endX;
+    float endY;
+    float endVx = 0;
+    float endVy = 0;
+    simpleTrajectory(trajectoryMaxLength,endVx,endVy);
     return true;
 }
 
@@ -136,9 +137,9 @@ bool TrajectoryLineCreator::advancedTrajectory(){
     //gibt x-y koodinaten zurück
 }
 
-void TrajectoryLineCreator::simpleTrajectory(){
-
-
+lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy){
+    //TODO use trajectoryMaxLength
+    lms::math::polyLine2f tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
     const float translation = config->get<float>("street.width", 0.8)/4.0f;
     //TODO das sollte von der aktuellen geschwindigkeit abhängen!
@@ -147,11 +148,11 @@ void TrajectoryLineCreator::simpleTrajectory(){
     using lms::math::vertex2f;
     if(road->points().size() == 0){
         logger.error("cycle") << "no valid environment given";
-        return;
+        return tempTrajectory;
     }
 
     const street_environment::RoadLane &middle = *road;
-    logger.debug("simpleTrajectory")<<"number of obstacles: "<<envObstacles->objects.size();
+    float currentTrajectoryLength = 0;
     for(size_t i = 1; i < middle.points().size(); i++) {
         vertex2f p1 = middle.points()[i - 1];
         vertex2f p2 = middle.points()[i];
@@ -159,6 +160,12 @@ void TrajectoryLineCreator::simpleTrajectory(){
             continue;
 
         vertex2f along = p2 - p1;
+        //check if the trajectory is long enough
+        //TODO, get endpoint
+        currentTrajectoryLength +=along.length();
+        if(currentTrajectoryLength > trajectoryMaxLength){
+            break;
+        }
         vertex2f mid((p1.x + p2.x) / 2., (p1.y + p2.y) / 2.);
         vertex2f normAlong = along / along.length();
         vertex2f orthogonal(normAlong.y, -normAlong.x);
@@ -168,34 +175,46 @@ void TrajectoryLineCreator::simpleTrajectory(){
         float obstacleLength = 0.3;
         //check all obstacles
         for(const std::shared_ptr<street_environment::EnvironmentObject> obj : envObstacles->objects){
-            if(obj->name().find("OBSTACLE") == std::string::npos){
+            if(obj->getType() == street_environment::Obstacle::TYPE){
+                const street_environment::Obstacle &obst = obj->getAsReference<const street_environment::Obstacle>();
+                float x = obst.position().x;
+                float y= obst.position().y;
+                if(x < 0){
+                    x += obstacleLength;
+                }
+                if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
+                    left = true;
+                    break;
+                }
+
+
+                if(left){
+                    orthogonal *= -1;
+                }
+                orthogonal = orthogonal * translation;
+                vertex2f result = mid + orthogonal;
+                tempTrajectory.points().push_back(result);
+            }else if(obj->getType() == street_environment::Crossing::TYPE){
+                const street_environment::Crossing &crossing = obj->getAsReference<const street_environment::Crossing>();
+                //check if the Crossing is close enough
+                //TODO
+                if(crossing.getStreetDistanceTangential() < trajectoryMaxLength){
+
+                    endVx = 0;
+                    endVy = 0;
+                }
+                //add endPoint
+            }else{
                 logger.warn("cycle")<<"invalid obstacle-type given: "<<obj->name();
                 continue;
             }
-            const street_environment::Obstacle &obst = obj->getAsReference<const street_environment::Obstacle>();
-            float x = obst.position().x;
-            float y= obst.position().y;
-            if(x < 0){
-                x += obstacleLength;
-            }
-            if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
-                left = true;
-                break;
-            }
         }
 
-        if(left){
-            orthogonal *= -1;
-        }
-        orthogonal = orthogonal * translation;
-        vertex2f result = mid + orthogonal;
-        trajectory->points().push_back(result);
+        tempTrajectory.reduce([](const lms::math::vertex2f& p1){
+            return p1.x < 0;
+        });
     }
-
-    trajectory->reduce([](const lms::math::vertex2f& p1){
-        return p1.x < 0;
-    });
-
+    return tempTrajectory;
 
 }
 
