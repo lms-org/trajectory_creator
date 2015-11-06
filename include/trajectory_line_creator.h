@@ -15,9 +15,9 @@ public:
 private:
     lms::math::polyLine2f simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy);
     bool advancedTrajectory();
-    const street_environment::EnvironmentObjects *envObstacles;
-    const street_environment::RoadLane *road;
-    lms::math::polyLine2f *trajectory;
+    lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
+    lms::ReadDataChannel<street_environment::RoadLane> road;
+    lms::WriteDataChannel<lms::math::polyLine2f> trajectory;
     const lms::ModuleConfig *config;
     float kappa_old;
 
