@@ -18,7 +18,6 @@ private:
     lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
     lms::ReadDataChannel<street_environment::RoadLane> road;
     lms::WriteDataChannel<lms::math::polyLine2f> trajectory;
-    const lms::ModuleConfig *config;
     float kappa_old;
 
 //    trajectory_generator* generator;
