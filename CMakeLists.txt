@@ -6,7 +6,8 @@ set ( SOURCES
 
 set (HEADERS
         "include/trajectory_line_creator.h"
-         include/trajectory_generator.h)
+         include/trajectory_generator.h include/poly.h include/types.h src/trajectory.cpp include/trajectory.h)
+
 
 
 include_directories("include" /usr/local/opt/eigen/include/eigen3)

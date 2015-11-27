@@ -3,20 +3,11 @@
 
 #include <lms/logging/logger.h>
 
-#include <Eigen/Dense>
-#include <unsupported/Eigen/Polynomials>
+#include "types.h"
+#include "poly.h"
+#include "trajectory.h"
 
 class trajectory_generator {
-public:
-
-    typedef float T;
-
-    template<int rows, int cols>
-    using Matrix = Eigen::Matrix<T, rows, cols>;
-
-    template<int rows>
-    using Vector = Matrix<rows, 1>;
-
 public:
 
     /**
@@ -27,6 +18,7 @@ public:
 protected:
     lms::logging::Logger logger;
 
+    bool create_trajectory_sample(Trajectory &trajectory,T v1, T d1, T safetyS, T safetyD, T tmin, T tmax, int nsamples, const roadData& roadDataIn, std::vector<obstacleData>& obstacleDataIn, const coeffCtot& coeffCtotIn);
 };
 
 
