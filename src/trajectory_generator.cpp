@@ -1,46 +1,43 @@
 #include <types.h>
 #include <curses.h>
 #include "trajectory_generator.h"
+/**
+ * creates a trajectory using the sampling method both for different trajectories in end time and to check for collision/drivability
+ */
+bool trajectory_generator::create_trajectory_sample(Trajectory &trajectory,T v1, T d1, T safetyS, T safetyD, T tmin, T tmax, int nSamplesTraj, const roadData& roadDataIn, std::vector<obstacleData>& obstacleDataIn, const coeffCtot& coeffCtotIn) {
 
-bool trajectory_generator::create_trajectory_sample(Trajectory &trajectory,T v1, T d1, T safetyS, T safetyD, T tmin, T tmax, int nsamples, const roadData& roadDataIn, std::vector<obstacleData>& obstacleDataIn, const coeffCtot& coeffCtotIn) {
-    /*
-    // vector containing the time steps
-    Vector<nsamples> tt;
-    T dt = (tmax-tmin)/(nsamples-1);
-    for (int i = 0; i < nsamples; i++)
-    {
-        tt(i) = tmin + i*dt;
-    }*/
 
-    T dt = (tmax - tmin) / (nsamples - 1);
+    T dt = (tmax - tmin) / (nSamplesTraj - 1); //time increment
 
     //vector containing the trajectories
     std::vector<Trajectory> sampleTrajectories;
 
-    for (int i = 0; i < nsamples; i++) {
+    /* //not good in performance
+    for (int i = 0; i < nSamplesTraj; i++) {
         sampleTrajectories.push_back(
                 Trajectory(v1, d1, safetyS, safetyD, roadDataIn, obstacleDataIn, tmin + i * dt, coeffCtotIn));
-    }
+    }*/
 
     //find the minimum cost function while still drivable and collision free
     bool flagFound = false;
     T bestCtot = 0;
-    int indbestTrajectory;
 
-    for (int i = 0; i < nsamples; i++) {
-        if (sampleTrajectories[i].isDrivable() && !sampleTrajectories[i].doesCollide()) {
+    for (int i = 0; i < nSamplesTraj; i++) {
+        //create trajectory
+        Trajectory sampleTrajectory = Trajectory(v1, d1, safetyS, safetyD, roadDataIn, obstacleDataIn, tmin + i * dt, coeffCtotIn);
+        if (sampleTrajectory.isDrivable() && !sampleTrajectory.doesCollide()) {
             // drivable and not colliding
             if (!flagFound) {
                 // the first one found
                 flagFound = true;
-                bestCtot = sampleTrajectories[i].ctot();
-                indbestTrajectory = i;
+                bestCtot = sampleTrajectory.ctot();
+                trajectory = sampleTrajectory;
             } else {
                 // not the first --> compare ctot
-                if (sampleTrajectories[i].ctot() <= bestCtot) {
+                if (sampleTrajectory.ctot() <= bestCtot) {
                     // better --> change
-                    bestCtot = sampleTrajectories[i].ctot();
-                    indbestTrajectory = i;
+                    bestCtot = sampleTrajectory.ctot();
+                    trajectory = sampleTrajectory;
                 }
             }
 
@@ -48,7 +45,7 @@ bool trajectory_generator::create_trajectory_sample(Trajectory &trajectory,T v1,
     }
 
     if (flagFound) {
-        trajectory =  sampleTrajectories[indbestTrajectory];
+        // trajectory was already set
         return true;
     }
     else {
@@ -123,7 +120,7 @@ trajectory_generator::trajectory_generator(lms::logging::Logger& _logger) : logg
 
     roadData roadDataIn;
     roadDataIn.ax0 = 0;
-    roadDataIn.kappa = 0.01;
+    roadDataIn.kappa = 0.25;
     roadDataIn.phi = 0.1;
     roadDataIn.vx0 = 1;
     roadDataIn.w = 0;
@@ -145,7 +142,7 @@ trajectory_generator::trajectory_generator(lms::logging::Logger& _logger) : logg
     obstacleDataIn.push_back(obstacleData1);
 
     Trajectory bestTrajectory1;
-    if(create_trajectory_sample(bestTrajectory1,v1, d1, safetyS, safetyD, 0.1, 10, 3900, roadDataIn, obstacleDataIn, coeffCtotIn))
+    if(create_trajectory_sample(bestTrajectory1,v1, d1, safetyS, safetyD, 0.1, 4, 390, roadDataIn, obstacleDataIn, coeffCtotIn))
     {
         std::cout << "---------- test fuer trajectory   ----------" <<std::endl << bestTrajectory1 << std::endl;
 
@@ -153,6 +150,11 @@ trajectory_generator::trajectory_generator(lms::logging::Logger& _logger) : logg
         std::cout << "kappaMax:     " << bestTrajectory1.kappa_max << std::endl;
 
         std::cout << "does the best traj. collide:   " << bestTrajectory1.doesCollide() << std::endl;
+
+        points2d<10> points = bestTrajectory1.sampleXY<10>();
+
+        std::cout << "POINTS: x coordinates:  " << points.x << std::endl;
+        std::cout << "POINTS: y coordinates:  " << points.y << std::endl;
     } else{
         std::cout<<"No valid trajectory found"<<std::endl;
     }

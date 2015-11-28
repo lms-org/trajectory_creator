@@ -1,5 +1,6 @@
 //
 // Created by Lukas Koestler on 23.10.15.
+// Class to represent a Polynomial
 //
 
 #ifndef PROJECT_POLY_H
@@ -23,6 +24,10 @@ public:
 
     }
 
+
+/**
+ * evaluates the polynomial at the points in x
+ */
     template<size_t m>
     Vector<m> eval(const Vector<m>& x)
     {
@@ -51,6 +56,9 @@ public:
         return y;
     }
 
+    /**
+     * Evaluates the Polynomial at one point
+     */
     T evalAtPoint(const T x)
     {
         T value = coeff(0);
@@ -66,6 +74,9 @@ public:
         return value;
     }
 
+    /**
+     * integrates the polynomial
+     */
     Poly<n+1> integrate()
     {
         Vector<n+2> new_coeff;
@@ -78,6 +89,9 @@ public:
         return Poly<n+1>(new_coeff);
     }
 
+    /**
+     * Differentiates the Polynomial
+     */
     Poly<n-1> differentiate()
     {
         Vector<n> new_coeff;
@@ -91,6 +105,9 @@ public:
     }
 
 
+    /**
+     * gives the coefficients
+     */
     const Vector<n+1>& getCoeff() const {
         return coeff;
     }
