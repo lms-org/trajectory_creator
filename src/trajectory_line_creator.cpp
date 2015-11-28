@@ -5,20 +5,19 @@
 #include "street_environment/crossing.h"
 
 bool TrajectoryLineCreator::initialize() {
-    envObstacles = datamanager()->readChannel<street_environment::EnvironmentObjects>(this,"ENVIRONMENT_OBSTACLE");
-    road = datamanager()->readChannel<street_environment::RoadLane>(this,"ROAD");
-    trajectory = datamanager()->writeChannel<lms::math::polyLine2f>(this,"LINE");
+    envObstacles = readChannel<street_environment::EnvironmentObjects>("ENVIRONMENT_OBSTACLE");
+    road = readChannel<street_environment::RoadLane>("ROAD");
+    trajectory = writeChannel<lms::math::polyLine2f>("LINE");
+    car = readChannel<sensor_utils::Car>("CAR");
     kappa_old = 0;
 
-    //   generator = new trajectory_generator(logger);
+    generator = new TrajectoryGenerator(logger);
 
     return true;
 }
 
 bool TrajectoryLineCreator::deinitialize() {
-
-    //    delete generator;
-
+    delete generator;
     return true;
 }
 bool TrajectoryLineCreator::cycle() {
@@ -28,10 +27,18 @@ bool TrajectoryLineCreator::cycle() {
     float trajectoryMaxLength = config().get<float>("trajectoryMaxLength",2);
     //float endX;
     //float endY;
+    //TODO
     float endVx = 0;
     float endVy = 0;
     //TODO not smart
-    lms::math::polyLine2f traj = simpleTrajectory(trajectoryMaxLength,endVx,endVy);
+    lms::math::polyLine2f traj;
+    if(config().get<bool>("simpleTraj",true)){
+        traj= simpleTrajectory(trajectoryMaxLength,endVx,endVy);
+    }else{
+        if(!advancedTrajectory(traj)){
+            traj = simpleTrajectory(trajectoryMaxLength,endVx,endVy);
+        }
+    }
     trajectory->points().clear();
     for(lms::math::vertex2f &v:traj.points()){
         trajectory->points().push_back(v);
@@ -39,106 +46,59 @@ bool TrajectoryLineCreator::cycle() {
     return true;
 }
 
-bool TrajectoryLineCreator::advancedTrajectory(){
-
+bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory){
+    if(road->polarDarstellung.size() < 8){
+        return false;
+    }
     //INPUT
     //hindernisse: vector Abstand-Straße,geschwindigkeit-Straße(absolut), -1 (links) +1 (rechts) (alle hindernisse hintereinander)
     //eigenes auto, vx,vy, dw -winkelgeschwindigkeit dw (zunächst mal 0)
     //vector mit x-koordinaten
     //vector mit y-koordinaten
+
+    int nSamplesTraj = config().get<int>("nSamplesTraj",50);
     double v1 = 2;//endgeschwindigkeit
-    double d1 = 0.2;//Abweichung, die man am Ende haben will
-    double vx0 = 1; //Sollte nicht 0 sein, wegen smoothem start
-    double ax0 = 0; //beschl. am anfang
-    double w = 0; //aktuelle winkelgeschwindigkeit
+    double d1 = -0.2;//TODO berechnenAbweichung, die man am Ende haben will
+    //aktuelle daten der fahrspur und des autos relativ dazu
+    RoadData dataRoad;
+    dataRoad.ax0 = 0; //beschl. am anfang
+    dataRoad.kappa = road->polarDarstellung[4]+road->polarDarstellung[7]+road->polarDarstellung[9];//TODO
+    dataRoad.kappa /= 3.0;
+    logger.info("kappa")<<dataRoad.kappa;
+    dataRoad.phi = road->polarDarstellung[1];
+    float velocity = 0.001;//Sollte nicht 0 sein, wegen smoothem start
+    if(car->velocity() != 0)
+        velocity = car->velocity();
+    dataRoad.vx0 = velocity;
+    dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
+    dataRoad.y0 = road->polarDarstellung[0]; //TODO
+    std::vector<ObstacleData> dataObstacle;
+    CoeffCtot tot;
 
-    double kj = config().get<double>("kj",1.0);
-    double kT = config().get<double>("kT",1.0);
-    double ks = config().get<double>("ks",1.0);
-    double kd = config().get<double>("kd",1.0);
+    tot.kj = config().get<double>("kj",1.0);
+    tot.kT = config().get<double>("kT",1.0);
+    tot.ks = config().get<double>("ks",1.0);
+    tot.kd = config().get<double>("kd",1.0);
 
-    double dT = config().get<double>("dT",0.1); //Intervall zwischen den Endzeiten
-    //TODO berechnen
     double tMin = 0.1;//Minimal benötigte Zeit
-    double tMax = 10; //Maximal benötigte Zeit
+    double tMax = 2; //Maximal benötigte Zeit
 
     double safetyS = config().get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
     double safetyD = config().get<double>("safetyD",0.1); //Sicherheitsabstand orthogonal zur Straße
 
-    double dt = config().get<double>("dt",0.01); //Zeitintervall zwischen den Kollisionsabfragen
-
-    double m = config().get<double>("m",20); //Anzahl der Punkte im Streckenzug
-
-    double y0 = road->polarDarstellung[0];
-    double phi = road->polarDarstellung[1];
-
-
-    int obstacle_count = envObstacles->objects.size();
-
-    /*
-    emxArray_real_T *dataVeh = emxCreate_real_T(3,obstacle_count);
-    for(int i = 0; i < obstacle_count; i++){
-        const std::shared_ptr<street_environment::EnvironmentObject> &obj = envObstacles->objects[i];
-        if(obj->getType() != 1){
-            logger.warn("cycle")<<"invalid obstacle-type given: "<<obj->name();
-            continue;
+    Trajectory result;
+    if(generator->createTrajectorySample(result,v1,d1,safetyS,safetyD,tMin,tMax,nSamplesTraj,dataRoad,dataObstacle,tot)){
+        //convert data
+        //TODO anzahl der punkte
+        points2d<20> points = result.sampleXY<20>();
+        for(int i = 0; i < 20; i++){
+            trajectory.points().push_back(lms::math::vertex2f(points.x(i),points.y(i)));
         }
-        const street_environment::Obstacle &obst = obj->getAsReference<const street_environment::Obstacle>();
-        float x = obst.position().x;
-        float y= obst.position().y;
-
-        dataVeh->data[i*3] = x;//abstand zum hindernis
-        logger.debug("Abstand zum hinderniss: ")<<x;
-        dataVeh->data[i*3 +1] = 0; //geschwindigkeit vom hindernis
-        //TODO rechte oder linke spur
-        dataVeh->data[i*3+ 2] = -1;  //TODO
-    }
-
-    //get kappa from circle
-    float kappa = 0;
-    //Wie stark der alte radius ins gewicht fallen soll
-    float kappa_ratio = config().get<float>("kappa_ratio",0);
-
-    int kappaCount = 3;
-    //std::cout << "trajec-creator: kappa-values: ";
-    for(int i = 0; i < kappaCount; i++){
-        kappa += road->polarDarstellung[5+i];
-        //std::cout<< std::to_string(road->polarDarstellung[2+i])<< " , ";
-    }
-    //std::cout<<std::endl;
-    kappa /= kappaCount;
-    logger.debug("kappa")<<kappa_old <<" , "<< kappa << " ratio: "<<kappa_ratio;
-    kappa = kappa_ratio*kappa_old+(1-kappa_ratio)*kappa;
-    kappa_old = kappa;
-
-    logger.debug("advancedTrajectory")<<"kappa: "<<kappa;
-    //output
-    double flag;
-    double T = -1; //gesamtzeit
-
-    //punkte
-    emxArray_real_T *x = emxCreate_real_T(1,m);
-    emxArray_real_T *y = emxCreate_real_T(1,m);
-
-
-    otg_xy_reallyDumb(v1,d1, kj,
-                      kT,  ks,  kd,  dT,  tMin,  tMax,
-                      dataVeh,  safetyS, safetyD, dt, m,  kappa,  y0,  phi,vx0,ax0,w,  &flag,x, y,&T);
-
-
-    logger.debug("advancedTrajectory")<<"flag: "<<flag;
-    if(flag < 0)
+        return true;
+    }else{
         return false;
-
-    for(int i = 0; i < m; i++){
-        lms::math::vertex2f result(x->data[i],y->data[i]);
-        trajectory->points().push_back(result);
     }
-     */
     return true;
-
-    //OUTPUT
-    //gibt x-y koodinaten zurück
 }
 
 lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy){

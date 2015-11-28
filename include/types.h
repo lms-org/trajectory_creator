@@ -5,7 +5,7 @@
 #ifndef PROJECT_TYPES_H
 #define PROJECT_TYPES_H
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 // TYPEDEF
 typedef float T;
@@ -15,10 +15,10 @@ using Matrix = Eigen::Matrix<T, rows, cols>;
 
 template<int rows>
 using Vector = Matrix<rows, 1>;
-
-typedef struct
-{
-    // captures the current state of the road and the car on it
+/**
+ * @brief The RoadData struct captures the current state of the road and the car on it
+ */
+struct RoadData{
     T y0; // intercept of the center line and the y-axis of the car coordinates (different sign than street coordinates)
     T phi; //angle of the centerline relative to the car x-axis
     T w; // angular velocity of the car (z axis positive rotation)
@@ -26,24 +26,25 @@ typedef struct
     T ax0; //initial acceleration of the car in x (car) direction
     T kappa; //curvature of the road (approximated as a circle)
 
-} roadData;
-
-typedef struct
-{
-    // caprutres the data of one obstacle on the road
+};
+/**
+ * @brief The obstacleData struct caprutres the data of one obstacle on the road
+ */
+struct ObstacleData{
     T s0; // initial distance along the road of the obstacle to the car
     T v0; // initial velocity of the obstacle (NOT REALTIVE TO THE CAR) along the road
     bool leftLane; //lane of the obstacle
-} obstacleData;
-
-typedef struct
+};
+/**
+ * @brief The CoeffCtot struct coefficients for the cost function
+ */
+struct CoeffCtot
 {
-    //coefficients for the cost function
     T kj; //cost of the non-smoothness (kj high --> gives smooth traj.)
     T kT; //cost of the time the traj. needs (kT high --> gives fast (non-smooth) tral.)
     T kd; //cost. of the lateral direction
     T ks; //cost. of the longitudinal direction
-} coeffCtot;
+};
 
 typedef struct
 {

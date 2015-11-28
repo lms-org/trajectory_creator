@@ -50,7 +50,7 @@ public:
         R(1,1) =  cos(this->roadData1.phi);
 
         // generate the XY points
-        if (this->kappa > 0)
+        if (fabs(this->kappa) > 0)
         {
             for (int i = 0; i <m; i++)
             {
@@ -94,7 +94,7 @@ public:
 
     };
 
-    Trajectory(const T& _v1, const T& _d1, const T & _safetyS, const T& _safetyD, const roadData& _roadData1, const std::vector<obstacleData>& _obstacles, T _tend, const coeffCtot& _coeffCtot);
+    Trajectory(const T& _v1, const T& _d1, const T & _safetyS, const T& _safetyD, const RoadData& _roadData1, const std::vector<ObstacleData>& _obstacles, T _tend, const CoeffCtot& _coeffCtot);
 
 
     /**
@@ -122,7 +122,7 @@ private:
     Poly<5>* mPtr_d; //pointer to the poly. object for the d (lateral) direction in Frenet space
     Poly<4>* mPtr_s; //pointer to the poly. object for the s (longitudinal) direction in Frenet space
 
-    coeffCtot coeffCtot1; //coefficients of the cost function (see also types.h)
+    CoeffCtot coeffCtot1; //coefficients of the cost function (see also types.h)
 
     T tend; //time the traj. needs (as tstart = 0 by definition)
 
@@ -131,9 +131,9 @@ private:
     T ctot_value; //value of the total cost function
     bool ctot_alreadyCalc; //was the value already calculated
 
-    roadData roadData1; //data of the road (see also types.h)
+    RoadData roadData1; //data of the road (see also types.h)
 
-    std::vector<obstacleData> obstacles; //vector: each obstacleData is the data corresp. to one obstacle (see also types.h)
+    std::vector<ObstacleData> obstacles; //vector: each obstacleData is the data corresp. to one obstacle (see also types.h)
 
     bool collision = true; //is there a collision
     bool collisionDetected = false; //was collision already checked

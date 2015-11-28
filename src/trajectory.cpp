@@ -181,7 +181,7 @@ T Trajectory::Jts() {
 /**
  * constructor
  */
-Trajectory::Trajectory(const T &_v1, const T &_d1, const T & _safetyS, const T& _safetyD, const roadData &_roadData1, const std::vector<obstacleData> &_obstacles, T _tend, const coeffCtot& _coeffCtot) : roadData1(_roadData1),
+Trajectory::Trajectory(const T &_v1, const T &_d1, const T & _safetyS, const T& _safetyD, const RoadData &_roadData1, const std::vector<ObstacleData> &_obstacles, T _tend, const CoeffCtot& _coeffCtot) : roadData1(_roadData1),
                                                                                                                                                                                                            obstacles(_obstacles),
                                                                                                                                                                                                            tend(_tend),
                                                                                                                                                                                                            coeffCtot1(_coeffCtot),

@@ -7,18 +7,18 @@
 #include "poly.h"
 #include "trajectory.h"
 
-class trajectory_generator {
+class TrajectoryGenerator {
 public:
 
     /**
      * @brief Constructor
      */
-    trajectory_generator(lms::logging::Logger& _logger);
+    TrajectoryGenerator(lms::logging::Logger& _logger);
+    bool createTrajectorySample(Trajectory &trajectory,T v1, T d1, T safetyS, T safetyD, T tmin, T tmax, int nSamplesTraj, const RoadData& roadDataIn, std::vector<ObstacleData>& obstacleDataIn, const CoeffCtot& coeffCtotIn);
+
 
 protected:
     lms::logging::Logger logger;
-
-    bool create_trajectory_sample(Trajectory &trajectory,T v1, T d1, T safetyS, T safetyD, T tmin, T tmax, int nSamplesTraj, const roadData& roadDataIn, std::vector<obstacleData>& obstacleDataIn, const coeffCtot& coeffCtotIn);
 };
 
 
