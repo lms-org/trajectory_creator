@@ -10,6 +10,8 @@
 class TrajectoryGenerator {
 public:
 
+    static float circleCurvature(lms::math::vertex2f p1, lms::math::vertex2f p2, lms::math::vertex2f p3);
+
     /**
      * @brief Constructor
      */

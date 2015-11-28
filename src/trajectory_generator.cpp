@@ -1,6 +1,7 @@
 #include <types.h>
 #include <lms/math/vertex.h>
 #include "trajectory_generator.h"
+#include "lms/math/math.h"
 /**
  * creates a trajectory using the sampling method both for different trajectories in end time and to check for collision/drivability
  */
@@ -48,11 +49,11 @@ bool TrajectoryGenerator::createTrajectorySample(Trajectory &trajectory,T v1, T 
 TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger(_logger){
 }
 
-T circleCurvature(lms::math::vertex2f p1, lms::math::vertex2f p2, lms::math::vertex2f p3)
+float TrajectoryGenerator::circleCurvature(lms::math::vertex2f p1, lms::math::vertex2f p2, lms::math::vertex2f p3)
 {
     // look at Arndt Brunner for explanation: http://www.arndt-bruenner.de/mathe/scripts/kreis3p.htm
 
-    T kappa_est = 0;
+    float kappa_est = 0;
 
     //set up A matrix
     Matrix<3,3> A;
@@ -79,7 +80,8 @@ T circleCurvature(lms::math::vertex2f p1, lms::math::vertex2f p2, lms::math::ver
         kappa_est = 0;
     }else
     {
-        kappa_est = 1/r;
+        kappa_est = lms::math::sgn<float>(ym)*(float)1/r;
+
 
     }
 

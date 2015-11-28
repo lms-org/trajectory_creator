@@ -62,8 +62,9 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
     //aktuelle daten der fahrspur und des autos relativ dazu
     RoadData dataRoad;
     dataRoad.ax0 = 0; //beschl. am anfang
-    dataRoad.kappa = road->polarDarstellung[4]+road->polarDarstellung[7]+road->polarDarstellung[9];//TODO
-    dataRoad.kappa /= 3.0;
+
+    dataRoad.kappa = generator->circleCurvature(road->points()[1],road->points()[3],road->points()[5]);//->polarDarstellung[4]+road->polarDarstellung[7]+road->polarDarstellung[9];//TODO
+    //dataRoad.kappa /= 3.0;
     logger.info("kappa")<<dataRoad.kappa;
     dataRoad.phi = road->polarDarstellung[1];
     float velocity = 0.001;//Sollte nicht 0 sein, wegen smoothem start
