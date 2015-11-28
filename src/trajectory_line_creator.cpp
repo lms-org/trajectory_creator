@@ -2,35 +2,40 @@
 #include "lms/datamanager.h"
 #include "lms/math/math.h"
 #include "street_environment/obstacle.h"
+#include "street_environment/crossing.h"
 
 bool TrajectoryLineCreator::initialize() {
     envObstacles = datamanager()->readChannel<street_environment::EnvironmentObjects>(this,"ENVIRONMENT_OBSTACLE");
     road = datamanager()->readChannel<street_environment::RoadLane>(this,"ROAD");
     trajectory = datamanager()->writeChannel<lms::math::polyLine2f>(this,"LINE");
-    config = getConfig();
     kappa_old = 0;
 
-    generator = new trajectory_generator(logger);
+    //   generator = new trajectory_generator(logger);
 
     return true;
 }
 
 bool TrajectoryLineCreator::deinitialize() {
 
-    delete generator;
+    //    delete generator;
 
     return true;
 }
 bool TrajectoryLineCreator::cycle() {
-
-    logger.info("cycle");
-    /*
     //clear old trajectory
     trajectory->points().clear();
-    if(!advancedTrajectory()){
-        simpleTrajectory();
+    //calculate data for creating the trajectory
+    float trajectoryMaxLength = config().get<float>("trajectoryMaxLength",2);
+    //float endX;
+    //float endY;
+    float endVx = 0;
+    float endVy = 0;
+    //TODO not smart
+    lms::math::polyLine2f traj = simpleTrajectory(trajectoryMaxLength,endVx,endVy);
+    trajectory->points().clear();
+    for(lms::math::vertex2f &v:traj.points()){
+        trajectory->points().push_back(v);
     }
-     */
     return true;
 }
 
@@ -47,22 +52,22 @@ bool TrajectoryLineCreator::advancedTrajectory(){
     double ax0 = 0; //beschl. am anfang
     double w = 0; //aktuelle winkelgeschwindigkeit
 
-    double kj = config->get<double>("kj",1.0);
-    double kT = config->get<double>("kT",1.0);
-    double ks = config->get<double>("ks",1.0);
-    double kd = config->get<double>("kd",1.0);
+    double kj = config().get<double>("kj",1.0);
+    double kT = config().get<double>("kT",1.0);
+    double ks = config().get<double>("ks",1.0);
+    double kd = config().get<double>("kd",1.0);
 
-    double dT = config->get<double>("dT",0.1); //Intervall zwischen den Endzeiten
+    double dT = config().get<double>("dT",0.1); //Intervall zwischen den Endzeiten
     //TODO berechnen
     double tMin = 0.1;//Minimal benötigte Zeit
     double tMax = 10; //Maximal benötigte Zeit
 
-    double safetyS = config->get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
-    double safetyD = config->get<double>("safetyD",0.1); //Sicherheitsabstand orthogonal zur Straße
+    double safetyS = config().get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
+    double safetyD = config().get<double>("safetyD",0.1); //Sicherheitsabstand orthogonal zur Straße
 
-    double dt = config->get<double>("dt",0.01); //Zeitintervall zwischen den Kollisionsabfragen
+    double dt = config().get<double>("dt",0.01); //Zeitintervall zwischen den Kollisionsabfragen
 
-    double m = config->get<double>("m",20); //Anzahl der Punkte im Streckenzug
+    double m = config().get<double>("m",20); //Anzahl der Punkte im Streckenzug
 
     double y0 = road->polarDarstellung[0];
     double phi = road->polarDarstellung[1];
@@ -92,7 +97,7 @@ bool TrajectoryLineCreator::advancedTrajectory(){
     //get kappa from circle
     float kappa = 0;
     //Wie stark der alte radius ins gewicht fallen soll
-    float kappa_ratio = config->get<float>("kappa_ratio",0);
+    float kappa_ratio = config().get<float>("kappa_ratio",0);
 
     int kappaCount = 3;
     //std::cout << "trajec-creator: kappa-values: ";
@@ -136,22 +141,22 @@ bool TrajectoryLineCreator::advancedTrajectory(){
     //gibt x-y koodinaten zurück
 }
 
-void TrajectoryLineCreator::simpleTrajectory(){
-
-
+lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy){
+    //TODO use trajectoryMaxLength
+    lms::math::polyLine2f tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
-    const float translation = config->get<float>("street.width", 0.8)/4.0f;
+    const float translation = config().get<float>("street.width", 0.8)/4.0f;
     //TODO das sollte von der aktuellen geschwindigkeit abhängen!
     float distanceObstacleBeforeChangeLine = 0.4;
 
     using lms::math::vertex2f;
     if(road->points().size() == 0){
         logger.error("cycle") << "no valid environment given";
-        return;
+        return tempTrajectory;
     }
 
     const street_environment::RoadLane &middle = *road;
-    logger.debug("simpleTrajectory")<<"number of obstacles: "<<envObstacles->objects.size();
+    float currentTrajectoryLength = 0;
     for(size_t i = 1; i < middle.points().size(); i++) {
         vertex2f p1 = middle.points()[i - 1];
         vertex2f p2 = middle.points()[i];
@@ -159,6 +164,12 @@ void TrajectoryLineCreator::simpleTrajectory(){
             continue;
 
         vertex2f along = p2 - p1;
+        //check if the trajectory is long enough
+        //TODO, get endpoint
+        currentTrajectoryLength +=along.length();
+        if(currentTrajectoryLength > trajectoryMaxLength){
+            break;
+        }
         vertex2f mid((p1.x + p2.x) / 2., (p1.y + p2.y) / 2.);
         vertex2f normAlong = along / along.length();
         vertex2f orthogonal(normAlong.y, -normAlong.x);
@@ -167,20 +178,32 @@ void TrajectoryLineCreator::simpleTrajectory(){
         //man geht davon aus, dass die Abstand, in dem man ausweicht deutlich größer ist als das hinderniss lang!
         float obstacleLength = 0.3;
         //check all obstacles
+        //TODO not smart at all, won't work in all cases
         for(const std::shared_ptr<street_environment::EnvironmentObject> obj : envObstacles->objects){
-            if(obj->name().find("OBSTACLE") == std::string::npos){
+            if(obj->getType() == street_environment::Obstacle::TYPE){
+                const street_environment::Obstacle &obst = obj->getAsReference<const street_environment::Obstacle>();
+                float x = obst.position().x;
+                float y= obst.position().y;
+                if(x < 0){
+                    x += obstacleLength;
+                }
+                if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
+                    left = true;
+                    break;
+                }
+            }else if(obj->getType() == street_environment::Crossing::TYPE){
+                const street_environment::Crossing &crossing = obj->getAsReference<const street_environment::Crossing>();
+                //check if the Crossing is close enough
+                //TODO
+                if(crossing.getStreetDistanceTangential() < trajectoryMaxLength){
+
+                    endVx = 0;
+                    endVy = 0;
+                }
+                //add endPoint
+            }else{
                 logger.warn("cycle")<<"invalid obstacle-type given: "<<obj->name();
                 continue;
-            }
-            const street_environment::Obstacle &obst = obj->getAsReference<const street_environment::Obstacle>();
-            float x = obst.position().x;
-            float y= obst.position().y;
-            if(x < 0){
-                x += obstacleLength;
-            }
-            if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
-                left = true;
-                break;
             }
         }
 
@@ -189,13 +212,13 @@ void TrajectoryLineCreator::simpleTrajectory(){
         }
         orthogonal = orthogonal * translation;
         vertex2f result = mid + orthogonal;
-        trajectory->points().push_back(result);
+        tempTrajectory.points().push_back(result);
     }
-
-    trajectory->reduce([](const lms::math::vertex2f& p1){
+    //remove invalid points
+    tempTrajectory.reduce([](const lms::math::vertex2f& p1){
         return p1.x < 0;
     });
-
+    return tempTrajectory;
 
 }
 

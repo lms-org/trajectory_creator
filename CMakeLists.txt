@@ -1,7 +1,7 @@
 set ( SOURCES
         "src/trajectory_line_creator.cpp"
-        src/trajectory_generator.cpp
-	"src/interface.cpp"
+        "src/trajectory_generator.cpp"
+        "src/interface.cpp"
 )
 
 set (HEADERS
