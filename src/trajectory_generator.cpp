@@ -1,5 +1,6 @@
 #include <types.h>
 #include <lms/math/vertex.h>
+#include <BezierPolynomial.h>
 #include "trajectory_generator.h"
 #include "lms/math/math.h"
 /**
@@ -47,6 +48,41 @@ bool TrajectoryGenerator::createTrajectorySample(Trajectory &trajectory,T v1, T 
 }
 
 TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger(_logger){
+    // Test of the Bezier Polynomials
+
+    const size_t n = 2;
+    Vector<3> controlPointsIn;
+    controlPointsIn(0) = 1; //some random numbers
+    controlPointsIn(1) = 3;
+    controlPointsIn(2) = -1;
+
+
+    T t_begin = 0;
+    T t_end = 1;
+
+    const size_t m = 100;
+
+    Vector<m> tt;
+
+    T dt = (t_end-t_begin)/(m-1);
+
+    for (size_t i = 0; i < m; i++)
+    {
+        tt(i) = t_begin + i*dt;
+    }
+
+    BezierPolynomial<2> bezPoly = BezierPolynomial<2>(controlPointsIn, t_begin, t_end);
+    BezierPolynomial<1> DerBezPoly = bezPoly.differentiate();
+
+    T valueAt0p5 = bezPoly.evalAtPoint(0.5);
+
+    auto y = bezPoly.eval<m>(tt);
+    auto dy = DerBezPoly.eval<m>(tt);
+
+
+    std::cout << "Time points" << tt << std::endl;
+    std::cout << "y: " << y << std::endl;
+    std::cout << "dy: " << dy << std::endl;
 }
 
 float TrajectoryGenerator::circleCurvature(lms::math::vertex2f p1, lms::math::vertex2f p2, lms::math::vertex2f p3)
