@@ -169,6 +169,8 @@ public:
         }
 
 
+        return pointsOut;
+
     };
 
 

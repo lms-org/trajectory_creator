@@ -13,15 +13,14 @@ template<size_t n>
 class BezierCurve {
 public:
     BezierCurve(const points2d<n+1> controlPointsIn, const T t_beginIn, const T t_endIn) : t_begin(initBegin(t_beginIn, t_endIn)),
-                                                                                                  t_end(initEnd(t_beginIn, t_endIn))
+                                                                                           t_end(initEnd(t_beginIn, t_endIn)),
+                                                                                           poly_x(BezierPolynomial<n>(controlPointsIn.x, t_beginIn, t_endIn)),//Watch OUT!!!!! This seems to make the mistake as t_beginIn and t_endIn are anythind (mostly 0)
+                                                                                           poly_y(BezierPolynomial<n>(controlPointsIn.y, t_beginIn, t_endIn)),
+                                                                                           poly_dx(poly_x.differentiate()),
+                                                                                           poly_dy(poly_y.differentiate())
     {
 
-        //init the two polynomials
-        poly_x = BezierPolynomial<n>(controlPointsIn.x, t_begin, t_end);
-        poly_y = BezierPolynomial<n>(controlPointsIn.y, t_begin, t_end);
 
-        poly_dx = poly_x.differentiate();
-        poly_dy = poly_y.differentiate();
     }
 
     Vector<2> evalAtPoint(const T t)

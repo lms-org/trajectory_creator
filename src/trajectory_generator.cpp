@@ -50,7 +50,7 @@ bool TrajectoryGenerator::createTrajectorySample(Trajectory &trajectory,T v1, T 
 TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger(_logger){
     // Test of the Bezier Polynomials
 
-    const size_t n = 2;
+    /*const size_t n = 2;
     Vector<3> controlPointsIn;
     controlPointsIn(0) = 1; //some random numbers
     controlPointsIn(1) = 3;
@@ -82,7 +82,67 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
 
     std::cout << "Time points" << tt << std::endl;
     std::cout << "y: " << y << std::endl;
-    std::cout << "dy: " << dy << std::endl;
+    std::cout << "dy: " << dy << std::endl;*/
+
+    //Test of the whole new algo with Bezier Curves
+
+    points2d<10> pointsCenter;
+    pointsCenter.x << 0, 0.1995, 0.3966, 0.5797, 0.7582, 0.9121, 1.0686, 1.2260, 1.3857, 1.5638;
+    pointsCenter.y << 0.2500, 0.2637, 0.2977, 0.3783, 0.4684, 0.5961, 0.7206, 0.8441, 0.9644, 1.0555;
+
+    // Generate Data
+    T v1 = 2;
+    T d1 = 0.2;
+
+    T safetyS = 0.55;
+    T safetyD = 0.15;
+
+    T tmin = 1;
+    T tmax = 5;
+
+    int nSamplesTraj = 100;
+
+    RoadData roadDataIn;
+    roadDataIn.vx0 = 1;
+    roadDataIn.ax0 = 0;
+    roadDataIn.phi = 0;
+    roadDataIn.w = 0;
+    roadDataIn.y0 = 0.25;
+    roadDataIn.kappa = 0.05;
+
+    ObstacleData obstacle1;
+    obstacle1.s0 = 2;
+    obstacle1.v0 = 0;
+    obstacle1.leftLane = false;
+
+    std::vector<ObstacleData> obstaclesIn;
+    obstaclesIn.push_back(obstacle1);
+
+    CoeffCtot coeffCtotIn;
+    coeffCtotIn.kj = 5;
+    coeffCtotIn.kT = 2;
+    coeffCtotIn.ks = 20;
+    coeffCtotIn.kd = 100;
+
+    Trajectory trajectory;
+
+    T l = 0.2;
+
+    if(TrajectoryGenerator::createTrajectorySample(trajectory, v1, d1, safetyS, safetyD, tmin, tmax, nSamplesTraj, roadDataIn, obstaclesIn, coeffCtotIn))
+    {
+        std::cout << "---------- SUCCESS ----------" << std::endl;
+        // do rest here
+
+        points2d<100> pointsOut = trajectory.projectOntoBezierCurve<100>(pointsCenter, l);
+        std::cout << "---x: " << std::endl;
+        std::cout << pointsOut.x << std::endl << std::endl;
+        std::cout << "---y: " << std::endl;
+        std::cout << pointsOut.y << std::endl;
+    }else
+    {
+        std::cout << "---------- FAILURE ----------" << std::endl;
+    }
+
 }
 
 float TrajectoryGenerator::circleCurvature(lms::math::vertex2f p1, lms::math::vertex2f p2, lms::math::vertex2f p3)
