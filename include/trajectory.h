@@ -7,6 +7,7 @@
 
 #include "types.h"
 #include "poly.h"
+#include "BezierCurve.h"
 #include <vector>
 #include <types.h>
 #include <iomanip>
@@ -85,6 +86,93 @@ public:
 
         return points;
     }
+
+
+    /**
+     * Projects the trajectory on the unique Bezier Curve that is defined by the k points in points (points2d<k> struct points)
+     * m = number of points to output
+     * l = diastance between two successive points
+     */
+    template<size_t m, size_t k>
+    points2d<m> projectOntoBezierCurve(const points2d<k> pointsIn, const T l)
+    {
+        T s_begin = 0;
+        T s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
+
+        BezierCurve<k-1> centerLine = BezierCurve<k-1>(pointsIn, s_begin, s_end);
+
+        //generate the vector with the times
+        points2d<m> pointsOut;
+
+        T dt = tend/(m-1); //time steps
+        Vector<m> tt;
+        for (int i = 0; i < m; i++)
+        {
+            tt(i) = dt*i;
+        }
+
+        Vector<m> ss;
+        Vector<m> dd;
+
+        ss = mPtr_s->eval<m>(tt);
+        dd = mPtr_d->eval<m>(tt);
+
+        for(size_t i = 0; i < m; i++)
+        {
+            //different cases
+            if (ss(i) < 0)
+            {
+                // this should not be: throw error
+                pointsOut.x(i) = 0;
+                pointsOut.y(i) = 0;
+
+
+            }else if(ss(i) >= 0 && ss(i) <= s_end)
+            {
+                //point on the center line
+                Vector<2> centerLinePoint = centerLine.evalAtPoint(ss(i));
+
+                //normal
+                Vector<2> centerLineNormal = centerLine.normalAtPoint(ss(i));
+
+                Vector<2> trajPoint = centerLinePoint + dd(i)*centerLineNormal; //the trajectoray point is the centerLinePoint plus d times the normal (should be oriented the right way and normalized)
+
+                pointsOut.x(i) = trajPoint(0);
+                pointsOut.y(i) = trajPoint(1);
+
+
+            } else if (ss(i) > s_end)
+            {
+                //the point is behind the trajectory --> linear extrapolation
+                //point on the center line
+                Vector<2> centerLinePoint = centerLine.evalAtPoint(s_end);
+
+                //normal
+                Vector<2> centerLineNormal = centerLine.normalAtPoint(s_end);
+
+                //normal
+                Vector<2> centerLineTangent = centerLine.tangentAtPoint(s_end);
+
+
+                Vector<2> trajPoint = centerLinePoint + (ss(i)-s_end)*centerLineTangent + dd(i)*centerLineNormal;
+
+                pointsOut.x(i) = trajPoint(0);
+                pointsOut.y(i) = trajPoint(1);
+
+            } else
+            {
+                // case not considered: use zeros
+                // this should not be: throw error
+                pointsOut.x(i) = 0;
+                pointsOut.y(i) = 0;
+            }
+        }
+
+
+        return pointsOut;
+
+    };
+
 
     /**
      * empty constructor

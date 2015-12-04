@@ -106,7 +106,7 @@ public:
 
 
     /**
-     * gives the coefficients
+     * @brief gives the coefficients
      */
     const Vector<n+1>& getCoeff() const {
         return coeff;
