@@ -13,7 +13,7 @@ public:
     bool deinitialize() override;
     bool cycle() override;
 private:
-    lms::math::polyLine2f simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy);
+    lms::math::polyLine2f simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy,const int obstacleTrustThreshold);
     bool advancedTrajectory(lms::math::polyLine2f &trajectory);
     lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
     lms::ReadDataChannel<street_environment::RoadLane> road;

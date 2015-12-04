@@ -25,6 +25,7 @@ bool TrajectoryLineCreator::cycle() {
     trajectory->points().clear();
     //calculate data for creating the trajectory
     float trajectoryMaxLength = config().get<float>("trajectoryMaxLength",2);
+    int obstacleTrustThreshold = config().get<int>("obstacleTrustThreshold",10);
     //float endX;
     //float endY;
     //TODO
@@ -33,10 +34,10 @@ bool TrajectoryLineCreator::cycle() {
     //TODO not smart
     lms::math::polyLine2f traj;
     if(config().get<bool>("simpleTraj",true)){
-        traj= simpleTrajectory(trajectoryMaxLength,endVx,endVy);
+        traj= simpleTrajectory(trajectoryMaxLength,endVx,endVy,obstacleTrustThreshold);
     }else{
         if(!advancedTrajectory(traj)){
-            traj = simpleTrajectory(trajectoryMaxLength,endVx,endVy);
+            traj = simpleTrajectory(trajectoryMaxLength,endVx,endVy,obstacleTrustThreshold);
         }
     }
     trajectory->points().clear();
@@ -102,7 +103,7 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
     return true;
 }
 
-lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy){
+lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy,const int obstacleTrustThreshold){
     //TODO use trajectoryMaxLength
     lms::math::polyLine2f tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
@@ -143,6 +144,10 @@ lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMa
         for(const std::shared_ptr<street_environment::EnvironmentObject> obj : envObstacles->objects){
             if(obj->getType() == street_environment::Obstacle::TYPE){
                 const street_environment::Obstacle &obst = obj->getAsReference<const street_environment::Obstacle>();
+                //check if the obstacle is trusted
+                if(obst.trust() < obstacleTrustThreshold){
+                    continue;
+                }
                 float x = obst.position().x;
                 float y= obst.position().y;
                 if(x < 0){
@@ -157,7 +162,6 @@ lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMa
                 //check if the Crossing is close enough
                 //TODO
                 if(crossing.getStreetDistanceTangential() < trajectoryMaxLength){
-
                     endVx = 0;
                     endVy = 0;
                 }
