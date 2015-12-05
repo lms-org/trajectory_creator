@@ -86,7 +86,7 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
 
     //Test of the whole new algo with Bezier Curves
 
-    points2d<10> pointsCenter;
+    /*points2d<10> pointsCenter;
     //pointsCenter.x << 0, 0.1995, 0.3966, 0.5797, 0.7582, 0.9121, 1.0686, 1.2260, 1.3857, 1.5638;
     //pointsCenter.x << 0    ,0.1999,    0.3988,    0.5936,    0.7814,    0.9583,    1.1364,    1.2948,    1.4168,    1.5274;
     pointsCenter.x << 0,    0.1960,    0.3802,    0.5453,    0.6846,    0.7927,    0.8652,    0.8992,    0.8933,    0.8479;
@@ -178,7 +178,7 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
     }else
     {
         std::cout << "---------- FAILURE ----------" << std::endl;
-    }
+    }*/
 
 }
 
