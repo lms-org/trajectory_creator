@@ -87,8 +87,12 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
     //Test of the whole new algo with Bezier Curves
 
     points2d<10> pointsCenter;
-    pointsCenter.x << 0, 0.1995, 0.3966, 0.5797, 0.7582, 0.9121, 1.0686, 1.2260, 1.3857, 1.5638;
-    pointsCenter.y << 0.2500, 0.2637, 0.2977, 0.3783, 0.4684, 0.5961, 0.7206, 0.8441, 0.9644, 1.0555;
+    //pointsCenter.x << 0, 0.1995, 0.3966, 0.5797, 0.7582, 0.9121, 1.0686, 1.2260, 1.3857, 1.5638;
+    //pointsCenter.x << 0    ,0.1999,    0.3988,    0.5936,    0.7814,    0.9583,    1.1364,    1.2948,    1.4168,    1.5274;
+    pointsCenter.x << 0,    0.1960,    0.3802,    0.5453,    0.6846,    0.7927,    0.8652,    0.8992,    0.8933,    0.8479;
+    //pointsCenter.y << 0.2500, 0.2637, 0.2977, 0.3783, 0.4684, 0.5961, 0.7206, 0.8441, 0.9644, 1.0555;
+    //pointsCenter.y << 0.2500,    0.2577,    0.2778,    0.3232,    0.3921,    0.4853,    0.5763,    0.6985,    0.8570,    1.0236;
+    pointsCenter.y << 0.2500,    0.2897,    0.3676,    0.4805,    0.6240,    0.7923,    0.9787,    1.1758,    1.3757,    1.5705;
 
     // Generate Data
     T v1 = 2;
@@ -110,6 +114,14 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
     roadDataIn.y0 = 0.25;
     roadDataIn.kappa = 0.05;
 
+    RoadData roadDataCenter;
+    roadDataCenter.vx0 = 1;
+    roadDataCenter.ax0 = 0;
+    roadDataCenter.phi = 0;
+    roadDataCenter.w = 0;
+    roadDataCenter.y0 = 0;
+    roadDataCenter.kappa = 0.05;
+
     ObstacleData obstacle1;
     obstacle1.s0 = 2;
     obstacle1.v0 = 0;
@@ -117,6 +129,8 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
 
     std::vector<ObstacleData> obstaclesIn;
     obstaclesIn.push_back(obstacle1);
+
+    std::vector<ObstacleData> noObs;
 
     CoeffCtot coeffCtotIn;
     coeffCtotIn.kj = 5;
@@ -128,6 +142,10 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
 
     T l = 0.2;
 
+    Trajectory trajCenterLine = Trajectory(2, 0, 0, 0, roadDataCenter, noObs, 4, coeffCtotIn);
+
+    BezierCurve<9> centerLine = BezierCurve<9>(pointsCenter, 0, 9*l);
+
     if(TrajectoryGenerator::createTrajectorySample(trajectory, v1, d1, safetyS, safetyD, tmin, tmax, nSamplesTraj, roadDataIn, obstaclesIn, coeffCtotIn))
     {
         std::cout << "---------- SUCCESS ----------" << std::endl;
@@ -138,6 +156,25 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
         std::cout << pointsOut.x << std::endl << std::endl;
         std::cout << "---y: " << std::endl;
         std::cout << pointsOut.y << std::endl;
+
+        std::cout  << std::endl << std::endl << std::endl << std::endl << std::endl << std::endl;
+
+        Vector<100> tt;
+
+        for(int i = 0; i <100; i++)
+        {
+            tt(i) = i*(9*0.2/99);
+        }
+
+        points2d<100> pointsCenter = centerLine.eval<100>(tt);
+
+        Vector<100> curvature = centerLine.curvature<100>(tt);
+
+        std::cout << "curvature: " << std::endl << curvature << std::endl;
+
+        std::cout << "x center: " << std::endl << pointsCenter.x << std::endl;
+        std::cout << "y center: " << std::endl << pointsCenter.y << std::endl;
+
     }else
     {
         std::cout << "---------- FAILURE ----------" << std::endl;
