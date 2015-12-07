@@ -6,11 +6,20 @@ set ( SOURCES
 
 set (HEADERS
         "include/trajectory_line_creator.h"
-        include/trajectory_generator.h include/poly.h include/types.h src/trajectory.cpp include/trajectory.h src/BezierPolynomial.cpp include/BezierPolynomial.h src/BezierCurve.cpp include/BezierCurve.h)
+        include/trajectory_generator.h
+        include/poly.h
+        include/types.h
+        src/trajectory.cpp
+        include/trajectory.h
+        src/BezierPolynomial.cpp
+        include/BezierPolynomial.h
+        src/BezierCurve.cpp
+        include/BezierCurve.h
+)
 
 
 
-include_directories("include" /usr/local/opt/eigen/include/eigen3)
+include_directories("include" "/usr/inlcude/eigen3/")
 
 add_library (trajectory_creator MODULE ${SOURCES} ${HEADERS})
 target_link_libraries(trajectory_creator PRIVATE lmscore math_lib sensor_utils street_environment)

@@ -5,7 +5,7 @@
 #ifndef PROJECT_TYPES_H
 #define PROJECT_TYPES_H
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 // TYPEDEF
 typedef float T;
