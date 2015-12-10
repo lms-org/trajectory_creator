@@ -20,7 +20,6 @@ private:
     lms::ReadDataChannel<street_environment::RoadLane> road;
     lms::ReadDataChannel<sensor_utils::Car> car;
     lms::WriteDataChannel<street_environment::Trajectory> trajectory;
-    float kappa_old;
 
     TrajectoryGenerator* generator;
 

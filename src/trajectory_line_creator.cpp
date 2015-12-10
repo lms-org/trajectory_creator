@@ -8,7 +8,6 @@ bool TrajectoryLineCreator::initialize() {
     road = readChannel<street_environment::RoadLane>("ROAD");
     trajectory = writeChannel<street_environment::Trajectory>("LINE");
     car = readChannel<sensor_utils::Car>("CAR");
-    kappa_old = 0;
 
     generator = new TrajectoryGenerator(logger);
 
