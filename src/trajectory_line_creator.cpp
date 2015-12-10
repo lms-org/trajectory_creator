@@ -3,11 +3,10 @@
 #include "lms/math/math.h"
 #include "street_environment/obstacle.h"
 #include "street_environment/crossing.h"
-
 bool TrajectoryLineCreator::initialize() {
     envObstacles = readChannel<street_environment::EnvironmentObjects>("ENVIRONMENT_OBSTACLE");
     road = readChannel<street_environment::RoadLane>("ROAD");
-    trajectory = writeChannel<lms::math::polyLine2f>("LINE");
+    trajectory = writeChannel<street_environment::Trajectory>("LINE");
     car = readChannel<sensor_utils::Car>("CAR");
     kappa_old = 0;
 
@@ -51,6 +50,8 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
     if(road->polarDarstellung.size() < 8){
         return false;
     }
+    //TODO Blinker setzen
+
     //INPUT
     //hindernisse: vector Abstand-Straße,geschwindigkeit-Straße(absolut), -1 (links) +1 (rechts) (alle hindernisse hintereinander)
     //eigenes auto, vx,vy, dw -winkelgeschwindigkeit dw (zunächst mal 0)
@@ -103,9 +104,11 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
     return true;
 }
 
-lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy,const int obstacleTrustThreshold){
+street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy,const int obstacleTrustThreshold){
     //TODO use trajectoryMaxLength
-    lms::math::polyLine2f tempTrajectory;
+    //TODO Blinker setzen
+
+    street_environment::Trajectory tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
     const float translation = config().get<float>("street.width", 0.8)/4.0f;
     //TODO das sollte von der aktuellen geschwindigkeit abhängen!
@@ -119,6 +122,7 @@ lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMa
 
     const street_environment::RoadLane &middle = *road;
     float currentTrajectoryLength = 0;
+    bool lastWasLeft = false;
     for(size_t i = 1; i < middle.points().size(); i++) {
         vertex2f p1 = middle.points()[i - 1];
         vertex2f p2 = middle.points()[i];
@@ -175,6 +179,14 @@ lms::math::polyLine2f TrajectoryLineCreator::simpleTrajectory(float trajectoryMa
         if(left){
             orthogonal *= -1;
         }
+        //set line indicator
+        if(i != 1){
+            if(lastWasLeft != left){
+                tempTrajectory.addChange(tempTrajectory.points().size(),left);
+            }
+        }
+        lastWasLeft=left;
+
         orthogonal = orthogonal * translation;
         vertex2f result = mid + orthogonal;
         tempTrajectory.points().push_back(result);

@@ -171,7 +171,7 @@ public:
 
         return pointsOut;
 
-    };
+    }
 
 
 
@@ -182,7 +182,7 @@ public:
     Trajectory()
     {
 
-    };
+    }
 
     Trajectory(const T& _v1, const T& _d1, const T & _safetyS, const T& _safetyD, const RoadData& _roadData1, const std::vector<ObstacleData>& _obstacles, T _tend, const CoeffCtot& _coeffCtot);
 

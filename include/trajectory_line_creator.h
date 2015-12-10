@@ -6,6 +6,7 @@
 #include "street_environment/road.h"
 #include "sensor_utils/car.h"
 #include "trajectory_generator.h"
+#include "street_environment/trajectory.h"
 
 class TrajectoryLineCreator : public lms::Module {
 public:
@@ -13,12 +14,12 @@ public:
     bool deinitialize() override;
     bool cycle() override;
 private:
-    lms::math::polyLine2f simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy,const int obstacleTrustThreshold);
+    street_environment::Trajectory simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy,const int obstacleTrustThreshold);
     bool advancedTrajectory(lms::math::polyLine2f &trajectory);
     lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
     lms::ReadDataChannel<street_environment::RoadLane> road;
     lms::ReadDataChannel<sensor_utils::Car> car;
-    lms::WriteDataChannel<lms::math::polyLine2f> trajectory;
+    lms::WriteDataChannel<street_environment::Trajectory> trajectory;
     float kappa_old;
 
     TrajectoryGenerator* generator;
