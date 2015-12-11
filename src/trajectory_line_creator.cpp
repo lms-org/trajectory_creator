@@ -170,7 +170,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                 }
                 //add endPoint
             }else{
-                logger.warn("cycle")<<"invalid obstacle-type given: "<<obj->name();
+                //I don't care about astartLine/whatever
                 continue;
             }
         }
