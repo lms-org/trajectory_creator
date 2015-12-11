@@ -1,5 +1,4 @@
 #include "trajectory_line_creator.h"
-#include "lms/datamanager.h"
 #include "lms/math/math.h"
 #include "street_environment/obstacle.h"
 #include "street_environment/crossing.h"
