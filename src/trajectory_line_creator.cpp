@@ -22,19 +22,14 @@ bool TrajectoryLineCreator::cycle() {
     trajectory->points().clear();
     //calculate data for creating the trajectory
     float trajectoryMaxLength = config().get<float>("trajectoryMaxLength",2);
-    int obstacleTrustThreshold = config().get<int>("obstacleTrustThreshold",10);
-    //float endX;
-    //float endY;
-    //TODO
-    float endVx = 0;
-    float endVy = 0;
+    int obstacleTrustThreshold = config().get<int>("obstacleTrustThreshold",0.5);
     //TODO not smart
     lms::math::polyLine2f traj;
     if(config().get<bool>("simpleTraj",true)){
-        traj= simpleTrajectory(trajectoryMaxLength,endVx,endVy,obstacleTrustThreshold);
+        traj= simpleTrajectory(trajectoryMaxLength,obstacleTrustThreshold);
     }else{
         if(!advancedTrajectory(traj)){
-            traj = simpleTrajectory(trajectoryMaxLength,endVx,endVy,obstacleTrustThreshold);
+            traj = simpleTrajectory(trajectoryMaxLength,obstacleTrustThreshold);
         }
     }
     trajectory->points().clear();
@@ -102,13 +97,13 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
     return true;
 }
 
-street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,float &endVx,float &endVy,const int obstacleTrustThreshold){
+street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,const int obstacleTrustThreshold){
     //TODO use trajectoryMaxLength
     //TODO Blinker setzen
 
     street_environment::Trajectory tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
-    const float translation = config().get<float>("street.width", 0.8)/4.0f;
+    const float translation = config().get<float>("street_width", 0.8)/4.0f;
     //TODO das sollte von der aktuellen geschwindigkeit abhängen!
     float distanceObstacleBeforeChangeLine = 0.4;
 
@@ -162,11 +157,18 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
             }else if(obj->getType() == street_environment::Crossing::TYPE){
                 const street_environment::Crossing &crossing = obj->getAsReference<const street_environment::Crossing>();
                 //check if the Crossing is close enough
-                //TODO
-                if(crossing.getStreetDistanceTangential() < trajectoryMaxLength){
-                    endVx = 0;
-                    endVy = 0;
+                float x = crossing.position().x;
+                float y= crossing.position().y;
+                //As there won't be an obstacle in front of the crossing we can go on the right
+                //TODO add useful if
+                //TODO we won't indicate if we change line
+                if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
+                    orthogonal = orthogonal * translation;
+                    vertex2f result = mid + orthogonal;
+                    tempTrajectory.points().push_back(result);
+                    return tempTrajectory;
                 }
+
                 //add endPoint
             }else{
                 //I don't care about astartLine/whatever
