@@ -22,7 +22,7 @@ bool TrajectoryLineCreator::cycle() {
     trajectory->points().clear();
     //calculate data for creating the trajectory
     float trajectoryMaxLength = config().get<float>("trajectoryMaxLength",2);
-    int obstacleTrustThreshold = config().get<int>("obstacleTrustThreshold",0.5);
+    float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     //TODO not smart
     lms::math::polyLine2f traj;
     if(config().get<bool>("simpleTraj",true)){
@@ -97,7 +97,7 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
     return true;
 }
 
-street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,const int obstacleTrustThreshold){
+street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,const float obstacleTrustThreshold){
     //TODO use trajectoryMaxLength
     //TODO Blinker setzen
 
@@ -160,12 +160,14 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                 float x = crossing.position().x;
                 float y= crossing.position().y;
                 //As there won't be an obstacle in front of the crossing we can go on the right
-                //TODO add useful if
                 //TODO we won't indicate if we change line
                 if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
                     orthogonal = orthogonal * translation;
                     vertex2f result = mid + orthogonal;
                     tempTrajectory.points().push_back(result);
+                    //add endPoint
+                    //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
+                    tempTrajectory.points().push_back(lms::math::vertex2f(x,y));
                     return tempTrajectory;
                 }
 

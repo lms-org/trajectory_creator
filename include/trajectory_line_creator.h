@@ -14,13 +14,12 @@ public:
     bool deinitialize() override;
     bool cycle() override;
 private:
-    street_environment::Trajectory simpleTrajectory(float trajectoryMaxLength,const int obstacleTrustThreshold);
+    street_environment::Trajectory simpleTrajectory(float trajectoryMaxLength,const float obstacleTrustThreshold);
     bool advancedTrajectory(lms::math::polyLine2f &trajectory);
     lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
     lms::ReadDataChannel<street_environment::RoadLane> road;
     lms::ReadDataChannel<sensor_utils::Car> car;
     lms::WriteDataChannel<street_environment::Trajectory> trajectory;
-
     TrajectoryGenerator* generator;
 
 };
