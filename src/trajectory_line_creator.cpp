@@ -156,19 +156,24 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                 }
             }else if(obj->getType() == street_environment::Crossing::TYPE){
                 const street_environment::Crossing &crossing = obj->getAsReference<const street_environment::Crossing>();
-                //check if the Crossing is close enough
-                float x = crossing.position().x;
-                float y= crossing.position().y;
-                //As there won't be an obstacle in front of the crossing we can go on the right
-                //TODO we won't indicate if we change line
-                if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
-                    orthogonal = orthogonal * translation;
-                    vertex2f result = mid + orthogonal;
-                    tempTrajectory.points().push_back(result);
-                    //add endPoint
-                    //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
-                    tempTrajectory.points().push_back(lms::math::vertex2f(x,y));
-                    return tempTrajectory;
+                //check if crossing is blocked
+                if(crossing.blocked()){
+                    //check if the Crossing is close enough
+                    float x = crossing.position().x-config().get<float>("minDistanceToCrossing",0.1);//Wir gehen davon aus, dass crossing.distanceTang() == crossing.position.x ist
+                    float y= crossing.position().y;
+                    //As there won't be an obstacle in front of the crossing we can go on the right
+                    //TODO we won't indicate if we change line
+                    if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
+                        orthogonal = orthogonal * translation;
+                        vertex2f result = mid + orthogonal;
+                        tempTrajectory.points().push_back(result);
+                        //add endPoint
+                        //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
+                        tempTrajectory.points().push_back(lms::math::vertex2f(x,y));
+                        return tempTrajectory;
+                    }
+                }else{
+                    logger.error("DELETE AFTERWARDS")<< "CROSSING ISN'T BLOCKED";
                 }
 
                 //add endPoint
