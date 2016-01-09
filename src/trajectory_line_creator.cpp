@@ -156,8 +156,11 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                 }
             }else if(obj->getType() == street_environment::Crossing::TYPE){
                 const street_environment::Crossing &crossing = obj->getAsReference<const street_environment::Crossing>();
-                //check if crossing is blocked
-                if(crossing.blocked()){
+                if(car->velocity() < 0.1){//TODO HACK but may work
+                    const_cast<street_environment::Crossing&>(crossing).startStop(); //TODO HACK
+                }
+                //check if we have to stop or if crossing is blocked
+                if(crossing.hasToStop() || crossing.blocked()){
                     //check if the Crossing is close enough
                     float x = crossing.position().x-config().get<float>("minDistanceToCrossing",0.1);//Wir gehen davon aus, dass crossing.distanceTang() == crossing.position.x ist
                     float y= crossing.position().y;
