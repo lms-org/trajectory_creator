@@ -108,6 +108,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
     street_environment::Trajectory tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
     const float translation = config().get<float>("street_width", 0.8)/4.0f;
+    const float obstacleLength = config().get<float>("obstacleLength",0.5);
     //Könnte von der aktuellen geschwindigkeit abhängen
     float distanceObstacleBeforeChangeLine = config().get<float>("distanceObstacleBeforeChangeLine",0.6);
 
@@ -140,7 +141,6 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
 
         bool left = false;
         //man geht davon aus, dass die Abstand, in dem man ausweicht deutlich größer ist als das hinderniss lang!
-        float obstacleLength = 0.5;
         float distanceToObstacle = 0;
         //check all obstacles
         //TODO not smart at all, won't work in all cases
