@@ -98,9 +98,6 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
 }
 
 street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,const float obstacleTrustThreshold){
-    //TODO use trajectoryMaxLength
-    //TODO Blinker setzen
-
     //Mindestabstand zwischen zwei Hindernissen 1m
     //Maximalabstand von der Kreuzung: 15cm
     //An der Kreuzung warten: 2s
@@ -117,6 +114,8 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         logger.error("cycle") << "no valid environment given";
         return tempTrajectory;
     }
+    //we start in the car
+    tempTrajectory.points().push_back(lms::math::vertex2f(0,0));
 
     const street_environment::RoadLane &middle = *road;
     //length along the road
@@ -208,12 +207,17 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                     float distanceToObstacleChange = distanceToObstacle-distanceObstacleBeforeChangeLine;
                     //if(fabs(distanceToObstacleChange)<along.length()){
                         lms::math::vertex2f temp = p2+normAlong*distanceToObstacleChange;
-                        if(i != 1){
-                            tempTrajectory.points().push_back(temp-orthogonal);//rechter eckpunkt
-                        }
+                        tempTrajectory.points().push_back(temp-orthogonal);//rechter eckpunkt
                         tempTrajectory.points().push_back(temp +orthogonal);//linker eckpunkt
                         addPoint = false; //we don't need the other point
+                        //TODO left to right lane change
                     //}
+                }else{
+                    //wir fahren von links nach rechts
+                    float distanceToObstacleChange = distanceToObstacle+obstacleLength;
+                    lms::math::vertex2f temp = p2+normAlong*distanceToObstacleChange;
+                    tempTrajectory.points().push_back(temp+orthogonal);//linker eckpunkt
+                    tempTrajectory.points().push_back(temp -orthogonal);//rechter eckpunkt
                 }
             }
         }
@@ -221,6 +225,26 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         if(addPoint){
             vertex2f result = p1 + orthogonal;
             tempTrajectory.points().push_back(result);
+        }
+    }
+
+    float minAngle = config().get<float>("maxAngleBetweenTrajectoryPoints",M_PI/6);
+    float distanceBetweenTrajectoryPoints = config().get<float>("distanceBetweenTrajectoryPoints",0.3);
+    int maxPointsRemoved = config().get<int>("maxPointsRemoved",2);
+    tempTrajectory.points() = tempTrajectory.getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints).points();
+    int currentPointsRemoved = 0;
+    //Smooth the trajectory (in some super professional way)
+    for(int i = 2; i < tempTrajectory.points().size();){
+        lms::math::vertex2f v1 = tempTrajectory.points()[i-1]-tempTrajectory.points()[i-2];
+        lms::math::vertex2f v2 = tempTrajectory.points()[i]-tempTrajectory.points()[i-1];
+        float angle = v2.angleBetween(v1);
+        if(angle > minAngle && currentPointsRemoved < maxPointsRemoved){
+            //remove the middle
+            tempTrajectory.points().erase(tempTrajectory.points().begin()+i-1);
+            currentPointsRemoved++;
+        }else{
+            currentPointsRemoved = 0;
+            i++;
         }
     }
     //remove invalid points
