@@ -60,7 +60,7 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
 
     dataRoad.kappa = generator->circleCurvature(road->points()[1],road->points()[3],road->points()[5]);//->polarDarstellung[4]+road->polarDarstellung[7]+road->polarDarstellung[9];//TODO
     //dataRoad.kappa /= 3.0;
-    logger.info("kappa")<<dataRoad.kappa;
+    logger.debug("kappa")<<dataRoad.kappa;
     dataRoad.phi = road->polarDarstellung[1];
     float velocity = 0.001;//Sollte nicht 0 sein, wegen smoothem start
     if(car->velocity() != 0)
@@ -154,15 +154,19 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
 
                 distanceToObstacle = obst->distanceTang()-tangLength;//abstand zum Punkt p2
 
-                if((distanceToObstacle < obstacleLength) && (distanceToObstacle >-distanceObstacleBeforeChangeLine)){
+                if((distanceToObstacle >-distanceObstacleBeforeChangeLine) && (distanceToObstacle < obstacleLength)){
                     left = true;
                     break;
                 }
             }else if(obj->getType() == street_environment::Crossing::TYPE){
                 const street_environment::CrossingPtr crossing = std::static_pointer_cast<street_environment::Crossing>(obj);
                 if(car->velocity() < 0.1){//TODO HACK but may work
-                    const_cast<street_environment::Crossing*>(crossing.get())->startStop(); //TODO HACK
+                    if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
+                        logger.info("start waiting in front of crossing");
+                    }
                 }
+                logger.info("simpleTrajectory")<<"crossing: stop "<< crossing->hasToStop() << " blocked:"<<crossing->blocked()<< " waiting for:"<<crossing->stopTime().since().toFloat();
+
                 //check if we have to stop or if crossing is blocked
                 if(crossing->hasToStop() || crossing->blocked()){
                     //check if the Crossing is close enough
