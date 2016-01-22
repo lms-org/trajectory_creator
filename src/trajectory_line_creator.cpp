@@ -250,24 +250,9 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         }else{
             currentPointsRemoved = 0;
             i++;
-            /*
-            //calculate the speed;
-            float normAngle = fabs(angle/maxAngle);
-            float maxSpeed;
-            float minSpeed;
-            float speed =  minSpeed+maxSpeed(1-normAngle);
-            */
         }
     }
-    /*
-    //calculate the speed
-    for(int i = 2; i < tempTrajectory.points().size(); i++){
-        lms::math::vertex2f v1 = tempTrajectory.points()[i-1]-tempTrajectory.points()[i-2];
-        lms::math::vertex2f v2 = tempTrajectory.points()[i]-tempTrajectory.points()[i-1];
-        float angle = fabs(v2.angleBetween(v1));
-    }
     return tempTrajectory;
-    */
 
 }
 
