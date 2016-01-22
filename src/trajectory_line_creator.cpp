@@ -228,6 +228,11 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         }
     }
 
+    //remove invalid points
+    tempTrajectory.reduce([](const lms::math::vertex2f& p1){
+        return p1.x < 0;
+    });
+
     float minAngle = config().get<float>("maxAngleBetweenTrajectoryPoints",M_PI/6);
     float distanceBetweenTrajectoryPoints = config().get<float>("distanceBetweenTrajectoryPoints",0.3);
     int maxPointsRemoved = config().get<int>("maxPointsRemoved",2);
@@ -245,12 +250,19 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         }else{
             currentPointsRemoved = 0;
             i++;
+
+            //calculate the speed;
+            float normAngle;
+            float maxSpeed;
+            float minSpeed;
+            float speed =  minSpeed+maxSpeed(1-normAngle);
         }
     }
-    //remove invalid points
-    tempTrajectory.reduce([](const lms::math::vertex2f& p1){
-        return p1.x < 0;
-    });
+
+    //calculate the speed
+    for(int i = 2; i < tempTrajectory.points().size(); i++){
+
+    }
     return tempTrajectory;
 
 }
