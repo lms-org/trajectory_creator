@@ -233,7 +233,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         return p1.x < 0;
     });
 
-    float minAngle = config().get<float>("maxAngleBetweenTrajectoryPoints",M_PI/6);
+    float maxAngle = config().get<float>("maxAngleBetweenTrajectoryPoints",M_PI/6);
     float distanceBetweenTrajectoryPoints = config().get<float>("distanceBetweenTrajectoryPoints",0.3);
     int maxPointsRemoved = config().get<int>("maxPointsRemoved",2);
     tempTrajectory.points() = tempTrajectory.getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints).points();
@@ -243,27 +243,31 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         lms::math::vertex2f v1 = tempTrajectory.points()[i-1]-tempTrajectory.points()[i-2];
         lms::math::vertex2f v2 = tempTrajectory.points()[i]-tempTrajectory.points()[i-1];
         float angle = v2.angleBetween(v1);
-        if(angle > minAngle && currentPointsRemoved < maxPointsRemoved){
+        if(angle > maxAngle && currentPointsRemoved < maxPointsRemoved){
             //remove the middle
             tempTrajectory.points().erase(tempTrajectory.points().begin()+i-1);
             currentPointsRemoved++;
         }else{
             currentPointsRemoved = 0;
             i++;
-
+            /*
             //calculate the speed;
-            float normAngle;
+            float normAngle = fabs(angle/maxAngle);
             float maxSpeed;
             float minSpeed;
             float speed =  minSpeed+maxSpeed(1-normAngle);
+            */
         }
     }
-
+    /*
     //calculate the speed
     for(int i = 2; i < tempTrajectory.points().size(); i++){
-
+        lms::math::vertex2f v1 = tempTrajectory.points()[i-1]-tempTrajectory.points()[i-2];
+        lms::math::vertex2f v2 = tempTrajectory.points()[i]-tempTrajectory.points()[i-1];
+        float angle = fabs(v2.angleBetween(v1));
     }
     return tempTrajectory;
+    */
 
 }
 
