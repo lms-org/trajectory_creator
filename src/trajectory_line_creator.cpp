@@ -116,6 +116,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
     }
     //we start in the car
     tempTrajectory.points().push_back(lms::math::vertex2f(0,0));
+    tempTrajectory.viewDirs.points().push_back(lms::math::vertex2f(1,0));
 
     const street_environment::RoadLane &middle = *road;
     //length along the road
@@ -177,9 +178,11 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                         orthogonal = orthogonal * translation;
                         vertex2f result = mid + orthogonal;
                         tempTrajectory.points().push_back(result);
+                        tempTrajectory.viewDirs.points().push_back(normAlong);
                         //add endPoint
                         //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
                         tempTrajectory.points().push_back(lms::math::vertex2f(x,y));
+                        tempTrajectory.viewDirs.points().push_back(normAlong);
                         return tempTrajectory;
                     }
                 }else{
@@ -209,6 +212,8 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                         lms::math::vertex2f temp = p2+normAlong*distanceToObstacleChange;
                         tempTrajectory.points().push_back(temp-orthogonal);//rechter eckpunkt
                         tempTrajectory.points().push_back(temp +orthogonal);//linker eckpunkt
+                        tempTrajectory.viewDirs.points().push_back(normAlong);
+                        tempTrajectory.viewDirs.points().push_back(normAlong);
                         addPoint = false; //we don't need the other point
                         //TODO left to right lane change
                     //}
@@ -218,6 +223,8 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                     lms::math::vertex2f temp = p2+normAlong*distanceToObstacleChange;
                     tempTrajectory.points().push_back(temp+orthogonal);//linker eckpunkt
                     tempTrajectory.points().push_back(temp -orthogonal);//rechter eckpunkt
+                    tempTrajectory.viewDirs.points().push_back(normAlong);
+                    tempTrajectory.viewDirs.points().push_back(normAlong);
                 }
             }
         }
@@ -225,27 +232,30 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         if(addPoint){
             vertex2f result = p1 + orthogonal;
             tempTrajectory.points().push_back(result);
+            tempTrajectory.viewDirs.points().push_back(normAlong);
         }
     }
 
+    /*Doesn't work iwth viewDirs
     //remove invalid points
     tempTrajectory.reduce([](const lms::math::vertex2f& p1){
         return p1.x < 0;
     });
-
+    */
     float maxAngle = config().get<float>("maxAngleBetweenTrajectoryPoints",M_PI/6);
     float distanceBetweenTrajectoryPoints = config().get<float>("distanceBetweenTrajectoryPoints",0.3);
     int maxPointsRemoved = config().get<int>("maxPointsRemoved",2);
     tempTrajectory.points() = tempTrajectory.getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints).points();
     int currentPointsRemoved = 0;
     //Smooth the trajectory (in some super professional way)
-    for(int i = 2; i < tempTrajectory.points().size();){
+    for(int i = 2; i <(int) tempTrajectory.points().size();){
         lms::math::vertex2f v1 = tempTrajectory.points()[i-1]-tempTrajectory.points()[i-2];
         lms::math::vertex2f v2 = tempTrajectory.points()[i]-tempTrajectory.points()[i-1];
         float angle = v2.angleBetween(v1);
         if(angle > maxAngle && currentPointsRemoved < maxPointsRemoved){
             //remove the middle
             tempTrajectory.points().erase(tempTrajectory.points().begin()+i-1);
+            tempTrajectory.viewDirs.points().erase(tempTrajectory.viewDirs.points().begin()+i-1);
             currentPointsRemoved++;
         }else{
             currentPointsRemoved = 0;
