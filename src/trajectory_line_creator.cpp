@@ -171,26 +171,28 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
 
                 //check if we have to stop or if crossing is blocked
                 if(crossing->hasToStop() || crossing->blocked()){
-                    //check if the Crossing is close enough
-                    float x = crossing->position().x-config().get<float>("minDistanceToCrossing",0.1);//Wir gehen davon aus, dass crossing.distanceTang() == crossing.position.x ist
-                    float y= crossing->position().y;
-                    //As there won't be an obstacle in front of the crossing we can go on the right
-                    //TODO we won't indicate if we change line
-                    if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
-                        orthogonal = orthogonal * translation;
-                        vertex2f result = mid + orthogonal;
-                        tempTrajectory.points().push_back(result);
-                        tempTrajectory.viewDirs.points().push_back(normAlong);
-                        //add endPoint
-                        //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
-                        tempTrajectory.points().push_back(lms::math::vertex2f(x,y));
-                        tempTrajectory.viewDirs.points().push_back(normAlong);
-                        return tempTrajectory;
+                    //Check if we are waiting for to long
+                    if(!crossing->hasToStop() && crossing->stopTime().since().toFloat()>config().get<float>("maxStopTimeAtCrossing",10)){
+                        logger.warn("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
+                    }else{
+                        //check if the Crossing is close enough
+                        float x = crossing->position().x-config().get<float>("minDistanceToCrossing",0.1);//Wir gehen davon aus, dass crossing.distanceTang() == crossing.position.x ist
+                        float y= crossing->position().y;
+                        //As there won't be an obstacle in front of the crossing we can go on the right
+                        //TODO we won't indicate if we change line
+                        if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
+                            orthogonal = orthogonal * translation;
+                            vertex2f result = mid + orthogonal;
+                            tempTrajectory.points().push_back(result);
+                            tempTrajectory.viewDirs.points().push_back(normAlong);
+                            //add endPoint
+                            //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
+                            tempTrajectory.points().push_back(lms::math::vertex2f(x,y));
+                            tempTrajectory.viewDirs.points().push_back(normAlong);
+                            return tempTrajectory;
+                        }
                     }
-                }else{
-                    logger.error("DELETE AFTERWARDS")<< "CROSSING ISN'T BLOCKED";
                 }
-
                 //add endPoint
             }else{
                 //I don't care about astartLine/whatever
