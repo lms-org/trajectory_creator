@@ -24,7 +24,7 @@ bool TrajectoryLineCreator::cycle() {
     float trajectoryMaxLength = config().get<float>("trajectoryMaxLength",2);
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     //TODO not smart
-    lms::math::polyLine2f traj;
+    street_environment::Trajectory traj;
     if(config().get<bool>("simpleTraj",true)){
         traj= simpleTrajectory(trajectoryMaxLength,obstacleTrustThreshold);
     }else{
@@ -32,10 +32,12 @@ bool TrajectoryLineCreator::cycle() {
             traj = simpleTrajectory(trajectoryMaxLength,obstacleTrustThreshold);
         }
     }
-    trajectory->points().clear();
+    *trajectory = traj;
+    /*trajectory->points().clear();
     for(lms::math::vertex2f &v:traj.points()){
         trajectory->points().push_back(v);
     }
+    */
     return true;
 }
 
@@ -243,9 +245,9 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
     });
     */
     float maxAngle = config().get<float>("maxAngleBetweenTrajectoryPoints",M_PI/6);
-    float distanceBetweenTrajectoryPoints = config().get<float>("distanceBetweenTrajectoryPoints",0.3);
+    //float distanceBetweenTrajectoryPoints = config().get<float>("distanceBetweenTrajectoryPoints",0.3);
     int maxPointsRemoved = config().get<int>("maxPointsRemoved",2);
-    tempTrajectory.points() = tempTrajectory.getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints).points();
+    //TODO doesn't work with viewDirstempTrajectory.points() = tempTrajectory.getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints).points();
     int currentPointsRemoved = 0;
     //Smooth the trajectory (in some super professional way)
     for(int i = 2; i <(int) tempTrajectory.points().size();){
@@ -254,6 +256,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         float angle = v2.angleBetween(v1);
         if(angle > maxAngle && currentPointsRemoved < maxPointsRemoved){
             //remove the middle
+            //TODO handle the change!
             tempTrajectory.points().erase(tempTrajectory.points().begin()+i-1);
             tempTrajectory.viewDirs.points().erase(tempTrajectory.viewDirs.points().begin()+i-1);
             currentPointsRemoved++;
@@ -261,6 +264,9 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
             currentPointsRemoved = 0;
             i++;
         }
+    }
+    if(tempTrajectory.points().size()!=tempTrajectory.viewDirs.points().size()){
+        logger.error("INVALID viewDir count")<<tempTrajectory.points().size()<<" "<<tempTrajectory.viewDirs.points().size();
     }
     return tempTrajectory;
 
