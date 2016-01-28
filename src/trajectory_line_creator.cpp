@@ -157,7 +157,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                 distanceToObstacle = obst->distanceTang()-tangLength;//abstand zum Punkt p2
 
                 if((distanceToObstacle >-distanceObstacleBeforeChangeLine) && (distanceToObstacle < obstacleLength)){
-                    left = true;
+                    left = obst->distanceOrth() > 0;
                     break;
                 }
             }else if(obj->getType() == street_environment::Crossing::TYPE){
