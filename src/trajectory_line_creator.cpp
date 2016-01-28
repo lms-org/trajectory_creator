@@ -120,7 +120,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
     tempTrajectory.points().push_back(lms::math::vertex2f(0,0));
     tempTrajectory.viewDirs.points().push_back(lms::math::vertex2f(1,0));
 
-    const street_environment::RoadLane &middle = *road;
+    const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(config().get<float>("distanceBetweenTrajectoryPoints",0.3));//TODO we could set the distance between points
     //length along the road
     float tangLength = 0;
     bool lastWasLeft = false;
@@ -240,18 +240,9 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         }
     }
 
-    /*Doesn't work iwth viewDirs
-    //remove invalid points
-    tempTrajectory.reduce([](const lms::math::vertex2f& p1){
-        return p1.x < 0;
-    });
-    */
     float maxAngle = config().get<float>("maxAngleBetweenTrajectoryPoints",M_PI/6);
-    //float distanceBetweenTrajectoryPoints = config().get<float>("distanceBetweenTrajectoryPoints",0.3);
     int maxPointsRemoved = config().get<int>("maxPointsRemoved",2);
-    //TODO doesn't work with viewDirstempTrajectory.points() = tempTrajectory.getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints).points();
     int currentPointsRemoved = 0;
-    //Smooth the trajectory (in some super professional way)
     for(int i = 2; i <(int) tempTrajectory.points().size();){
         lms::math::vertex2f v1 = tempTrajectory.points()[i-1]-tempTrajectory.points()[i-2];
         lms::math::vertex2f v2 = tempTrajectory.points()[i]-tempTrajectory.points()[i-1];
