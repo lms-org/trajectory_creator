@@ -210,8 +210,8 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         if(i != 1){
             if(lastWasLeft != sideState){
                 tempTrajectory.addChange(tempTrajectory.points().size(),sideState);
+                /*
                 if(sideState){
-                    /*
                     //wir fahren von rechts nach links
                     float distanceToObstacleChange = distanceToObstacle-distanceObstacleBeforeChangeLine;
                     //if(fabs(distanceToObstacleChange)<along.length()){
@@ -222,10 +222,8 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                         tempTrajectory.viewDirs.points().push_back(normAlong);
                         addPoint = false; //we don't need the other point
                     //}
-                    */
                 }else{
                     //wir fahren von links nach rechts
-                    /*
                     float distanceToObstacleChange = distanceToObstacle+obstacleLength;
                     lms::math::vertex2f temp = p2+normAlong*distanceToObstacleChange;
                     tempTrajectory.points().push_back(temp -orthogonalTrans);//rechter eckpunkt
@@ -233,9 +231,9 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                     tempTrajectory.viewDirs.points().push_back(normAlong);
                     tempTrajectory.viewDirs.points().push_back(normAlong);
                     addPoint = false; //we don't need the other point
-                    */
 
                 }
+                */
             }
         }
         lastWasLeft=sideState;
