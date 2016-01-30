@@ -21,7 +21,7 @@ bool TrajectoryLineCreator::cycle() {
     //clear old trajectory
     trajectory->points().clear();
     //calculate data for creating the trajectory
-    float trajectoryMaxLength = config().get<float>("trajectoryMaxLength",2);
+    float trajectoryMaxLength = config().get<float>("trajectoryMaxLength",1);
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     //TODO not smart
     street_environment::Trajectory traj;
@@ -116,11 +116,11 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         logger.error("cycle") << "no valid environment given";
         return tempTrajectory;
     }
-    //we start in the car
-    tempTrajectory.points().push_back(lms::math::vertex2f(0,0));
-    tempTrajectory.viewDirs.points().push_back(lms::math::vertex2f(1,0));
+    //we start in the car - NOT TODAY MY FRIEND
+    //tempTrajectory.points().push_back(lms::math::vertex2f(0,0));
+    //tempTrajectory.viewDirs.points().push_back(lms::math::vertex2f(1,0));
     const float trajectoryStartDistance = config().get<float>("trajectoryStartDistance",0.3);
-    const float distanceBetweenTrajectoryPoints = config().get<float>("distanceBetweenTrajectoryPoints",0.05);
+    const float distanceBetweenTrajectoryPoints = config().get<float>("obstacleResolution",0.05);
     const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints);
     float tangLength = 0;
     bool lastWasLeft = false;
@@ -135,7 +135,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         //check if the trajectory is long enough
         //TODO, get endpoint
         tangLength +=along.length();
-        if(tangLength > trajectoryStartDistance && tangLength > trajectoryMaxLength){
+        if(tangLength > trajectoryStartDistance /* tangLength > trajectoryMaxLength*/){//TODO trajectoryMaxLength
             break;
         }
         const vertex2f mid((p1.x + p2.x) / 2., (p1.y + p2.y) / 2.);
@@ -253,6 +253,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
     float angleD = config().get<float>("angleD",22.0*M_PI/180.0);
     float maxDistanceRemoved = config().get<float>("maxDistanceRemoved",0.8);
     float distanceRemoved = 0;
+    float minDistanceBetweenTrajectoryPoints = config().get<float>("minDistanceBetweenTrajectoryPoints",0.2);
     bool rightDel = false;
     for(int i = 2; i <((int) tempTrajectory.points().size())-2;){//we won't change the first or the last point
         lms::math::vertex2f v1 = tempTrajectory.points()[i]-tempTrajectory.points()[i-1];
@@ -279,9 +280,14 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
             if(i < 2)
                 i = 2;
         }else{
-            distanceRemoved = 0;
-            i++;
-            rightDel  =false;
+            if(v1.distance(v2) < minDistanceBetweenTrajectoryPoints){
+                tempTrajectory.points().erase(tempTrajectory.points().begin()+i+1);
+                tempTrajectory.viewDirs.points().erase(tempTrajectory.viewDirs.points().begin()+i+1);
+            }else{
+                distanceRemoved = 0;
+                i++;
+                rightDel  =false;
+            }
         }
     }
 
