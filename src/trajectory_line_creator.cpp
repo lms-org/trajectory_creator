@@ -42,10 +42,30 @@ bool TrajectoryLineCreator::cycle() {
                     //we change the line
                     //TODO we don't cover obstacles close to each other
                     initRightSide = rightSide;
+                    break;
                 }
             }
+            //TODO calculate the endVelocity #IMPORTANT
+            //What happens if the current car velocity and the end-velocity is close to zero?
+            float endVelocity = traj[traj.size()-1].velocity;
+            float averageVelocity = 0;
+            float maxVelocity = 0;
+            for(int i = 0; i < (int)traj.size(); i++){
+                averageVelocity += traj[i].velocity;
+                if(maxVelocity < traj[i].velocity){
+                    maxVelocity = traj[i].velocity;
+                }
+            }
+            if(maxVelocity < 0.1){ //HACK
+                maxVelocity = 1;
+            }
+            averageVelocity /= traj.size();
+            float midDistance = road->length();
+            float minTime = midDistance/maxVelocity;
+            float maxTime = midDistance/averageVelocity;
+
             traj.clear();
-            if(!advancedTrajectory(traj,initRightSide,1)){
+            if(!advancedTrajectory(traj,initRightSide,endVelocity,minTime,maxTime)){
                 logger.warn("advancedTrajectory")<<"FAILED";
                 traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold);
             }
@@ -60,7 +80,7 @@ bool TrajectoryLineCreator::cycle() {
     return true;
 }
 
-bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &trajectory, bool rightSide, float endVelocity){
+bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &trajectory, bool rightSide, float endVelocity, float tMin,float tMax){
     if(road->polarDarstellung.size() < 8){
         logger.error("invalid middle")<<road->polarDarstellung.size();
         return false;
@@ -109,10 +129,6 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     tot.ks = config().get<double>("ks",1.0);
     tot.kd = config().get<double>("kd",1.0);
 
-    //TODO tMin und tMax generieren
-    double tMin =0.1;//Minimal benötigte Zeit
-    double tMax = 5; //Maximal benötigte Zeit
-
     double safetyS = config().get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
     double safetyD = config().get<double>("safetyD",0.1); //Sicherheitsabstand orthogonal zur Straße
 
@@ -135,6 +151,8 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
     //Mindestabstand zwischen zwei Hindernissen 1m
     //Maximalabstand von der Kreuzung: 15cm
     //An der Kreuzung warten: 2s
+    bool useFixedSpeed = false;
+    float fixedSpeed= 0;
 
     street_environment::Trajectory tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
@@ -153,7 +171,6 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
     const float distanceBetweenTrajectoryPoints = config().get<float>("obstacleResolution",0.05);
     const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints);
     float tangLength = 0;
-    bool lastWasLeft = false;
     //ignore first point
     for(size_t i = 2; i < middle.points().size(); i++) {
         const vertex2f p1 = middle.points()[i - 1];
@@ -179,6 +196,9 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         //check all obstacles
         //TODO not smart at all, won't work in all cases
         for(const std::shared_ptr<street_environment::EnvironmentObject> obj : envObstacles->objects){
+            if(obj->trust() < obstacleTrustThreshold){
+                continue;
+            }
             if(obj->getType() == street_environment::Obstacle::TYPE){
                const street_environment::ObstaclePtr obst = std::static_pointer_cast<street_environment::Obstacle>(obj);
                 //check if the obstacle is trusted
@@ -195,36 +215,44 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                 }
             }else if(obj->getType() == street_environment::Crossing::TYPE){
                 const street_environment::CrossingPtr crossing = std::static_pointer_cast<street_environment::Crossing>(obj);
-                if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //we already missed the trajectory!
+                if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //TODO #IMPORTANT we already missed the trajectory!
                     continue;
                 }
-                if(car->velocity() < 0.1){//TODO HACK but may work
-                    if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
-                        logger.info("start waiting in front of crossing");
-                    }
-                }
-                logger.info("simpleTrajectory")<<"crossing: stop "<< crossing->hasToStop() << " blocked:"<<crossing->blocked()<< " waiting for:"<<crossing->stopTime().since().toFloat();
-
-                //check if we have to stop or if crossing is blocked
-                if(crossing->hasToStop() || crossing->blocked()){
-                    //Check if we are waiting for to long
-                    if(!crossing->hasToStop() && crossing->stopTime().since().toFloat()>config().get<float>("maxStopTimeAtCrossing",10)){
-                        logger.warn("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
-                    }else{
-                        //check if the Crossing is close enough
-                        float x = crossing->position().x-config().get<float>("minDistanceToCrossing",0.1);//Wir gehen davon aus, dass crossing.distanceTang() == crossing.position.x ist
-                        float y= crossing->position().y;
-                        //As there won't be an obstacle in front of the crossing we can go on the right
-                        //TODO we won't indicate if we change line
-                        if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
-                            vertex2f result = mid + orthogonalTrans;
-                            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,-0.2,0)); //TODO
-                            //add endPoint
-                            //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
-                            tempTrajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(x,y),normAlong,-0.2,0)); //TODO
-                            return tempTrajectory;
+                if(crossing->foundOppositeStopLine){
+                    if(car->velocity() < 0.1){//TODO HACK but may work
+                        if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
+                            logger.info("start waiting in front of crossing");
                         }
                     }
+                    logger.info("simpleTrajectory")<<"crossing: stop "<< crossing->hasToStop() << " blocked:"<<crossing->blocked()<< " waiting for:"<<crossing->stopTime().since().toFloat();
+
+                    //check if we have to stop or if crossing is blocked
+                    if(crossing->hasToStop() || crossing->blocked()){
+                        //Check if we are waiting for to long
+                        if(!crossing->hasToStop() && crossing->stopTime().since().toFloat()>config().get<float>("maxStopTimeAtCrossing",10)){
+                            logger.warn("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
+                        }else{
+                            //check if the Crossing is close enough
+                            float x = crossing->position().x-config().get<float>("minDistanceToCrossing",0.1);//Wir gehen davon aus, dass crossing.distanceTang() == crossing.position.x ist
+                            float y= crossing->position().y;
+                            //As there won't be an obstacle in front of the crossing we can go on the right
+                            //TODO we won't indicate if we change line
+                            if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
+                                //Create a trajectory with speed 0
+                                useFixedSpeed = true;
+                                fixedSpeed = 0;
+                                vertex2f result = mid + orthogonalTrans;
+                                tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,0,-0.2)); //TODO
+                                //add endPoint
+                                //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
+                                tempTrajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(x,y),normAlong,0,-0.2)); //TODO
+                                continue;
+                            }
+                        }
+                    }
+                }else{
+                    useFixedSpeed = true;
+                    fixedSpeed = config().get<float>("slowDownInFrontOfCrossing",1); //TODO #IMPORTANT
                 }
                 //add endPoint
             }else{
@@ -232,96 +260,25 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                 continue;
             }
         }
-
-        bool addPoint = true;
-        //we first point can't cross the line
-        if(i != 1){
-            if(lastWasLeft != rightSide){
-                /*
-                if(sideState){
-                    //wir fahren von rechts nach links
-                    float distanceToObstacleChange = distanceToObstacle-distanceObstacleBeforeChangeLine;
-                    //if(fabs(distanceToObstacleChange)<along.length()){
-                        lms::math::vertex2f temp = p2+normAlong*distanceToObstacleChange;
-                        tempTrajectory.points().push_back(temp +orthogonalTrans);//linker eckpunkt
-                        tempTrajectory.points().push_back(temp-orthogonalTrans);//rechter eckpunkt
-                        tempTrajectory.viewDirs.points().push_back(normAlong);
-                        tempTrajectory.viewDirs.points().push_back(normAlong);
-                        addPoint = false; //we don't need the other point
-                    //}
-                }else{
-                    //wir fahren von links nach rechts
-                    float distanceToObstacleChange = distanceToObstacle+obstacleLength;
-                    lms::math::vertex2f temp = p2+normAlong*distanceToObstacleChange;
-                    tempTrajectory.points().push_back(temp -orthogonalTrans);//rechter eckpunkt
-                    tempTrajectory.points().push_back(temp+orthogonalTrans);//linker eckpunkt
-                    tempTrajectory.viewDirs.points().push_back(normAlong);
-                    tempTrajectory.viewDirs.points().push_back(normAlong);
-                    addPoint = false; //we don't need the other point
-
-                }
-                */
-            }
-        }
-        lastWasLeft=rightSide;
-        if(addPoint){
-            vertex2f result;
-            if(rightSide){
-                result= p1 + orthogonalTrans;
-                tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,2.0,-0.2)); //TODO
-            }else{
-                result= p1 - orthogonalTrans;
-                tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,2.0,0.2)); //TODO
-
-            }
-        }
-    }
-    /*
-    float angleD = config().get<float>("angleD",22.0*M_PI/180.0);
-    float maxDistanceRemoved = config().get<float>("maxDistanceRemoved",0.8);
-    float distanceRemoved = 0;
-    float minDistanceBetweenTrajectoryPoints = config().get<float>("minDistanceBetweenTrajectoryPoints",0.2);
-    bool rightDel = false;
-    for(int i = 2; i <((int) tempTrajectory.points().size())-2;){//we won't change the first or the last point
-        lms::math::vertex2f v1 = tempTrajectory.points()[i]-tempTrajectory.points()[i-1];
-        lms::math::vertex2f v2 = tempTrajectory.points()[i+1]-tempTrajectory.points()[i];;
-        float angle = v1.angleBetween(v2);
-        if(distanceRemoved > maxDistanceRemoved){
-            distanceRemoved = 0;
-        }else if(angle >angleD){
-            //remove the middle
-            //TODO handle the change!
-            if(v1.left(v2)){
-                tempTrajectory.points().erase(tempTrajectory.points().begin()+i);
-                tempTrajectory.viewDirs.points().erase(tempTrajectory.viewDirs.points().begin()+i);
-                i--;
-                rightDel = true;
-            }else if(!rightDel){
-                tempTrajectory.points().erase(tempTrajectory.points().begin()+i+1);
-                tempTrajectory.viewDirs.points().erase(tempTrajectory.viewDirs.points().begin()+i+1);
-            }else{
-                rightDel  =false;
-                i++;
-            }
-            distanceRemoved += distanceBetweenTrajectoryPoints;
-            if(i < 2)
-                i = 2;
+        float velocity = 0;
+        if(useFixedSpeed){
+            velocity = fixedSpeed;
         }else{
-            if(v1.distance(v2) < minDistanceBetweenTrajectoryPoints){
-                tempTrajectory.points().erase(tempTrajectory.points().begin()+i+1);
-                tempTrajectory.viewDirs.points().erase(tempTrajectory.viewDirs.points().begin()+i+1);
-            }else{
-                distanceRemoved = 0;
-                i++;
-                rightDel  =false;
-            }
+            velocity = 2;//TODO #IMPORTANT
+        }
+        vertex2f result;
+        if(rightSide){
+            result= p1 + orthogonalTrans;
+            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,velocity,-0.2)); //TODO
+        }else{
+            result= p1 - orthogonalTrans;
+            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,velocity,0.2)); //TODO
         }
     }
 
-    if(tempTrajectory.points().size()!=tempTrajectory.viewDirs.points().size()){
-        logger.error("INVALID viewDir count")<<tempTrajectory.points().size()<<" "<<tempTrajectory.viewDirs.points().size();
-    }
-    */
+    //TODO we could also modify the velocity after gernerating the trajectory #IMPORTANT
+    //TODO we could also modify the viewDIR after gernerating the trajectory #IMPORTANT
+
     return tempTrajectory;
 
 }
