@@ -6,6 +6,7 @@ bool TrajectoryLineCreator::initialize() {
     envObstacles = readChannel<street_environment::EnvironmentObjects>("ENVIRONMENT_OBSTACLE");
     road = readChannel<street_environment::RoadLane>("ROAD");
     trajectory = writeChannel<street_environment::Trajectory>("LINE");
+    debug_trajectory = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY");
     car = readChannel<sensor_utils::Car>("CAR");
 
     generator = new TrajectoryGenerator(logger);
@@ -19,34 +20,51 @@ bool TrajectoryLineCreator::deinitialize() {
 }
 bool TrajectoryLineCreator::cycle() {
     //clear old trajectory
-    trajectory->points().clear();
+    trajectory->clear();
     //calculate data for creating the trajectory
-    float trajectoryMaxLength = config().get<float>("trajectoryMaxLength",1);
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     //TODO not smart
     street_environment::Trajectory traj;
     if(config().get<bool>("simpleTraj",true)){
-        traj= simpleTrajectory(trajectoryMaxLength,obstacleTrustThreshold);
+        traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold);
     }else{
-        if(!advancedTrajectory(traj)){
-            traj = simpleTrajectory(trajectoryMaxLength,obstacleTrustThreshold);
+        traj= simpleTrajectory(0,obstacleTrustThreshold);
+        //detect if we have to go left or right
+        if(traj[traj.size()-1].velocity == 0){
+            //Stop it, we won't go for an advancedTrajectory :)
+            logger.warn("STOP");
+        }else{
+            bool initRightSide (traj[0].distanceToMiddleLane <= 0);
+            for(int i = 1; i < (int)traj.size(); i++){
+                //try to find change of the line
+                bool rightSide =(traj[i].distanceToMiddleLane <= 0);
+                if(initRightSide != rightSide){
+                    //we change the line
+                    //TODO we don't cover obstacles close to each other
+                    initRightSide = rightSide;
+                }
+            }
+            traj.clear();
+            if(!advancedTrajectory(traj,initRightSide,1)){
+                logger.warn("advancedTrajectory")<<"FAILED";
+                traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold);
+            }
         }
     }
     *trajectory = traj;
-    /*trajectory->points().clear();
-    for(lms::math::vertex2f &v:traj.points()){
-        trajectory->points().push_back(v);
+    debug_trajectory->points().clear();
+    for(street_environment::TrajectoryPoint &v:traj){
+        debug_trajectory->points().push_back(v.position);
     }
-    */
+
     return true;
 }
 
-bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory){
+bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &trajectory, bool rightSide, float endVelocity){
     if(road->polarDarstellung.size() < 8){
+        logger.error("invalid middle")<<road->polarDarstellung.size();
         return false;
     }
-    //TODO Blinker setzen
-
     //INPUT
     //hindernisse: vector Abstand-Straße,geschwindigkeit-Straße(absolut), -1 (links) +1 (rechts) (alle hindernisse hintereinander)
     //eigenes auto, vx,vy, dw -winkelgeschwindigkeit dw (zunächst mal 0)
@@ -54,23 +72,36 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
     //vector mit y-koordinaten
 
     int nSamplesTraj = config().get<int>("nSamplesTraj",50);
-    double v1 = 2;//endgeschwindigkeit
-    double d1 = -0.2;//TODO berechnenAbweichung, die man am Ende haben will
+    double d1; //Abstand zur Mittellinie
+    if(rightSide)
+        d1= -0.2;
+    else
+        d1= 0.2;
+
     //aktuelle daten der fahrspur und des autos relativ dazu
     RoadData dataRoad;
     dataRoad.ax0 = 0; //beschl. am anfang
-
-    dataRoad.kappa = generator->circleCurvature(road->points()[1],road->points()[3],road->points()[5]);//->polarDarstellung[4]+road->polarDarstellung[7]+road->polarDarstellung[9];//TODO
-    //dataRoad.kappa /= 3.0;
-    logger.debug("kappa")<<dataRoad.kappa;
+    dataRoad.kappa = generator->circleCurvature(road->points()[2],road->points()[5],road->points()[7]);
     dataRoad.phi = road->polarDarstellung[1];
-    float velocity = 0.001;//Sollte nicht 0 sein, wegen smoothem start
-    if(car->velocity() != 0)
-        velocity = car->velocity();
+    float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
+    if(velocity < 0.01)
+        velocity = 1;//TODO
     dataRoad.vx0 = velocity;
     dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
-    dataRoad.y0 = road->polarDarstellung[0]; //TODO
+    dataRoad.y0 = road->polarDarstellung[0];
+    logger.error("kappa")<<dataRoad.kappa<< " distanceToMiddle: "<<d1;
+
     std::vector<ObstacleData> dataObstacle;
+    for(const street_environment::EnvironmentObjectPtr objPtr:envObstacles->objects){
+        if(objPtr->getType() == street_environment::Obstacle::TYPE){
+            street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(objPtr);
+            ObstacleData toAdd;
+            toAdd.s0 = obstPtr->distanceTang();
+            toAdd.v0 = 0;
+            toAdd.leftLane = obstPtr->distanceOrth()> 0;
+            dataObstacle.push_back(toAdd);
+        }
+    }
     CoeffCtot tot;
 
     tot.kj = config().get<double>("kj",1.0);
@@ -78,19 +109,20 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
     tot.ks = config().get<double>("ks",1.0);
     tot.kd = config().get<double>("kd",1.0);
 
-    double tMin = 0.1;//Minimal benötigte Zeit
-    double tMax = 2; //Maximal benötigte Zeit
+    //TODO tMin und tMax generieren
+    double tMin =0.1;//Minimal benötigte Zeit
+    double tMax = 5; //Maximal benötigte Zeit
 
     double safetyS = config().get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
     double safetyD = config().get<double>("safetyD",0.1); //Sicherheitsabstand orthogonal zur Straße
 
     Trajectory result;
-    if(generator->createTrajectorySample(result,v1,d1,safetyS,safetyD,tMin,tMax,nSamplesTraj,dataRoad,dataObstacle,tot)){
+    if(generator->createTrajectorySample(result,endVelocity,d1,safetyS,safetyD,tMin,tMax,nSamplesTraj,dataRoad,dataObstacle,tot)){
         //convert data
         //TODO anzahl der punkte
         points2d<20> points = result.sampleXY<20>();
         for(int i = 0; i < 20; i++){
-            trajectory.points().push_back(lms::math::vertex2f(points.x(i),points.y(i)));
+            trajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(points.x(i),points.y(i)),lms::math::vertex2f(0,0),0,0));
         }
         return true;
     }else{
@@ -99,7 +131,7 @@ bool TrajectoryLineCreator::advancedTrajectory(lms::math::polyLine2f &trajectory
     return true;
 }
 
-street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float trajectoryMaxLength,const float obstacleTrustThreshold){
+street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine,const float obstacleTrustThreshold){
     //Mindestabstand zwischen zwei Hindernissen 1m
     //Maximalabstand von der Kreuzung: 15cm
     //An der Kreuzung warten: 2s
@@ -108,8 +140,6 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
     // translate the middle lane to the right with a quarter of the street width
     const float translation = config().get<float>("street_width", 0.8)/4.0f;
     const float obstacleLength = config().get<float>("obstacleLength",0.5);
-    //Könnte von der aktuellen geschwindigkeit abhängen
-    const float distanceObstacleBeforeChangeLine = config().get<float>("distanceObstacleBeforeChangeLine",0);
 
     using lms::math::vertex2f;
     if(road->points().size() == 0){
@@ -135,15 +165,15 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         //check if the trajectory is long enough
         //TODO, get endpoint
         tangLength +=along.length();
-        if(tangLength > trajectoryStartDistance /* tangLength > trajectoryMaxLength*/){//TODO trajectoryMaxLength
-            break;
+        if(tangLength < trajectoryStartDistance /* tangLength > trajectoryMaxLength*/){//TODO trajectoryMaxLength
+            continue;
         }
         const vertex2f mid((p1.x + p2.x) / 2., (p1.y + p2.y) / 2.);
         const vertex2f normAlong = along / along.length();
         const vertex2f orthogonal(normAlong.y, -normAlong.x);
         const vertex2f orthogonalTrans = orthogonal*translation;
 
-        bool sideState = false; //TODO 0 -> no value given, -1 ->left,1->right
+        bool rightSide = true;
         //man geht davon aus, dass die Abstand, in dem man ausweicht deutlich größer ist als das hinderniss lang!
         float distanceToObstacle = 0;
         //check all obstacles
@@ -159,7 +189,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                 distanceToObstacle = obst->distanceTang()-tangLength;//abstand zum Punkt p2
                 if((distanceToObstacle >= 0 && distanceToObstacle <= distanceObstacleBeforeChangeLine)||
                         (distanceToObstacle<=0 && distanceToObstacle >=-obstacleLength)){//obstacle is in front of us
-                    sideState = obst->distanceOrth() < 0;
+                    rightSide = obst->distanceOrth() > 0;
                     //TODO check if trajectory is blocked
                     break;
                 }
@@ -188,12 +218,10 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                         //TODO we won't indicate if we change line
                         if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
                             vertex2f result = mid + orthogonalTrans;
-                            tempTrajectory.points().push_back(result);
-                            tempTrajectory.viewDirs.points().push_back(normAlong);
+                            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,-0.2,0)); //TODO
                             //add endPoint
                             //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
-                            tempTrajectory.points().push_back(lms::math::vertex2f(x,y));
-                            tempTrajectory.viewDirs.points().push_back(normAlong);
+                            tempTrajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(x,y),normAlong,-0.2,0)); //TODO
                             return tempTrajectory;
                         }
                     }
@@ -208,8 +236,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
         bool addPoint = true;
         //we first point can't cross the line
         if(i != 1){
-            if(lastWasLeft != sideState){
-                tempTrajectory.addChange(tempTrajectory.points().size(),sideState);
+            if(lastWasLeft != rightSide){
                 /*
                 if(sideState){
                     //wir fahren von rechts nach links
@@ -236,20 +263,20 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
                 */
             }
         }
-        lastWasLeft=sideState;
+        lastWasLeft=rightSide;
         if(addPoint){
             vertex2f result;
-            if(sideState){
-                result= p1 - orthogonalTrans;
-            }else{
+            if(rightSide){
                 result= p1 + orthogonalTrans;
+                tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,2.0,-0.2)); //TODO
+            }else{
+                result= p1 - orthogonalTrans;
+                tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,2.0,0.2)); //TODO
 
             }
-            tempTrajectory.points().push_back(result);
-            tempTrajectory.viewDirs.points().push_back(normAlong);
         }
     }
-
+    /*
     float angleD = config().get<float>("angleD",22.0*M_PI/180.0);
     float maxDistanceRemoved = config().get<float>("maxDistanceRemoved",0.8);
     float distanceRemoved = 0;
@@ -294,6 +321,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float tra
     if(tempTrajectory.points().size()!=tempTrajectory.viewDirs.points().size()){
         logger.error("INVALID viewDir count")<<tempTrajectory.points().size()<<" "<<tempTrajectory.viewDirs.points().size();
     }
+    */
     return tempTrajectory;
 
 }

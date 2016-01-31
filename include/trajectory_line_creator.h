@@ -15,10 +15,11 @@ public:
     bool cycle() override;
 private:
     street_environment::Trajectory simpleTrajectory(float trajectoryMaxLength,const float obstacleTrustThreshold);
-    bool advancedTrajectory(lms::math::polyLine2f &trajectory);
+    bool advancedTrajectory(street_environment::Trajectory &trajectory,bool rightSide, float endVelocity);
     lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
     lms::ReadDataChannel<street_environment::RoadLane> road;
     lms::ReadDataChannel<sensor_utils::Car> car;
+    lms::WriteDataChannel<lms::math::polyLine2f> debug_trajectory;
     lms::WriteDataChannel<street_environment::Trajectory> trajectory;
     TrajectoryGenerator* generator;
 

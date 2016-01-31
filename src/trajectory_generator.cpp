@@ -3,9 +3,7 @@
 #include <BezierPolynomial.h>
 #include "trajectory_generator.h"
 #include "lms/math/math.h"
-/**
- * creates a trajectory using the sampling method both for different trajectories in end time and to check for collision/drivability
- */
+
 bool TrajectoryGenerator::createTrajectorySample(Trajectory &trajectory,T v1, T d1, T safetyS, T safetyD, T tmin, T tmax, int nSamplesTraj, const RoadData& roadDataIn, std::vector<ObstacleData>& obstacleDataIn, const CoeffCtot& coeffCtotIn) {
 
 
@@ -40,17 +38,17 @@ bool TrajectoryGenerator::createTrajectorySample(Trajectory &trajectory,T v1, T 
     if (flagFound) {
         // trajectory was already set
         return true;
-    }
-    else {
+    }else {
         return false;
     }
 
 }
 
 TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger(_logger){
+    /*
     // Test of the Bezier Polynomials
 
-    /*const size_t n = 2;
+    const size_t n = 2;
     Vector<3> controlPointsIn;
     controlPointsIn(0) = 1; //some random numbers
     controlPointsIn(1) = 3;
@@ -82,11 +80,11 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
 
     std::cout << "Time points" << tt << std::endl;
     std::cout << "y: " << y << std::endl;
-    std::cout << "dy: " << dy << std::endl;*/
+    std::cout << "dy: " << dy << std::endl;
 
     //Test of the whole new algo with Bezier Curves
 
-    /*points2d<10> pointsCenter;
+    points2d<10> pointsCenter;
     //pointsCenter.x << 0, 0.1995, 0.3966, 0.5797, 0.7582, 0.9121, 1.0686, 1.2260, 1.3857, 1.5638;
     //pointsCenter.x << 0    ,0.1999,    0.3988,    0.5936,    0.7814,    0.9583,    1.1364,    1.2948,    1.4168,    1.5274;
     pointsCenter.x << 0,    0.1960,    0.3802,    0.5453,    0.6846,    0.7927,    0.8652,    0.8992,    0.8933,    0.8479;
@@ -178,7 +176,8 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
     }else
     {
         std::cout << "---------- FAILURE ----------" << std::endl;
-    }*/
+    }
+    */
 
 }
 
