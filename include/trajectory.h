@@ -11,17 +11,24 @@
 #include <vector>
 #include <types.h>
 #include <iomanip>
+#include <math.h>
 
+/**
+ * @brief: holds a trajectory in Frenet space
+ */
 class Trajectory {
 public:
     bool doesCollide(); //does the trajectory collide
     bool isDrivable(); //is the traj. drivable
 
-    T kappa_max = 1.5; //max. drivable curvature of the traj.
+    T kappa_max = 2.5; //max. drivable curvature of the traj.
     T aOrthMax = 0.5*9.81; //max. acc. orthogonal to the traj.
 
     T ctot(); //function: gives back the value of the total cost function
 
+    /**
+     * should not be used anymore. Better use projectOntoBezierCurve
+     */
     template<size_t m>
     points2d<m> sampleXY()
     {
@@ -90,7 +97,6 @@ public:
 
     /**
      * Projects the trajectory on the unique Bezier Curve that is defined by the k points in points (points2d<k> struct points)
-     * m = number of points to output
      * l = diastance between two successive points
      */
     template<size_t m, size_t k>
@@ -174,6 +180,24 @@ public:
     }
 
 
+    template<size_t m>
+    RoadData Trajectory::convertPointsToRoadData(const points2d<m> pointsIn){
+
+        RoadData roadDataOut;
+
+        if (pointsIn.x(0) > 0){
+            // the points are all infront of the car so i extrapolate linearly
+            T dx = pointsIn.x(1) - pointsIn.x(0);
+            T dy = pointsIn.y(1) - pointsIn.y(0);
+
+            if (dx == 0){
+                dx = 0.001;
+            }
+
+            roadDataOut.y0 = pointsIn.y(0) + dy/dx*(-pointsIn.x(0));
+            roadDataOut.phi = atan(dy/dx);
+        }
+    }
 
 
     /**

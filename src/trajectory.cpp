@@ -5,6 +5,7 @@
 #include <types.h>
 #include "trajectory.h"
 
+
 /**
  * function that computes if the tra. collides
  */
@@ -177,6 +178,7 @@ T Trajectory::Jts() {
     return 192 * pow(tend, 3) * pow(coeff_s(4), 2) + 144 * pow(tend, 2) * coeff_s(3) * coeff_s(4) +
            36 * tend * pow(coeff_s(3), 2);
 }
+
 
 /**
  * constructor

@@ -8,9 +8,14 @@
 #include <vector>
 
 #include "BezierPolynomial.h"
-
+/**
+ * @brief Class which handles 2d Bezier Curves
+ */
 template<size_t n>
 class BezierCurve {
+    /**
+     * @brief constructor
+     */
 public:
     BezierCurve(const points2d<n+1> controlPointsIn, const T t_beginIn, const T t_endIn) : t_begin(initBegin(t_beginIn, t_endIn)),
                                                                                            t_end(initEnd(t_beginIn, t_endIn)),
@@ -25,6 +30,9 @@ public:
 
     }
 
+    /**
+     * @brief evaluate curve at one point for the parametrizing parameter t
+     */
     Vector<2> evalAtPoint(const T t)
     {
         Vector<2> result;
@@ -44,6 +52,9 @@ public:
 
     }
 
+    /**
+     * @brief evaluate curve at multiple points for the parametrizing parameter t
+     */
     template <size_t m>
     points2d<m> eval(const Vector<m> tt)
     {
@@ -55,6 +66,10 @@ public:
         return points;
     }
 
+
+    /**
+     * @brief return the normal vector at one point
+     */
     Vector<2> normalAtPoint(const T t) {
         Vector<2> result;
         result(0) = 0;
@@ -82,6 +97,10 @@ public:
         return result;
     }
 
+
+    /**+
+     * @brief: return the tangential vector at one point
+     */
     Vector<2> tangentAtPoint(const T t) {
         Vector<2> result;
         result(0) = 0;
@@ -109,6 +128,10 @@ public:
         return result;
     }
 
+
+    /**
+     * return curvature (signed) at point
+     */
     T curvatureAtPoint(const T t)
     {
         T result = 0;
@@ -139,6 +162,9 @@ public:
 
     }
 
+    /**
+     * return (signed) curvature at multiple points
+     */
     template <size_t m>
             Vector<m> curvature(const Vector<m>& tt)
     {

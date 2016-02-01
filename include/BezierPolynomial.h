@@ -8,6 +8,9 @@
 #include <cstddef>
 #include "types.h"
 
+/**
+ * @brief A class to represent Bezier Polynomials in 1-D. Is used by the Bezier Curve class
+ */
 template <size_t n>
 class BezierPolynomial {
 

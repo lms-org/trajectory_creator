@@ -7,6 +7,7 @@ bool TrajectoryLineCreator::initialize() {
     road = readChannel<street_environment::RoadLane>("ROAD");
     trajectory = writeChannel<street_environment::Trajectory>("LINE");
     debug_trajectory = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY");
+    debug_trajectory2 = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY_2");
     car = readChannel<sensor_utils::Car>("CAR");
 
     generator = new TrajectoryGenerator(logger);
@@ -24,6 +25,9 @@ bool TrajectoryLineCreator::cycle() {
     //calculate data for creating the trajectory
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     //TODO not smart
+
+    bool advancedTraj = false;
+
     street_environment::Trajectory traj;
     if(config().get<bool>("simpleTraj",true)){
         traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold);
@@ -61,20 +65,33 @@ bool TrajectoryLineCreator::cycle() {
             }
             averageVelocity /= traj.size();
             float midDistance = road->length();
-            float minTime = midDistance/maxVelocity;
-            float maxTime = midDistance/averageVelocity;
+            //float minTime = midDistance/maxVelocity;
+            //float maxTime = midDistance/averageVelocity;
+            float minTime = midDistance/maxVelocity/4;
+            float maxTime = 2;
 
             traj.clear();
             if(!advancedTrajectory(traj,initRightSide,endVelocity,minTime,maxTime)){
                 logger.warn("advancedTrajectory")<<"FAILED";
                 traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold);
+            }else{
+                advancedTraj = true;
             }
         }
     }
     *trajectory = traj;
     debug_trajectory->points().clear();
+    debug_trajectory2->points().clear();
+
+
     for(street_environment::TrajectoryPoint &v:traj){
-        debug_trajectory->points().push_back(v.position);
+        if (advancedTraj)
+        {
+            debug_trajectory->points().push_back(v.position);
+        }else{
+            debug_trajectory2->points().push_back(v.position);
+        }
+
     }
 
     return true;
@@ -105,11 +122,15 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     dataRoad.phi = road->polarDarstellung[1];
     float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
     if(velocity < 0.01)
-        velocity = 1;//TODO
+        velocity = 0.01;//TODO
     dataRoad.vx0 = velocity;
     dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
     dataRoad.y0 = road->polarDarstellung[0];
     logger.error("kappa")<<dataRoad.kappa<< " distanceToMiddle: "<<d1;
+    logger.warn("vx0 ") << dataRoad.vx0 << ",  v1 " << endVelocity;
+    logger.warn("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
+    logger.warn("tmin ") << tMin << ",  tMAx " << tMax;
+
 
     std::vector<ObstacleData> dataObstacle;
     for(const street_environment::EnvironmentObjectPtr objPtr:envObstacles->objects){
@@ -120,23 +141,36 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
             toAdd.v0 = 0;
             toAdd.leftLane = obstPtr->distanceOrth()> 0;
             dataObstacle.push_back(toAdd);
+            logger.error("obstacle: s0: ") << toAdd.s0 << ",  v0: " << toAdd.v0 << ",  leftLane: " << toAdd.leftLane;
         }
     }
     CoeffCtot tot;
 
     tot.kj = config().get<double>("kj",1.0);
-    tot.kT = config().get<double>("kT",1.0);
+    tot.kT = config().get<double>("kT",100.0);
     tot.ks = config().get<double>("ks",1.0);
     tot.kd = config().get<double>("kd",1.0);
 
     double safetyS = config().get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
-    double safetyD = config().get<double>("safetyD",0.1); //Sicherheitsabstand orthogonal zur Straße
+    double safetyD = config().get<double>("safetyD",0); //Sicherheitsabstand orthogonal zur Straße
 
     Trajectory result;
     if(generator->createTrajectorySample(result,endVelocity,d1,safetyS,safetyD,tMin,tMax,nSamplesTraj,dataRoad,dataObstacle,tot)){
         //convert data
         //TODO anzahl der punkte
-        points2d<20> points = result.sampleXY<20>();
+        //points2d<20> points = result.sampleXY<20>();
+        float middleLength = road->length();
+        float middleStepLength = road->length()/10;
+        lms::math::polyLine2f myroad= road->getWithDistanceBetweenPoints(middleStepLength);
+        points2d<10> pointsMiddle;
+
+        for (int i = 0; i < 10; i++)
+        {
+            pointsMiddle.x(i) = myroad.points()[i].x;
+            pointsMiddle.y(i) = myroad.points()[i].y;
+        }
+        points2d<20> points = result.projectOntoBezierCurve<20>(pointsMiddle, 0.1);
+
         for(int i = 0; i < 20; i++){
             trajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(points.x(i),points.y(i)),lms::math::vertex2f(0,0),0,0));
         }
