@@ -172,7 +172,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
             pointsMiddle.x(i) = myroad.points()[i].x;
             pointsMiddle.y(i) = myroad.points()[i].y;
         }
-        points2d<20> points = result.projectOntoBezierCurve<20>(pointsMiddle, 0.1);
+        points2d<20> points = result.projectOntoBezierCurve<20, 10>(pointsMiddle, 0.1);
 
         for(int i = 0; i < 20; i++){
             trajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(points.x(i),points.y(i)),lms::math::vertex2f(0,0),0,0));

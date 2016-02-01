@@ -12,6 +12,8 @@
 #include <types.h>
 #include <iomanip>
 #include <math.h>
+#include <lms/math/vertex.h>
+#include <street_environment/trajectory.h>
 
 /**
  * @brief: holds a trajectory in Frenet space
@@ -179,7 +181,27 @@ public:
 
     }
 
+    /**
+     * Projects the trajectory on the unique Bezier Curve that is defined by the k points in points (points2d<k> struct points). Also return tangent + velocity
+     * l = diastance between two successive points
+     */
+    template<size_t k>
+    street_environment::Trajectory projectOntoBezierCurvePlusVelocity(const points2d<k> pointsIn, const T l, const T length)
+    {
+        // generate output
+        street_environment::Trajectory trajectoryOut;
 
+        // generate x,y points
+        size_t m = floor(length/l);
+        points2d<m> pointsOut = projectOntoBezierCurve<m, k>(pointsIn, l);
+
+        // add xy points to trajectory
+        
+    }
+
+/**
+ * @brief work in progress: Do not USE!!!!
+ */
     template<size_t m>
     RoadData Trajectory::convertPointsToRoadData(const points2d<m> pointsIn){
 
