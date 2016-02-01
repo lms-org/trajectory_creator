@@ -112,7 +112,10 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     logger.error("kappa")<<dataRoad.kappa<< " distanceToMiddle: "<<d1;
 
     std::vector<ObstacleData> dataObstacle;
+    float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     for(const street_environment::EnvironmentObjectPtr objPtr:envObstacles->objects){
+        if(objPtr->trust() < obstacleTrustThreshold)
+            continue;
         if(objPtr->getType() == street_environment::Obstacle::TYPE){
             street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(objPtr);
             ObstacleData toAdd;
