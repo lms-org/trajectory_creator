@@ -185,7 +185,7 @@ public:
      * Projects the trajectory on the unique Bezier Curve that is defined by the k points in points (points2d<k> struct points). Also return tangent + velocity
      * l = diastance between two successive points
      */
-    template<size_t k>
+   /* template<size_t k>
     street_environment::Trajectory projectOntoBezierCurvePlusVelocity(const points2d<k> pointsIn, const T l, const T length)
     {
         // generate output
@@ -195,14 +195,17 @@ public:
         size_t m = floor(length/l);
         points2d<m> pointsOut = projectOntoBezierCurve<m, k>(pointsIn, l);
 
+        // generate velocities
+
+
         // add xy points to trajectory
-        
-    }
+        //trajectoryOut.
+    }*/
 
 /**
  * @brief work in progress: Do not USE!!!!
  */
-    template<size_t m>
+   /* template<size_t m>
     RoadData Trajectory::convertPointsToRoadData(const points2d<m> pointsIn){
 
         RoadData roadDataOut;
@@ -219,7 +222,7 @@ public:
             roadDataOut.y0 = pointsIn.y(0) + dy/dx*(-pointsIn.x(0));
             roadDataOut.phi = atan(dy/dx);
         }
-    }
+    }*/
 
 
     /**
