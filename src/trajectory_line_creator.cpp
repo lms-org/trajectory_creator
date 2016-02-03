@@ -173,11 +173,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
             pointsMiddle.x(i) = myroad.points()[i].x;
             pointsMiddle.y(i) = myroad.points()[i].y;
         }
-        points2d<20> points = result.projectOntoBezierCurve<20>(pointsMiddle, 0.1);
-
-        for(int i = 0; i < 20; i++){
-            trajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(points.x(i),points.y(i)),lms::math::vertex2f(0,0),0,0));
-        }
+        trajectory = result.projectOntoBezierCurvePlusVelocity<20>(pointsMiddle, 0.1);
         return true;
     }else{
         return false;
@@ -312,7 +308,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         float maxDistanceEnvModel =  lengthEnvModelSegment * (nPointsRoad-1);
         if (maxDistance > maxDistanceEnvModel)
         {
-            logger.warn("max distance is bigger than max distance of environment model");
+            //logger.warn("max distance is bigger than max distance of environment model"); //TODO
             maxDistance = maxDistanceEnvModel;
         }
         if (minDistance < 0)
@@ -352,8 +348,8 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         curvatureAtLargeDistancePT1 = alphaPT1*curvature_local + (1-alphaPT1)*curvatureAtLargeDistancePT1;
 
         //just for debugging
-        logger.warn("curvature at large distance: moment: ") << curvature_local;
-        logger.warn("curvature at large distance: PT1   : ") << curvatureAtLargeDistancePT1;
+        logger.debug("curvature at large distance: moment: ") << curvature_local;
+        logger.debug("curvature at large distance: PT1   : ") << curvatureAtLargeDistancePT1;
 
         float velocity = 0;
         if(useFixedSpeed){
@@ -392,7 +388,7 @@ lms::math::vertex2f TrajectoryLineCreator::interpolateRoadAtDistance(float dista
     float maxDistanceEnvModel =  lengthEnvModelSegment * (nPointsRoad-1);
     if (distanceInClean >= maxDistanceEnvModel)
     {
-        logger.warn("distanceIn is bigger than max distance of environment model");
+        //logger.warn("distanceIn is bigger than max distance of environment model"); //TODO
         distanceInClean = maxDistanceEnvModel;
         result = road->points()[nPointsRoad-1];
         return result;
@@ -410,12 +406,12 @@ lms::math::vertex2f TrajectoryLineCreator::interpolateRoadAtDistance(float dista
         // by chance got one point
         int idPoint = round(distanceInClean/lengthEnvModelSegment);
         result = road->points()[idPoint];
-        logger.warn("perfect hit: i point:  ") << idPoint << ",  distance in: " << distanceInClean;
+        //logger.warn("perfect hit: i point:  ") << idPoint << ",  distance in: " << distanceInClean; //TODO
         return result;
     }
 
     // is between two points
-    logger.warn("distanceIn   ") << distanceInClean;
+    logger.debug("distanceIn   ") << distanceInClean;
     int idPointBefore = floor(distanceInClean/lengthEnvModelSegment);
 
     if ((idPointBefore < 0) || (idPointBefore > nPointsRoad - 2))

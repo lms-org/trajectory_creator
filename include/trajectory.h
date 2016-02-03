@@ -203,7 +203,7 @@ public:
 
 
         T dt = tend/(m-1); //time steps
-        const Vector<m> tt;
+        Vector<m> tt;
         for (int i = 0; i < m; i++)
         {
             tt(i) = dt*i;
@@ -214,7 +214,7 @@ public:
         Vector<m> dd;
 
         ss = mPtr_s->eval<m>(tt);
-        ss_d = poly_s_d.eval(tt);
+        ss_d = poly_s_d.eval<m>(tt);
 
         dd = mPtr_d->eval<m>(tt);
 
