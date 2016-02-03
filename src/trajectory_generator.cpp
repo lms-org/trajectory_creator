@@ -180,10 +180,13 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
     */
 
 }
-
+/**
+ * @brief important: p1, p2, p3 must have order
+ */
 float TrajectoryGenerator::circleCurvature(lms::math::vertex2f p1, lms::math::vertex2f p2, lms::math::vertex2f p3)
 {
     // look at Arndt Brunner for explanation: http://www.arndt-bruenner.de/mathe/scripts/kreis3p.htm
+
 
     float kappa_est = 0;
 
@@ -212,7 +215,23 @@ float TrajectoryGenerator::circleCurvature(lms::math::vertex2f p1, lms::math::ve
         kappa_est = 0;
     }else
     {
-        kappa_est = lms::math::sgn<float>(ym)*(float)1/r;
+        lms::math::vertex2f v1 = p2 - p1; // from first to second point
+        lms::math::vertex2f v2; // from first to middle
+        v2.x = xm - p1.x;
+        v2.y = ym - p1.y;
+
+        // generate sign
+        float thirdComponentCrossProduct = v1.x*v2.y - v1.y*v2.x;
+
+        if (thirdComponentCrossProduct > 0)
+        {
+            // middle of circle is on the left --> positive curvature
+            kappa_est = 1/r;
+        } else
+        {
+            // middle of circle is on the right --> negative curvature
+            kappa_est = - 1/r;
+        }
 
 
     }

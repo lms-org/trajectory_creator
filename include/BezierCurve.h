@@ -6,6 +6,7 @@
 #define PROJECT_BEZIERCURVE_H
 
 #include <vector>
+#include <math.h>
 
 #include "BezierPolynomial.h"
 /**
@@ -124,6 +125,37 @@ public:
         {
             result(0) = dx/norm;
             result(1) = dy/norm;
+        }
+        return result;
+    }
+
+    T normTangentAtPoint(const T t) {
+        T result = 0;
+
+        if (t < t_begin || t > t_end) {
+            // throw error
+            return result;
+        }
+
+        T dy = poly_dy.evalAtPoint(t);
+        T dx = poly_dx.evalAtPoint(t);
+
+        result = sqrt(pow(dy, 2) + pow(dx, 2));
+
+        return result;
+    }
+
+    template<size_t m>
+    points2d<m> tangent(const Vector<m> tt) {
+        points2d<m> result;
+
+        Vector<2> result_local;
+
+        for (int j = 0; j< m; j++)
+        {
+            result_local = this->tangentAtPoint(tt(j));
+            result.x(j) = result_local(0);
+            result.y(j) = result_local(1);
         }
         return result;
     }

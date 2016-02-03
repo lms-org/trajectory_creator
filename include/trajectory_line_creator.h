@@ -24,6 +24,11 @@ private:
     lms::WriteDataChannel<street_environment::Trajectory> trajectory;
     TrajectoryGenerator* generator;
 
+    // for the velocity adjustement
+    float curvatureAtLargeDistancePT1 = 0;
+    float alphaPT1; // between 0 and 1. if 1 only current value
+
+    lms::math::vertex2f interpolateRoadAtDistance(const float distanceIn);
 };
 
 #endif /* IMAGE_HINT_TRANSFORMER_H */

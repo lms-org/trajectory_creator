@@ -185,22 +185,143 @@ public:
      * Projects the trajectory on the unique Bezier Curve that is defined by the k points in points (points2d<k> struct points). Also return tangent + velocity
      * l = diastance between two successive points
      */
-   /* template<size_t k>
-    street_environment::Trajectory projectOntoBezierCurvePlusVelocity(const points2d<k> pointsIn, const T l, const T length)
+   template<size_t m, size_t k>
+    street_environment::Trajectory projectOntoBezierCurvePlusVelocity(const points2d<k> pointsIn, const T l)
     {
+
+        // initialize
         // generate output
         street_environment::Trajectory trajectoryOut;
+        street_environment::TrajectoryPoint toAdd;
 
-        // generate x,y points
-        size_t m = floor(length/l);
-        points2d<m> pointsOut = projectOntoBezierCurve<m, k>(pointsIn, l);
+        Poly<3> poly_s_d = mPtr_s->differentiate(); //first derivative
 
-        // generate velocities
+        T s_begin = 0;
+        T s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
+
+        BezierCurve<k-1> centerLine = BezierCurve<k-1>(pointsIn, s_begin, s_end);
 
 
-        // add xy points to trajectory
-        //trajectoryOut.
-    }*/
+        T dt = tend/(m-1); //time steps
+        const Vector<m> tt;
+        for (int i = 0; i < m; i++)
+        {
+            tt(i) = dt*i;
+        }
+
+        Vector<m> ss;
+        Vector<m> ss_d;
+        Vector<m> dd;
+
+        ss = mPtr_s->eval<m>(tt);
+        ss_d = poly_s_d.eval(tt);
+
+        dd = mPtr_d->eval<m>(tt);
+
+        T s_end_trajectory = mPtr_s->evalAtPoint(this->tend);
+
+        // get rid of strange values in ss, dd and ss_d i.e. all for which tt(i) > this.T
+        for (size_t j = 0; j < m; j++) {
+            if (tt(j) > this->tend)
+            {
+                ss(j) = s_end_trajectory + S.v1*(tt(j) - this->tend);
+                dd(j) = D.d1;
+
+                ss_d(j) = S.v1;
+            }
+
+        }
+
+
+        for(size_t i = 0; i < m; i++)
+        {
+            //different cases
+            if (ss(i) < 0)
+            {
+                // this should not be: throw error
+                toAdd.position.x = 0;
+                toAdd.position.y = 0;
+
+                toAdd.directory.x = 0;
+                toAdd.directory.y = 0;
+
+                toAdd.velocity = 0;
+
+                toAdd.distanceToMiddleLane = 0;
+
+
+            }else if(ss(i) >= 0 && ss(i) <= s_end)
+            {
+                Vector<2> centerLinePoint = centerLine.evalAtPoint(ss(i));
+
+                //normal
+                Vector<2> centerLineNormal = centerLine.normalAtPoint(ss(i));
+                Vector<2> trajPoint = centerLinePoint + dd(i)*centerLineNormal; //the trajectoray point is the centerLinePoint plus d times the normal (should be oriented the right way and normalized)
+
+                toAdd.position.x = trajPoint(0);
+                toAdd.position.y = trajPoint(1);
+
+                // tangent
+                Vector<2> centerLineTangent = centerLine.tangentAtPoint(ss(i));
+
+                toAdd.directory.x = centerLineTangent(0);
+                toAdd.directory.y = centerLineTangent(1);
+
+                // velocity (norm tangent times derivative d/dt s(t))
+                toAdd.velocity = centerLine.normTangentAtPoint(ss(i))*ss_d(i);
+
+                // side
+                toAdd.distanceToMiddleLane = dd(i);
+
+            } else if (ss(i) > s_end)
+            {
+                //the point is behind the trajectory --> linear extrapolation
+                //point on the center line
+                Vector<2> centerLinePoint = centerLine.evalAtPoint(s_end);
+
+                //normal
+                Vector<2> centerLineNormal = centerLine.normalAtPoint(s_end);
+
+                //tangent
+                Vector<2> centerLineTangent = centerLine.tangentAtPoint(s_end);
+
+
+                Vector<2> trajPoint = centerLinePoint + (ss(i)-s_end)*centerLineTangent + dd(i)*centerLineNormal;
+
+                toAdd.directory.x = trajPoint(0);
+                toAdd.directory.y = trajPoint(1);
+
+                toAdd.directory.x = centerLineTangent(0);
+                toAdd.directory.y = centerLineTangent(1);
+
+                toAdd.velocity = centerLine.normTangentAtPoint(ss(i))*ss_d(i);
+
+                // side
+                toAdd.distanceToMiddleLane = dd(i);
+
+            } else
+            {
+                // case not considered: use zeros
+                // this should not be: throw error
+                toAdd.directory.x = 0;
+                toAdd.directory.y = 0;
+
+                toAdd.directory.x = 0;
+                toAdd.directory.y = 0;
+
+                toAdd.velocity = 0;
+
+                // side
+                toAdd.distanceToMiddleLane = 0;
+            }
+
+            // add to Trajectory
+            trajectoryOut.push_back(toAdd);
+        }
+
+
+        return trajectoryOut;
+    }
 
 /**
  * @brief work in progress: Do not USE!!!!
