@@ -122,7 +122,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     dataRoad.phi = road->polarDarstellung[1];
     float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
     if(velocity < 0.01)
-        velocity = 0.01;//TODO
+        velocity = 0.01;
     dataRoad.vx0 = velocity;
     dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
     dataRoad.y0 = road->polarDarstellung[0];
