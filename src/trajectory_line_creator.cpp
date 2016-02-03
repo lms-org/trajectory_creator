@@ -2,6 +2,7 @@
 #include "lms/math/math.h"
 #include "street_environment/obstacle.h"
 #include "street_environment/crossing.h"
+#include "lms/math/mathEigen.h"
 bool TrajectoryLineCreator::initialize() {
     envObstacles = readChannel<street_environment::EnvironmentObjects>("ENVIRONMENT_OBSTACLE");
     road = readChannel<street_environment::RoadLane>("ROAD");
@@ -118,7 +119,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     //aktuelle daten der fahrspur und des autos relativ dazu
     RoadData dataRoad;
     dataRoad.ax0 = 0; //beschl. am anfang
-    dataRoad.kappa = generator->circleCurvature(road->points()[2],road->points()[5],road->points()[7]);
+    dataRoad.kappa = lms::math::circleCurvature(road->points()[2],road->points()[5],road->points()[7]);
     dataRoad.phi = road->polarDarstellung[1];
     float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
     if(velocity < 0.01)
@@ -328,7 +329,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
 
 
         // calc. curvature opf the circle with signum
-        float curvature_local = generator->circleCurvature(nearestPoint, midPoint, farthestPoint);
+        float curvature_local = lms::math::circleCurvature(nearestPoint, midPoint, farthestPoint);
 
         //=================================================================
         // PT 1 filter
