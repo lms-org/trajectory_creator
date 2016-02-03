@@ -31,7 +31,7 @@ public:
      * @param coeffCtotIn
      * @return
      */
-    bool createTrajectorySample(Trajectory &trajectory,T v1, T d1, T safetyS, T safetyD, T tmin, T tmax, int nSamplesTraj, const RoadData& roadDataIn, std::vector<ObstacleData>& obstacleDataIn, const CoeffCtot& coeffCtotIn);
+    bool createTrajectorySample(Trajectory &trajectory,float v1, float d1, float safetyS, float safetyD, float tmin, float tmax, int nSamplesTraj, const RoadData& roadDataIn, std::vector<ObstacleData>& obstacleDataIn, const CoeffCtot& coeffCtotIn);
 
 
 protected:

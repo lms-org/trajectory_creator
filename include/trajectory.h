@@ -23,10 +23,10 @@ public:
     bool doesCollide(); //does the trajectory collide
     bool isDrivable(); //is the traj. drivable
 
-    T kappa_max = 2.5; //max. drivable curvature of the traj.
-    T aOrthMax = 0.5*9.81; //max. acc. orthogonal to the traj.
+    float kappa_max = 2.5; //max. drivable curvature of the traj.
+    float aOrthMax = 0.5*9.81; //max. acc. orthogonal to the traj.
 
-    T ctot(); //function: gives back the value of the total cost function
+    float ctot(); //function: gives back the value of the total cost function
 
     /**
      * should not be used anymore. Better use projectOntoBezierCurve
@@ -37,7 +37,7 @@ public:
 
         points2d<m> points;
 
-        T dt = tend/(m-1); //time steps
+        float dt = tend/(m-1); //time steps
         Vector<m> tt;
         for (int i = 0; i < m; i++)
         {
@@ -102,17 +102,17 @@ public:
      * l = diastance between two successive points
      */
     template<size_t m, size_t k>
-    points2d<m> projectOntoBezierCurve(const points2d<k> pointsIn, const T l)
+    points2d<m> projectOntoBezierCurve(const points2d<k> pointsIn, const float l)
     {
-        T s_begin = 0;
-        T s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
+        float s_begin = 0;
+        float s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
 
         BezierCurve<k-1> centerLine = BezierCurve<k-1>(pointsIn, s_begin, s_end);
 
         //generate the vector with the times
         points2d<m> pointsOut;
 
-        T dt = tend/(m-1); //time steps
+        float dt = tend/(m-1); //time steps
         Vector<m> tt;
         for (int i = 0; i < m; i++)
         {
@@ -186,7 +186,7 @@ public:
      * l = diastance between two successive points
      */
    template<size_t m, size_t k>
-    street_environment::Trajectory projectOntoBezierCurvePlusVelocity(const points2d<k> pointsIn, const T l)
+    street_environment::Trajectory projectOntoBezierCurvePlusVelocity(const points2d<k> pointsIn, const float l)
     {
 
         // initialize
@@ -196,13 +196,13 @@ public:
 
         Poly<3> poly_s_d = mPtr_s->differentiate(); //first derivative
 
-        T s_begin = 0;
-        T s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
+        float s_begin = 0;
+        float s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
 
         BezierCurve<k-1> centerLine = BezierCurve<k-1>(pointsIn, s_begin, s_end);
 
 
-        T dt = tend/(m-1); //time steps
+        float dt = tend/(m-1); //time steps
         Vector<m> tt;
         for (int i = 0; i < m; i++)
         {
@@ -218,7 +218,7 @@ public:
 
         dd = mPtr_d->eval<m>(tt);
 
-        T s_end_trajectory = mPtr_s->evalAtPoint(this->tend);
+        float s_end_trajectory = mPtr_s->evalAtPoint(this->tend);
 
         // get rid of strange values in ss, dd and ss_d i.e. all for which tt(i) > this.T
         for (size_t j = 0; j < m; j++) {
@@ -354,7 +354,7 @@ public:
 
     }
 
-    Trajectory(const T& _v1, const T& _d1, const T & _safetyS, const T& _safetyD, const RoadData& _roadData1, const std::vector<ObstacleData>& _obstacles, T _tend, const CoeffCtot& _coeffCtot);
+    Trajectory(const float& _v1, const float& _d1, const float & _safetyS, const float& _safetyD, const RoadData& _roadData1, const std::vector<ObstacleData>& _obstacles, float _tend, const CoeffCtot& _coeffCtot);
 
 
     /**
@@ -384,11 +384,11 @@ private:
 
     CoeffCtot coeffCtot1; //coefficients of the cost function (see also types.h)
 
-    T tend; //time the traj. needs (as tstart = 0 by definition)
+    float tend; //time the traj. needs (as tstart = 0 by definition)
 
-    T kappa; //curvature of the road (approx. as a circle)
+    float kappa; //curvature of the road (approx. as a circle)
 
-    T ctot_value; //value of the total cost function
+    float ctot_value; //value of the total cost function
     bool ctot_alreadyCalc; //was the value already calculated
 
     RoadData roadData1; //data of the road (see also types.h)
@@ -404,12 +404,12 @@ private:
     int nSamplesCollisionAndDrivabilityDetection = 300;
 
 
-    T safetyS; //safety distance in s (longitudinal) direction: IMPORTANT: Both cars are assumed as points so this must at least include half their lengths
-    T safetyD; //safety distance in d (lateral) direction: IMPORTANT: this is measured from the center line
+    float safetyS; //safety distance in s (longitudinal) direction: IMPORTANT: Both cars are assumed as points so this must at least include half their lengths
+    float safetyD; //safety distance in d (lateral) direction: IMPORTANT: this is measured from the center line
 
-    T Jtd(); //function that returns the smoothness-functional for the d direction
+    float Jtd(); //function that returns the smoothness-functional for the d direction
 
-    T Jts(); //function that returns the smoothness-functional for the s direction
+    float Jts(); //function that returns the smoothness-functional for the s direction
 
     S_initialCond S;
     D_initialCond D;

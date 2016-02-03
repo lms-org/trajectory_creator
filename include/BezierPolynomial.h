@@ -21,7 +21,7 @@ public:
     /**
      * @brief constructor give points as Eigen Vector<n+1> t_begin, t_end
      */
-    BezierPolynomial(const Vector<n+1> controlPointsIn, const T t_beginIn, const T t_endIn) : t_begin(initBegin(t_beginIn, t_endIn)),
+    BezierPolynomial(const Vector<n+1> controlPointsIn, const float t_beginIn, const float t_endIn) : t_begin(initBegin(t_beginIn, t_endIn)),
                                                                                      t_end(initEnd(t_beginIn, t_endIn)),
                                                                                      controlPoints(controlPointsIn)
     {
@@ -31,7 +31,7 @@ public:
     /**
      * @brief evaluate Polynomial at one point t in [t_begin, t_end]
      */
-    T evalAtPoint(const T t)
+    float evalAtPoint(const float t)
     {
         if (t < t_begin || t > t_end)
         {
@@ -39,7 +39,7 @@ public:
             return 0;
         }
         // maps from t in [t_begin, t_end] to tau in [0, 1]
-        T tau = (t-t_begin)/(t_end-t_begin);
+        float tau = (t-t_begin)/(t_end-t_begin);
 
         //This is the Casteljaus Algorithm as on wikipedia: https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm
         Vector<n+1> betas_old;
@@ -100,7 +100,7 @@ public:
 
 
 private:
-    T initBegin(const T t_beginIn, const T t_endIn)
+    float initBegin(const float t_beginIn, const float t_endIn)
     {
         if (t_beginIn >= t_endIn)
         {
@@ -111,7 +111,7 @@ private:
         }
     }
 
-    T initEnd(const T t_beginIn, const T t_endIn)
+    float initEnd(const float t_beginIn, const float t_endIn)
     {
         if (t_beginIn >= t_endIn)
         {
@@ -124,8 +124,8 @@ private:
 
     const Vector<n+1> controlPoints;
 
-    const T t_begin;
-    const T t_end;
+    const float t_begin;
+    const float t_end;
 
 };
 

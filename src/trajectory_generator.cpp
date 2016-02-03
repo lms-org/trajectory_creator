@@ -4,14 +4,14 @@
 #include "trajectory_generator.h"
 #include "lms/math/math.h"
 
-bool TrajectoryGenerator::createTrajectorySample(Trajectory &trajectory,T v1, T d1, T safetyS, T safetyD, T tmin, T tmax, int nSamplesTraj, const RoadData& roadDataIn, std::vector<ObstacleData>& obstacleDataIn, const CoeffCtot& coeffCtotIn) {
+bool TrajectoryGenerator::createTrajectorySample(Trajectory &trajectory,float v1, float d1, float safetyS, float safetyD, float tmin, float tmax, int nSamplesTraj, const RoadData& roadDataIn, std::vector<ObstacleData>& obstacleDataIn, const CoeffCtot& coeffCtotIn) {
 
 
-    T dt = (tmax - tmin) / (nSamplesTraj - 1); //time increment
+    float dt = (tmax - tmin) / (nSamplesTraj - 1); //time increment
 
     //find the minimum cost function while still drivable and collision free
     bool flagFound = false;
-    T bestCtot = 0;
+    float bestCtot = 0;
 
     for (int i = 0; i < nSamplesTraj; i++) {
         //create trajectory
@@ -54,14 +54,14 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
     controlPointsIn(2) = -1;
 
 
-    T t_begin = 0;
-    T t_end = 1;
+    float t_begin = 0;
+    float t_end = 1;
 
     const size_t m = 100;
 
     Vector<m> tt;
 
-    T dt = (t_end-t_begin)/(m-1);
+    float dt = (t_end-t_begin)/(m-1);
 
     for (size_t i = 0; i < m; i++)
     {
@@ -71,7 +71,7 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
     BezierPolynomial<2> bezPoly = BezierPolynomial<2>(controlPointsIn, t_begin, t_end);
     BezierPolynomial<1> DerBezPoly = bezPoly.differentiate();
 
-    T valueAt0p5 = bezPoly.evalAtPoint(0.5);
+    float valueAt0p5 = bezPoly.evalAtPoint(0.5);
 
     auto y = bezPoly.eval<m>(tt);
     auto dy = DerBezPoly.eval<m>(tt);
@@ -92,14 +92,14 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
     pointsCenter.y << 0.2500,    0.2897,    0.3676,    0.4805,    0.6240,    0.7923,    0.9787,    1.1758,    1.3757,    1.5705;
 
     // Generate Data
-    T v1 = 2;
-    T d1 = 0.2;
+    float v1 = 2;
+    float d1 = 0.2;
 
-    T safetyS = 0.55;
-    T safetyD = 0.15;
+    float safetyS = 0.55;
+    float safetyD = 0.15;
 
-    T tmin = 1;
-    T tmax = 5;
+    float tmin = 1;
+    float tmax = 5;
 
     int nSamplesTraj = 100;
 
@@ -137,7 +137,7 @@ TrajectoryGenerator::TrajectoryGenerator(lms::logging::Logger& _logger) : logger
 
     Trajectory trajectory;
 
-    T l = 0.2;
+    float l = 0.2;
 
     Trajectory trajCenterLine = Trajectory(2, 0, 0, 0, roadDataCenter, noObs, 4, coeffCtotIn);
 

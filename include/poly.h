@@ -59,10 +59,10 @@ public:
     /**
      * Evaluates the Polynomial at one point
      */
-    T evalAtPoint(const T x)
+    float evalAtPoint(const float x)
     {
-        T value = coeff(0);
-        T x_power = 1.0;
+        float value = coeff(0);
+        float x_power = 1.0;
 
         for (int j = 1; j <= n; j++)
         {

@@ -18,7 +18,7 @@ class BezierCurve {
      * @brief constructor
      */
 public:
-    BezierCurve(const points2d<n+1> controlPointsIn, const T t_beginIn, const T t_endIn) : t_begin(initBegin(t_beginIn, t_endIn)),
+    BezierCurve(const points2d<n+1> controlPointsIn, const float t_beginIn, const float t_endIn) : t_begin(initBegin(t_beginIn, t_endIn)),
                                                                                            t_end(initEnd(t_beginIn, t_endIn)),
                                                                                            poly_x(BezierPolynomial<n>(controlPointsIn.x, t_begin, t_end)),//Watch OUT!!!!! This seems to make the mistake as t_beginIn and t_endIn are anythind (mostly 0)
                                                                                            poly_y(BezierPolynomial<n>(controlPointsIn.y, t_begin, t_end)),
@@ -34,7 +34,7 @@ public:
     /**
      * @brief evaluate curve at one point for the parametrizing parameter t
      */
-    Vector<2> evalAtPoint(const T t)
+    Vector<2> evalAtPoint(const float t)
     {
         Vector<2> result;
         result(0) = 0;
@@ -71,7 +71,7 @@ public:
     /**
      * @brief return the normal vector at one point
      */
-    Vector<2> normalAtPoint(const T t) {
+    Vector<2> normalAtPoint(const float t) {
         Vector<2> result;
         result(0) = 0;
         result(1) = 1;
@@ -81,10 +81,10 @@ public:
             return result;
         }
 
-        T dy = poly_dy.evalAtPoint(t);
-        T dx = poly_dx.evalAtPoint(t);
+        float dy = poly_dy.evalAtPoint(t);
+        float dx = poly_dx.evalAtPoint(t);
 
-        T norm = sqrt(pow(dy, 2) + pow(dx, 2));
+        float norm = sqrt(pow(dy, 2) + pow(dx, 2));
 
         if (norm == 0)
         {
@@ -102,7 +102,7 @@ public:
     /**+
      * @brief: return the tangential vector at one point
      */
-    Vector<2> tangentAtPoint(const T t) {
+    Vector<2> tangentAtPoint(const float t) {
         Vector<2> result;
         result(0) = 0;
         result(1) = 1;
@@ -112,10 +112,10 @@ public:
             return result;
         }
 
-        T dy = poly_dy.evalAtPoint(t);
-        T dx = poly_dx.evalAtPoint(t);
+        float dy = poly_dy.evalAtPoint(t);
+        float dx = poly_dx.evalAtPoint(t);
 
-        T norm = sqrt(pow(dy, 2) + pow(dx, 2));
+        float norm = sqrt(pow(dy, 2) + pow(dx, 2));
 
         if (norm == 0)
         {
@@ -129,16 +129,16 @@ public:
         return result;
     }
 
-    T normTangentAtPoint(const T t) {
-        T result = 0;
+    float normTangentAtPoint(const float t) {
+        float result = 0;
 
         if (t < t_begin || t > t_end) {
             // throw error
             return result;
         }
 
-        T dy = poly_dy.evalAtPoint(t);
-        T dx = poly_dx.evalAtPoint(t);
+        float dy = poly_dy.evalAtPoint(t);
+        float dx = poly_dx.evalAtPoint(t);
 
         result = sqrt(pow(dy, 2) + pow(dx, 2));
 
@@ -164,22 +164,22 @@ public:
     /**
      * return curvature (signed) at point
      */
-    T curvatureAtPoint(const T t)
+    float curvatureAtPoint(const float t)
     {
-        T result = 0;
+        float result = 0;
 
         if (t < t_begin || t > t_end) {
             // throw error
             return result;
         }
 
-        T dy = poly_dy.evalAtPoint(t);
-        T dx = poly_dx.evalAtPoint(t);
-        T ddx = poly_ddx.evalAtPoint(t);
-        T ddy = poly_ddy.evalAtPoint(t);
+        float dy = poly_dy.evalAtPoint(t);
+        float dx = poly_dx.evalAtPoint(t);
+        float ddx = poly_ddx.evalAtPoint(t);
+        float ddy = poly_ddy.evalAtPoint(t);
 
-        T denum = pow( pow(dx,2) + pow(dy,2) , 1.5);
-        T num = dx*ddy - dy*ddx;
+        float denum = pow( pow(dx,2) + pow(dy,2) , 1.5);
+        float num = dx*ddy - dy*ddx;
 
         if (denum == 0)
         {
@@ -213,8 +213,8 @@ public:
 
 
 private:
-    const T t_begin;
-    const T t_end;
+    const float t_begin;
+    const float t_end;
 
     BezierPolynomial<n> poly_x;
     BezierPolynomial<n> poly_y;
@@ -227,7 +227,7 @@ private:
 
 
 
-    T initBegin(const T t_beginIn, const T t_endIn)
+    float initBegin(const float t_beginIn, const float t_endIn)
     {
         if (t_beginIn >= t_endIn)
         {
@@ -238,7 +238,7 @@ private:
         }
     }
 
-    T initEnd(const T t_beginIn, const T t_endIn)
+    float initEnd(const float t_beginIn, const float t_endIn)
     {
         if (t_beginIn >= t_endIn)
         {

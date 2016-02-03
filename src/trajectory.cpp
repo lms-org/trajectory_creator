@@ -20,11 +20,11 @@ bool Trajectory::doesCollide() {
 
         collisionDetected = true;
 
-        T dt = tend / nSamplesCollisionAndDrivabilityDetection;
-        T t = 0;
+        float dt = tend / nSamplesCollisionAndDrivabilityDetection;
+        float t = 0;
 
-        T s_local;
-        T d_local;
+        float s_local;
+        float d_local;
 
         for (int i = 0; i <= nSamplesCollisionAndDrivabilityDetection; i++) {
             // sample the time numberOfsamplesCollsisionDetection times
@@ -75,8 +75,8 @@ bool Trajectory::isDrivable() {
     {
         drivabilityDetected = true;
 
-        T dt = tend / nSamplesCollisionAndDrivabilityDetection;
-        T t = 0;
+        float dt = tend / nSamplesCollisionAndDrivabilityDetection;
+        float t = 0;
 
         // differentiate the polynomials
         Poly<4> poly_d_d = mPtr_d->differentiate(); //first derivative
@@ -87,16 +87,16 @@ bool Trajectory::isDrivable() {
         for (int i = 0; i <= nSamplesCollisionAndDrivabilityDetection; i++) {
             // sample in the time nSamplesCollisionAndDrivabilityDetection times
             // evaluate the polynomials for the local time
-            T d_d_local  = poly_d_d.evalAtPoint(t);
-            T d_dd_local = poly_d_dd.evalAtPoint(t);
+            float d_d_local  = poly_d_d.evalAtPoint(t);
+            float d_dd_local = poly_d_dd.evalAtPoint(t);
 
-            T s_d_local = poly_s_d.evalAtPoint(t);
+            float s_d_local = poly_s_d.evalAtPoint(t);
 
             // update time
             t = t + dt;
 
             //compute the local curvature of the traj. in x-y-space
-            T kappa_xy_local;
+            float kappa_xy_local;
 
             //catch cases
             if (s_d_local == 0)
@@ -125,7 +125,7 @@ bool Trajectory::isDrivable() {
                 }
 
                 // check if the orthogonal acceleration is ok (speed dependent)
-                T v_local_squarred = pow(d_d_local,2) + pow(s_d_local,2);
+                float v_local_squarred = pow(d_d_local,2) + pow(s_d_local,2);
 
                 if (abs(kappa_xy_local * v_local_squarred) > aOrthMax)
                 {
@@ -144,7 +144,7 @@ bool Trajectory::isDrivable() {
 /**
  * function that returns the total value of the cost function
  */
-T Trajectory::ctot() {
+float Trajectory::ctot() {
     if (ctot_alreadyCalc) {
         return ctot_value;
     }
@@ -161,7 +161,7 @@ T Trajectory::ctot() {
 /**
  * function that returns the smoothness-functional for the d direction
  */
-T Trajectory::Jtd() {
+float Trajectory::Jtd() {
     const Vector<6> &coeff_d = mPtr_d->getCoeff();
     //formula from matlab: checked
     return 36 * tend * pow(coeff_d(3), 2) + pow(tend, 3) * (192 * pow(coeff_d(4), 2) + 240 * coeff_d(3) * coeff_d(5)) +
@@ -172,7 +172,7 @@ T Trajectory::Jtd() {
 /**
  * function that returns the smoothness-functional for the d direction
  */
-T Trajectory::Jts() {
+float Trajectory::Jts() {
     const Vector<5> &coeff_s = mPtr_s->getCoeff();
     //formula from matlab: checked
     return 192 * pow(tend, 3) * pow(coeff_s(4), 2) + 144 * pow(tend, 2) * coeff_s(3) * coeff_s(4) +
@@ -183,7 +183,7 @@ T Trajectory::Jts() {
 /**
  * constructor
  */
-Trajectory::Trajectory(const T &_v1, const T &_d1, const T & _safetyS, const T& _safetyD, const RoadData &_roadData1, const std::vector<ObstacleData> &_obstacles, T _tend, const CoeffCtot& _coeffCtot) : roadData1(_roadData1),
+Trajectory::Trajectory(const float &_v1, const float &_d1, const float & _safetyS, const float& _safetyD, const RoadData &_roadData1, const std::vector<ObstacleData> &_obstacles, float _tend, const CoeffCtot& _coeffCtot) : roadData1(_roadData1),
                                                                                                                                                                                                            obstacles(_obstacles),
                                                                                                                                                                                                            tend(_tend),
                                                                                                                                                                                                            coeffCtot1(_coeffCtot),
