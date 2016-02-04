@@ -5,6 +5,7 @@
 #include "lms/math/mathEigen.h"
 bool TrajectoryLineCreator::initialize() {
     envObstacles = readChannel<street_environment::EnvironmentObjects>("ENVIRONMENT_OBSTACLE");
+    roadStates= readChannel<street_environment::RoadStates>("ROAD_STATES");
     road = readChannel<street_environment::RoadLane>("ROAD");
     trajectory = writeChannel<street_environment::Trajectory>("LINE");
     debug_trajectory = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY");
@@ -20,20 +21,41 @@ bool TrajectoryLineCreator::deinitialize() {
     delete generator;
     return true;
 }
+
+float TrajectoryLineCreator::targetVelocity(){
+    //TODO calculate useful speed using curvation # IMPORTANT
+    float velocity = 0;
+    switch (roadStates->mostProbableState().type) {
+    case street_environment::RoadStateType::STRAIGHT:
+        velocity = 3;
+        break;
+    case street_environment::RoadStateType::STRAIGHT_CURVE:
+        velocity = 2;
+        break;
+    case street_environment::RoadStateType::CURVE:
+        velocity = 2;
+        break;
+    default:
+        break;
+    }
+    return velocity;
+}
+
 bool TrajectoryLineCreator::cycle() {
     //clear old trajectory
     trajectory->clear();
     //calculate data for creating the trajectory
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
-    //TODO not smart
+    float velocity = targetVelocity();
+    //calculate the speed without
+
 
     bool advancedTraj = false;
-
     street_environment::Trajectory traj;
     if(config().get<bool>("simpleTraj",true)){
-        traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold);
+        traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold,velocity);
     }else{
-        traj= simpleTrajectory(0,obstacleTrustThreshold);
+        traj= simpleTrajectory(0,obstacleTrustThreshold,velocity);
         //detect if we have to go left or right
         if(traj[traj.size()-1].velocity == 0){
             //Stop it, we won't go for an advancedTrajectory :)
@@ -74,7 +96,7 @@ bool TrajectoryLineCreator::cycle() {
             traj.clear();
             if(!advancedTrajectory(traj,initRightSide,endVelocity,minTime,maxTime)){
                 logger.warn("advancedTrajectory")<<"FAILED";
-                traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold);
+                traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold,velocity);
             }else{
                 advancedTraj = true;
             }
@@ -181,7 +203,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     return true;
 }
 
-street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine,const float obstacleTrustThreshold){
+street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine,const float obstacleTrustThreshold, float endVelocity){
     //Mindestabstand zwischen zwei Hindernissen 1m
     //Maximalabstand von der Kreuzung: 15cm
     //An der Kreuzung warten: 2s
@@ -294,81 +316,18 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                 continue;
             }
         }
-        //=================================================================
-        // Here is the place to implement higher level velocity adjustments
-        //=================================================================
-        int nPointsRoad = road->points().size();
-        float lengthEnvModelSegment = road->polarPartLength;
-        //inputs
-        float minDistance = 0.8;
-        float maxDistance = 100;
-
-
-        //check if environment model has needed range
-        float maxDistanceEnvModel =  lengthEnvModelSegment * (nPointsRoad-1);
-        if (maxDistance > maxDistanceEnvModel)
-        {
-            //logger.warn("max distance is bigger than max distance of environment model"); //TODO
-            maxDistance = maxDistanceEnvModel;
-        }
-        if (minDistance < 0)
-        {
-            logger.warn("min distance smaller 0");
-            minDistance = 0;
-        }
-
-        //calc all points
-        lms::math::vertex2f nearestPoint = interpolateRoadAtDistance(minDistance);
-        lms::math::vertex2f midPoint = interpolateRoadAtDistance((minDistance+maxDistance)/2);
-        lms::math::vertex2f farthestPoint = interpolateRoadAtDistance(maxDistance);
-
-
-
-        // calc. curvature opf the circle with signum
-        float curvature_local = lms::math::circleCurvature(nearestPoint, midPoint, farthestPoint);
-
-        //=================================================================
-        // PT 1 filter
-
-        alphaPT1 = config().get<float>("SpeedEstimationalphaPT1curvature",0.05);
-
-        //check alpha
-        if (alphaPT1 < 0)
-        {
-            logger.warn("alpha PT1 smaller 0");
-            alphaPT1 = 0.01;
-        }
-        if (alphaPT1 > 1)
-        {
-            logger.warn("alpha PT1 larger 1");
-            alphaPT1 = 0.99;
-        }
-
-        //do PT 1
-        curvatureAtLargeDistancePT1 = alphaPT1*curvature_local + (1-alphaPT1)*curvatureAtLargeDistancePT1;
-
-        //just for debugging
-        logger.debug("curvature at large distance: moment: ") << curvature_local;
-        logger.debug("curvature at large distance: PT1   : ") << curvatureAtLargeDistancePT1;
-
-        float velocity = 0;
         if(useFixedSpeed){
-            velocity = fixedSpeed;
-        }else{
-            velocity = 2;//TODO #IMPORTANT
+            endVelocity = fixedSpeed;
         }
         vertex2f result;
         if(rightSide){
             result= p1 + orthogonalTrans;
-            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,velocity,-0.2)); //TODO
+            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,endVelocity,-0.2)); //TODO
         }else{
             result= p1 - orthogonalTrans;
-            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,velocity,0.2)); //TODO
+            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,endVelocity,0.2)); //TODO
         }
     }
-
-    //TODO we could also modify the velocity after gernerating the trajectory #IMPORTANT
-    //TODO we could also modify the viewDIR after gernerating the trajectory #IMPORTANT
 
     return tempTrajectory;
 
