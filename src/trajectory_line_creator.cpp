@@ -90,7 +90,7 @@ bool TrajectoryLineCreator::cycle() {
             float midDistance = road->length();
             //float minTime = midDistance/maxVelocity;
             //float maxTime = midDistance/averageVelocity;
-            float minTime = midDistance/maxVelocity/4;
+            float minTime = 0.05;
             float maxTime = 2;
 
             traj.clear();
@@ -121,10 +121,15 @@ bool TrajectoryLineCreator::cycle() {
 }
 
 bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &trajectory, bool rightSide, float endVelocity, float tMin,float tMax){
+    logger.warn("In advanced trajectory now");
+
     if(road->polarDarstellung.size() < 8){
         logger.error("invalid middle")<<road->polarDarstellung.size();
         return false;
     }
+    logger.warn("still there");
+
+
     //INPUT
     //hindernisse: vector Abstand-Straße,geschwindigkeit-Straße(absolut), -1 (links) +1 (rechts) (alle hindernisse hintereinander)
     //eigenes auto, vx,vy, dw -winkelgeschwindigkeit dw (zunächst mal 0)
@@ -146,6 +151,8 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
     if(velocity < 0.01)
         velocity = 0.01;
+    if(velocity > 3)
+        velocity = 3;
     dataRoad.vx0 = velocity;
     dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
     dataRoad.y0 = road->polarDarstellung[0];
@@ -167,18 +174,19 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
             toAdd.v0 = 0;
             toAdd.leftLane = obstPtr->distanceOrth()> 0;
             dataObstacle.push_back(toAdd);
-            //logger.error("obstacle: s0: ") << toAdd.s0 << ",  v0: " << toAdd.v0 << ",  leftLane: " << toAdd.leftLane;
+            logger.error("obstacle: s0: ") << toAdd.s0 << ",  v0: " << toAdd.v0 << ",  leftLane: " << toAdd.leftLane;
         }
     }
     CoeffCtot tot;
 
     tot.kj = config().get<double>("kj",1.0);
-    tot.kT = config().get<double>("kT",100.0);
+    tot.kT = config().get<double>("kT",1.0);
     tot.ks = config().get<double>("ks",1.0);
     tot.kd = config().get<double>("kd",1.0);
 
+
     double safetyS = config().get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
-    double safetyD = config().get<double>("safetyD",0); //Sicherheitsabstand orthogonal zur Straße
+    double safetyD = config().get<double>("safetyD",0.1); //Sicherheitsabstand orthogonal zur Straße
 
     Trajectory result;
     if(generator->createTrajectorySample(result,endVelocity,d1,safetyS,safetyD,tMin,tMax,nSamplesTraj,dataRoad,dataObstacle,tot)){
@@ -319,6 +327,9 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                 continue;
             }
         }
+
+
+        float velocity = 0;
         if(useFixedSpeed){
             endVelocity = fixedSpeed;
         }
@@ -336,86 +347,5 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
 
 }
 
-lms::math::vertex2f TrajectoryLineCreator::interpolateRoadAtDistance(float distanceIn)
-{
-    lms::math::vertex2f result;
 
-
-    int nPointsRoad = road->points().size();
-    float lengthEnvModelSegment = road->polarPartLength;
-
-    float distanceInClean = distanceIn;
-
-    //check if environment model has needed range
-    float maxDistanceEnvModel =  lengthEnvModelSegment * (nPointsRoad-1);
-    if (distanceInClean >= maxDistanceEnvModel)
-    {
-        //logger.warn("distanceIn is bigger than max distance of environment model"); //TODO
-        distanceInClean = maxDistanceEnvModel;
-        result = road->points()[nPointsRoad-1];
-        return result;
-
-    }
-    if (distanceInClean < 0)
-    {
-        logger.warn("distanceIn smaller 0");
-        distanceInClean = 0;
-    }
-
-    // get the point
-    if (fmod(distanceInClean, lengthEnvModelSegment) == 0)
-    {
-        // by chance got one point
-        int idPoint = round(distanceInClean/lengthEnvModelSegment);
-        result = road->points()[idPoint];
-        //logger.warn("perfect hit: i point:  ") << idPoint << ",  distance in: " << distanceInClean; //TODO
-        return result;
-    }
-
-    // is between two points
-    logger.debug("distanceIn   ") << distanceInClean;
-    int idPointBefore = floor(distanceInClean/lengthEnvModelSegment);
-
-    if ((idPointBefore < 0) || (idPointBefore > nPointsRoad - 2))
-    {
-
-        if (idPointBefore < 0)
-        {
-            logger.warn("the id of the point selected is smaller 0");
-            idPointBefore = 0;
-        }
-        if (idPointBefore > nPointsRoad - 2)
-        {
-            logger.warn("the id of the point selected is to big: ") << idPointBefore;
-            logger.warn("nPointsRoad: ") << nPointsRoad;
-            idPointBefore = nPointsRoad - 2;
-        }
-    }
-
-    lms::math::vertex2f pointBefore = road->points()[idPointBefore];
-    lms::math::vertex2f pointAfter = road->points()[idPointBefore+1]; // not going out of bounds should be automatically detected before
-
-
-    float fractionFirst =1 - (distanceInClean - idPointBefore*lengthEnvModelSegment)/lengthEnvModelSegment;
-
-    if ((fractionFirst < 0))
-    {
-        logger.warn("fraction should be bigger 0");
-        fractionFirst = 0;
-    }
-    if ((fractionFirst > 1))
-    {
-        logger.warn("fraction should be smaller 1");
-        fractionFirst = 1;
-    }
-
-
-
-    result.x = fractionFirst*pointBefore.x + (1-fractionFirst)*pointAfter.x;
-    result.y = fractionFirst*pointBefore.y + (1-fractionFirst)*pointAfter.y;
-
-    //logger.warn("i: ") << idPointBefore << ",  distance in: " << distanceInClean << ",  fraction first: " << fractionFirst <<",  x: " << result.x <<",  y= " << result.y << ", point before: x:" << pointBefore.x << ", y:" << pointBefore.y <<",  point0:x " << road->points()[0].x << ", y:" << road->points()[0].y;
-
-    return result;
-}
 
