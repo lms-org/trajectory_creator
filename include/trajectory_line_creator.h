@@ -30,7 +30,7 @@ private:
     float alphaPT1; // between 0 and 1. if 1 only current value
 
     lms::math::vertex2f interpolateRoadAtDistance(const float distanceIn);
-    float targetVelocity();
+    float targetVelocity(float obstacleTrustThreshold);
 };
 
 #endif /* IMAGE_HINT_TRANSFORMER_H */

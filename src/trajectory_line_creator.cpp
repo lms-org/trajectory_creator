@@ -22,22 +22,40 @@ bool TrajectoryLineCreator::deinitialize() {
     return true;
 }
 
-float TrajectoryLineCreator::targetVelocity(){
-    //TODO calculate useful speed using curvation # IMPORTANT
+float TrajectoryLineCreator::targetVelocity(float obstacleTrustThreshold){
     float velocity = 0;
-    switch (roadStates->mostProbableState().type) {
-    case street_environment::RoadStateType::STRAIGHT:
-        velocity = 3;
-        break;
-    case street_environment::RoadStateType::STRAIGHT_CURVE:
-        velocity = 2;
-        break;
-    case street_environment::RoadStateType::CURVE:
-        velocity = 2;
-        break;
-    default:
-        break;
+    bool obstacleInSight = false;
+    float distanceToObstacle = 0;
+    for(street_environment::EnvironmentObjectPtr obj:envObstacles->objects){
+        if(obj->getType() != street_environment::Obstacle::TYPE)
+            continue;
+        street_environment::ObstaclePtr obst = std::static_pointer_cast<street_environment::Obstacle>(obj);
+        if(obst->trust() > obstacleTrustThreshold){
+            obstacleInSight = true;
+            if(obst->position().x > 0 && (distanceToObstacle > obst->distanceTang()) || !obstacleInSight){
+                distanceToObstacle = obst->distanceTang();
+            }
+        }
     }
+    //TODO
+    if(obstacleInSight){
+        switch (roadStates->mostProbableState().type) {
+        case street_environment::RoadStateType::STRAIGHT:
+            velocity = 3;
+            break;
+        case street_environment::RoadStateType::STRAIGHT_CURVE:
+            velocity = 2;
+            break;
+        case street_environment::RoadStateType::CURVE:
+            velocity = 2;
+            break;
+        default:
+            break;
+        }
+    }else{
+
+    }
+    //TODO calculate useful speed using curvation # IMPORTANT
     return velocity;
 }
 
@@ -47,7 +65,7 @@ bool TrajectoryLineCreator::cycle() {
     //calculate data for creating the trajectory
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     //calculate the speed without obstacles
-    float velocity = targetVelocity();
+    float velocity = targetVelocity(obstacleTrustThreshold);
 
 
     bool advancedTraj = false;
