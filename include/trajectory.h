@@ -23,8 +23,8 @@ public:
     bool doesCollide(); //does the trajectory collide
     bool isDrivable(); //is the traj. drivable
 
-    float kappa_max = 2.5; //max. drivable curvature of the traj.
-    float aOrthMax = 0.5*9.81; //max. acc. orthogonal to the traj.
+    float kappa_max = 2.5*4; //max. drivable curvature of the traj.
+    float aOrthMax = 0.5*9.81*8; //max. acc. orthogonal to the traj.
 
     float ctot(); //function: gives back the value of the total cost function
 

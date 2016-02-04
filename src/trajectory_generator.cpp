@@ -15,6 +15,10 @@ bool TrajectoryGenerator::createTrajectorySample(Trajectory &trajectory,float v1
     for (int i = 0; i < nSamplesTraj; i++) {
         //create trajectory
         Trajectory sampleTrajectory = Trajectory(v1, d1, safetyS, safetyD, roadDataIn, obstacleDataIn, tmin + i * dt, coeffCtotIn);
+
+        //logger.warn("traj num ")<<i << "end time: " << tmin+i*dt;
+        //logger.warn("drivable ") <<sampleTrajectory.isDrivable() << "  collision: " << sampleTrajectory.doesCollide();
+
         if (sampleTrajectory.isDrivable() && !sampleTrajectory.doesCollide()) {
             // drivable and not colliding
             if (!flagFound) {

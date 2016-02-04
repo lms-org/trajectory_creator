@@ -35,7 +35,7 @@ bool Trajectory::doesCollide() {
 
             for (auto const &obs:obstacles) {
                 // loop over all obstacles on the road
-                if (s_local >= -safetyS + obs.s0 + obs.v0 * t && s_local <= safetyS + obs.s0 + obs.v0 * t) {
+                if ((s_local >= -safetyS + obs.s0 + obs.v0 * t) && (s_local <= safetyS + obs.s0 + obs.v0 * t)) {
                     // the obstacle is close enough for a collsision and not to far away
                     if (obs.leftLane) {
                         // left lane obstacle
@@ -203,7 +203,7 @@ Trajectory::Trajectory(const float &_v1, const float &_d1, const float & _safety
 
     double cosphi_d = -sin(roadData1.phi) * roadData1.w;
     double cosphi_dd = -pow(roadData1.w, 2) * cos(roadData1.phi);
-    double y0_d = -sin(roadData1.phi) * roadData1.vx0;
+    double y0_d = sin(roadData1.phi) * roadData1.vx0;
     double y0_dd = -(cos(roadData1.phi) * roadData1.w * roadData1.vx0 + sin(roadData1.phi) * roadData1.ax0);
 
     this->D.d0 = -cos(roadData1.phi) * roadData1.y0;
