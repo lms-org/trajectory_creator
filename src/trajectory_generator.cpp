@@ -1,4 +1,3 @@
-#include <types.h>
 #include <lms/math/vertex.h>
 #include <BezierPolynomial.h>
 #include "trajectory_generator.h"

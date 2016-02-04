@@ -1,7 +1,7 @@
 #ifndef TRAJECTORYGENERATOR_H
 #define TRAJECTORYGENERATOR_H
 
-#include <lms/logging/logger.h>
+#include <lms/logger.h>
 
 #include "types.h"
 #include "poly.h"
@@ -9,7 +9,6 @@
 
 class TrajectoryGenerator {
 public:
-
     /**
      * @brief Constructor
      */
