@@ -5,6 +5,7 @@
 #include "lms/math/mathEigen.h"
 bool TrajectoryLineCreator::initialize() {
     envObstacles = readChannel<street_environment::EnvironmentObjects>("ENVIRONMENT_OBSTACLE");
+    roadStates= readChannel<street_environment::RoadStates>("ROAD_STATES");
     road = readChannel<street_environment::RoadLane>("ROAD");
     trajectory = writeChannel<street_environment::Trajectory>("LINE");
     debug_trajectory = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY");
@@ -20,20 +21,41 @@ bool TrajectoryLineCreator::deinitialize() {
     delete generator;
     return true;
 }
+
+float TrajectoryLineCreator::targetVelocity(){
+    //TODO calculate useful speed using curvation # IMPORTANT
+    float velocity = 0;
+    switch (roadStates->mostProbableState().type) {
+    case street_environment::RoadStateType::STRAIGHT:
+        velocity = 3;
+        break;
+    case street_environment::RoadStateType::STRAIGHT_CURVE:
+        velocity = 2;
+        break;
+    case street_environment::RoadStateType::CURVE:
+        velocity = 2;
+        break;
+    default:
+        break;
+    }
+    return velocity;
+}
+
 bool TrajectoryLineCreator::cycle() {
     //clear old trajectory
     trajectory->clear();
     //calculate data for creating the trajectory
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
-    //TODO not smart
+    //calculate the speed without obstacles
+    float velocity = targetVelocity();
+
 
     bool advancedTraj = false;
-
     street_environment::Trajectory traj;
     if(config().get<bool>("simpleTraj",true)){
-        traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold);
+        traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold,velocity);
     }else{
-        traj= simpleTrajectory(0,obstacleTrustThreshold);
+        traj= simpleTrajectory(0,obstacleTrustThreshold,velocity);
         //detect if we have to go left or right
         if(traj[traj.size()-1].velocity == 0){
             //Stop it, we won't go for an advancedTrajectory :)
@@ -74,7 +96,7 @@ bool TrajectoryLineCreator::cycle() {
             traj.clear();
             if(!advancedTrajectory(traj,initRightSide,endVelocity,minTime,maxTime)){
                 logger.warn("advancedTrajectory")<<"FAILED";
-                traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold);
+                traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold,velocity);
             }else{
                 advancedTraj = true;
             }
@@ -189,7 +211,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     return true;
 }
 
-street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine,const float obstacleTrustThreshold){
+street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine,const float obstacleTrustThreshold, float endVelocity){
     //Mindestabstand zwischen zwei Hindernissen 1m
     //Maximalabstand von der Kreuzung: 15cm
     //An der Kreuzung warten: 2s
@@ -260,7 +282,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                 if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //TODO #IMPORTANT we already missed the trajectory!
                     continue;
                 }
-                if(crossing->foundOppositeStopLine){
+                if(crossing->foundOppositeStopLine && config().get<float>("crossingUseOppositeLine",false)){
                     if(car->velocity() < 0.1){//TODO HACK but may work
                         if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
                             logger.info("start waiting in front of crossing");
@@ -306,22 +328,17 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
 
         float velocity = 0;
         if(useFixedSpeed){
-            velocity = fixedSpeed;
-        }else{
-            velocity = 2;//TODO #IMPORTANT
+            endVelocity = fixedSpeed;
         }
         vertex2f result;
         if(rightSide){
             result= p1 + orthogonalTrans;
-            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,velocity,-0.2)); //TODO
+            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,endVelocity,-0.2)); //TODO
         }else{
             result= p1 - orthogonalTrans;
-            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,velocity,0.2)); //TODO
+            tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,endVelocity,0.2)); //TODO
         }
     }
-
-    //TODO we could also modify the velocity after gernerating the trajectory #IMPORTANT
-    //TODO we could also modify the viewDIR after gernerating the trajectory #IMPORTANT
 
     return tempTrajectory;
 
