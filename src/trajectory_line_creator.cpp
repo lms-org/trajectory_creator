@@ -46,8 +46,8 @@ bool TrajectoryLineCreator::cycle() {
     trajectory->clear();
     //calculate data for creating the trajectory
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
+    //calculate the speed without obstacles
     float velocity = targetVelocity();
-    //calculate the speed without
 
 
     bool advancedTraj = false;
@@ -274,7 +274,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                 if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //TODO #IMPORTANT we already missed the trajectory!
                     continue;
                 }
-                if(crossing->foundOppositeStopLine){
+                if(crossing->foundOppositeStopLine && config().get<float>("crossingUseOppositeLine",false)){
                     if(car->velocity() < 0.1){//TODO HACK but may work
                         if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
                             logger.info("start waiting in front of crossing");
