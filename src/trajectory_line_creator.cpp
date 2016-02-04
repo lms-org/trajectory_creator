@@ -274,7 +274,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                 if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //TODO #IMPORTANT we already missed the trajectory!
                     continue;
                 }
-                if(crossing->foundOppositeStopLine && config().get<float>("crossingUseOppositeLine",false)){
+                if(crossing->foundOppositeStopLine || !config().get<float>("crossingUseOppositeLine",false)){
                     if(car->velocity() < 0.1){//TODO HACK but may work
                         if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
                             logger.info("start waiting in front of crossing");
@@ -289,16 +289,19 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                             logger.warn("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
                         }else{
                             //check if the Crossing is close enough
-                            float x = crossing->position().x-config().get<float>("minDistanceToCrossing",0.1);//Wir gehen davon aus, dass crossing.distanceTang() == crossing.position.x ist
-                            float y= crossing->position().y;
                             //As there won't be an obstacle in front of the crossing we can go on the right
                             //TODO we won't indicate if we change line
-                            if(pow(x*x+y*y,0.5)-mid.length() < distanceObstacleBeforeChangeLine ){
+                            if(crossing->distanceTang()-tangLength < config().get<float>("minDistanceToCrossing",0.1)){
+                                if(useFixedSpeed){
+                                    continue;
+                                }
                                 //Create a trajectory with speed 0
                                 useFixedSpeed = true;
                                 fixedSpeed = 0;
-                                vertex2f result = mid + orthogonalTrans;
-                                tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,0,-0.2)); //TODO
+                                float x = crossing->position().x-config().get<float>("minDistanceToCrossing",0.1);//Wir gehen davon aus, dass crossing.distanceTang() == crossing.position.x ist
+                                float y= crossing->position().y;
+                                //vertex2f result = mid + orthogonalTrans;
+                                //tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,0,-0.2)); //TODO
                                 //add endPoint
                                 //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
                                 tempTrajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(x,y),normAlong,0,-0.2)); //TODO
