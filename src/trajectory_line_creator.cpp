@@ -341,10 +341,10 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                 }
             }else if(obj->getType() == street_environment::Crossing::TYPE){
                 const street_environment::CrossingPtr crossing = std::static_pointer_cast<street_environment::Crossing>(obj);
-                if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //TODO #IMPORTANT we already missed the trajectory!
+                if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //we already missed the trajectory!
                     continue;
                 }
-                if(crossing->foundOppositeStopLine || !config().get<float>("crossingUseOppositeLine",false)){
+                if(crossing->foundOppositeStopLine || !config().get<bool>("crossingUseOppositeLine",false)){
                     if(car->velocity() < 0.1){//TODO HACK but may work
                         if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
                             logger.info("start waiting in front of crossing");
