@@ -323,6 +323,85 @@ public:
         return trajectoryOut;
     }
 
+    /**
+     * Projects the trajectory on the unique Bezier Curve that is defined by the k points in points (points2d<k> struct points). Also return tangent + velocity
+     * l = diastance between two successive points
+     */
+
+    street_environment::Trajectory projectOntoLineSegments(lms::math::polyLine2f road, float lSample)
+    {
+
+        // initialize
+        // generate output
+        street_environment::Trajectory trajectoryOut;
+        street_environment::TrajectoryPoint toAdd;
+
+        Poly<3> poly_s_d = mPtr_s->differentiate(); //first derivative
+        Poly<4> poly_d_d = mPtr_d->differentiate();
+
+        int nPoints = (road.points().size());
+        float k = (1.0 * nPoints);
+        float l = road.points()[0].distance(road.points()[1]);
+
+        float s_begin = 0;
+        float s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
+
+        float min_velocity = S.v0;
+
+        if (S.v1 < S.v0)
+        {
+            min_velocity = S.v1;
+        }
+
+
+        float dt = lSample/min_velocity;
+        const int m = floor(s_end/lSample);
+
+
+        float t_local = 0;
+        float s_local = mPtr_s->evalAtPoint(t_local);
+        float d_local = mPtr_d->evalAtPoint(t_local)
+
+
+        float s_d_local = poly_s_d.evalAtPoint(t_local);
+        float d_d_local = poly_d_d.evalAtPoint(t_local);
+
+        for (int i = 0; i <m ; i++)
+        {
+            t_local = dt*i;
+            s_local = mPtr_s->evalAtPoint(t_local);
+            d_local = mPtr_d->evalAtPoint(t_local);
+            s_d_local = poly_s_d.evalAtPoint(t_local);
+
+            lms::math::vertex2f centerLinePoint = road.interpolateAtDistance(s_local);
+
+            //normal
+            lms::math::vertex2f centerLineNormal = road.interpolateNormalAtDistance(s_local);
+            lms::math::vertex2f trajPoint = centerLinePoint + (centerLineNormal*d_local); //the trajectoray point is the centerLinePoint plus d times the normal (should be oriented the right way and normalized)
+
+            toAdd.position = trajPoint;
+
+            // tangent
+            lms::math::vertex2f centerLineTangent = road.interpolateTangentAtDistance(s_local);
+
+            lms::math::vertex2f directionTraj = (centerLineTangent*s_d_local) + (centerLineNormal*d_d_local);
+            toAdd.directory = directionTraj.normalize();
+
+            // velocity (norm tangent times derivative d/dt s(t))
+            toAdd.velocity = sqrtf(pow(s_d_local, 2) + pow(d_d_local, 2));
+
+            // side
+            toAdd.distanceToMiddleLane = d_local;
+
+
+            // add to Trajectory
+            trajectoryOut.push_back(toAdd);
+        }
+
+
+        return trajectoryOut;
+    }
+
 /**
  * @brief work in progress: Do not USE!!!!
  */
