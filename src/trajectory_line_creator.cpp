@@ -33,7 +33,7 @@ float TrajectoryLineCreator::targetVelocity(float obstacleTrustThreshold){
         //Only looking for obstacles on the right side
         if(obst->distanceOrth() < 0 && obst->trust() > obstacleTrustThreshold){
             obstacleInSight = true;
-            if(obst->position().x > -0.1 && (distanceToObstacle > obst->distanceTang()) || !obstacleInSight){
+            if(obst->position().x > -0.1 && (distanceToObstacle > obst->distanceTang())){
                 distanceToObstacle = obst->distanceTang();
             }
         }
@@ -103,8 +103,6 @@ float TrajectoryLineCreator::targetVelocity(float obstacleTrustThreshold){
     }else{
         //do nothing
     }
-
-    //TODO calculate useful speed using curvation # IMPORTANT
     return velocity;
 }
 
@@ -115,7 +113,7 @@ bool TrajectoryLineCreator::cycle() {
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     //calculate the speed without obstacles
     float velocity = targetVelocity(obstacleTrustThreshold);
-    logger.error("set velocity: ") << velocity;
+    logger.debug("set velocity: ") << velocity;
 
 
     bool advancedTraj = false;
@@ -155,11 +153,11 @@ bool TrajectoryLineCreator::cycle() {
                 maxVelocity = 1;
             }
             averageVelocity /= traj.size();
-            float midDistance = road->length();
-            //float minTime = midDistance/maxVelocity;
-            //float maxTime = midDistance/averageVelocity;
-            float minTime = 0.05;
-            float maxTime = 2;
+            float minTime = 0.05; //TODO #IMPORTANT
+            float maxTime = 5;
+            if(endVelocity < 1){ //TODO HACK
+                endVelocity = 1;
+            }
 
             traj.clear();
             if(!advancedTrajectory(traj,initRightSide,endVelocity,minTime,maxTime)){
@@ -189,13 +187,10 @@ bool TrajectoryLineCreator::cycle() {
 }
 
 bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &trajectory, bool rightSide, float endVelocity, float tMin,float tMax){
-    logger.warn("In advanced trajectory now");
-
     if(road->polarDarstellung.size() < 8){
         logger.error("invalid middle")<<road->polarDarstellung.size();
         return false;
     }
-    logger.warn("still there");
 
 
     //INPUT
@@ -217,8 +212,8 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     dataRoad.kappa = lms::math::circleCurvature(road->points()[2],road->points()[5],road->points()[7]);
     dataRoad.phi = road->polarDarstellung[1];
     float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
-    if(velocity < 0.01)
-        velocity = 0.01;
+    if(velocity < 1) //TODO HACK
+        velocity = 1;
     if(velocity > 3)
         velocity = 3;
     dataRoad.vx0 = velocity;
@@ -242,7 +237,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
             toAdd.v0 = 0;
             toAdd.leftLane = obstPtr->distanceOrth()> 0;
             dataObstacle.push_back(toAdd);
-            logger.error("obstacle: s0: ") << toAdd.s0 << ",  v0: " << toAdd.v0 << ",  leftLane: " << toAdd.leftLane;
+            logger.debug("obstacle: s0: ") << toAdd.s0 << ",  v0: " << toAdd.v0 << ",  leftLane: " << toAdd.leftLane;
         }
     }
     CoeffCtot tot;
@@ -261,7 +256,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         //convert data
         //TODO anzahl der punkte
         //points2d<20> points = result.sampleXY<20>();
-        float middleLength = road->length();
+        //float middleLength = road->length();
         float middleStepLength = road->length()/10;
         lms::math::polyLine2f myroad= road->getWithDistanceBetweenPoints(middleStepLength);
         points2d<10> pointsMiddle;
@@ -297,8 +292,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         return tempTrajectory;
     }
     //we start in the car - NOT TODAY MY FRIEND
-    //tempTrajectory.points().push_back(lms::math::vertex2f(0,0));
-    //tempTrajectory.viewDirs.points().push_back(lms::math::vertex2f(1,0));
+    tempTrajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(0,0),lms::math::vertex2f(1,0),endVelocity,-road->polarDarstellung[0])); //Add first point
     const float trajectoryStartDistance = config().get<float>("trajectoryStartDistance",0.3);
     const float distanceBetweenTrajectoryPoints = config().get<float>("obstacleResolution",0.05);
     const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints);
@@ -396,8 +390,6 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
             }
         }
 
-
-        float velocity = 0;
         if(useFixedSpeed){
             endVelocity = fixedSpeed;
         }
