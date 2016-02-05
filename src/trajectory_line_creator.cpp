@@ -30,31 +30,80 @@ float TrajectoryLineCreator::targetVelocity(float obstacleTrustThreshold){
         if(obj->getType() != street_environment::Obstacle::TYPE)
             continue;
         street_environment::ObstaclePtr obst = std::static_pointer_cast<street_environment::Obstacle>(obj);
-        if(obst->trust() > obstacleTrustThreshold){
+        //Only looking for obstacles on the right side
+        if(obst->distanceOrth() < 0 && obst->trust() > obstacleTrustThreshold){
             obstacleInSight = true;
-            if(obst->position().x > 0 && (distanceToObstacle > obst->distanceTang()) || !obstacleInSight){
+            if(obst->position().x > -0.1 && (distanceToObstacle > obst->distanceTang()) || !obstacleInSight){
                 distanceToObstacle = obst->distanceTang();
             }
         }
     }
     //TODO
-    if(obstacleInSight){
-        switch (roadStates->mostProbableState().type) {
-        case street_environment::RoadStateType::STRAIGHT:
-            velocity = 3;
-            break;
-        case street_environment::RoadStateType::STRAIGHT_CURVE:
-            velocity = 2;
-            break;
-        case street_environment::RoadStateType::CURVE:
-            velocity = 2;
-            break;
-        default:
-            break;
-        }
-    }else{
 
+    Eigen::Vector3f stateVelocities;
+    stateVelocities(0) = config().get<float>("velocity_straight", 6);
+
+    float aOrthMax = config().get<float>("aOrthMax", 9.81*0.5);
+    float curve_minVelocity = config().get<float>("curve_minVelocity", 1.8);
+    float curve_maxVelocity = config().get<float>("curve_maxVelocity", 5);
+
+
+    float curveVelocity = sqrt(aOrthMax/fabs(roadStates->states[2].curvature));
+    float straightCurveVelocity = sqrt(aOrthMax/fabs(roadStates->states[1].curvature));
+
+    if (roadStates->states[2].curvature == 0)
+    {
+        curveVelocity = curve_maxVelocity;
     }
+    if (roadStates->states[1].curvature == 0)
+    {
+        straightCurveVelocity = straightCurveVelocity;
+    }
+
+
+    if (curveVelocity < curve_minVelocity)
+    {
+        curveVelocity = curve_minVelocity;
+    }
+    if (curveVelocity > curve_maxVelocity)
+    {
+        curveVelocity = curve_maxVelocity;
+    }
+    if (straightCurveVelocity < curve_minVelocity)
+    {
+        straightCurveVelocity = curve_minVelocity;
+    }
+    if (straightCurveVelocity > curve_maxVelocity)
+    {
+        straightCurveVelocity = curve_maxVelocity;
+    }
+
+    stateVelocities(1) = straightCurveVelocity;
+    stateVelocities(2) = curveVelocity;
+
+    Eigen::Vector3f stateProbabilities;
+    stateProbabilities(0) = roadStates->states[0].probability;
+    stateProbabilities(1) = roadStates->states[1].probability;
+    stateProbabilities(2) = roadStates->states[2].probability;
+
+    velocity = (stateProbabilities.cwiseProduct(stateVelocities)).sum() / stateProbabilities.sum();
+
+
+    if (velocity > stateVelocities(0))
+    {
+        velocity = stateVelocities(0);
+    }
+    if (velocity < curve_minVelocity)
+    {
+        velocity = curve_minVelocity;
+    }
+
+    if(obstacleInSight){
+        velocity = velocity * config().get<float>("obstacleVelocitySafetyFactor", 0.65);
+    }else{
+        //do nothing
+    }
+
     //TODO calculate useful speed using curvation # IMPORTANT
     return velocity;
 }
@@ -66,6 +115,7 @@ bool TrajectoryLineCreator::cycle() {
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     //calculate the speed without obstacles
     float velocity = targetVelocity(obstacleTrustThreshold);
+    logger.error("set velocity: ") << velocity;
 
 
     bool advancedTraj = false;
