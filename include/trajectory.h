@@ -185,7 +185,7 @@ public:
      * Projects the trajectory on the unique Bezier Curve that is defined by the k points in points (points2d<k> struct points). Also return tangent + velocity
      * l = diastance between two successive points
      */
-   template<size_t m, size_t k>
+    template<size_t m, size_t k>
     street_environment::Trajectory projectOntoBezierCurvePlusVelocity(const points2d<k> pointsIn, const float l)
     {
 
@@ -367,12 +367,22 @@ public:
 
         for (int i = 0; i <m ; i++)
         {
-            t_local = dt*i;
-            s_local = mPtr_s->evalAtPoint(t_local);
-            d_local = mPtr_d->evalAtPoint(t_local);
-            s_d_local = poly_s_d.evalAtPoint(t_local);
 
-            if ((s_local > 0) && (s_local < s_end) && (t_local > 0) && (t_local < tend)) {
+            t_local = dt*i;
+            if (t_local <= tend) {
+                s_local = mPtr_s->evalAtPoint(t_local);
+                d_local = mPtr_d->evalAtPoint(t_local);
+                s_d_local = poly_s_d.evalAtPoint(t_local);
+            }else
+            {
+                s_local = mPtr_s->evalAtPoint(tend) + S.v1*(t_local-tend);
+                s_d_local = S.v1;
+                d_local = D.d1;
+                d_d_local = 0;
+            }
+
+            if ((s_local > 0) && (s_local < s_end) && (t_local > 0))
+            {
 
                 lms::math::vertex2f centerLinePoint = road.interpolateAtDistance(s_local);
 
@@ -387,7 +397,8 @@ public:
                 // tangent
                 lms::math::vertex2f centerLineTangent = road.interpolateTangentAtDistance(s_local);
 
-                lms::math::vertex2f directionTraj = (centerLineTangent * s_d_local) + (centerLineNormal * d_d_local);
+                lms::math::vertex2f directionTraj =
+                        (centerLineTangent * s_d_local) + (centerLineNormal * d_d_local);
                 toAdd.directory = directionTraj.normalize();
 
                 // velocity (norm tangent times derivative d/dt s(t))
@@ -397,17 +408,14 @@ public:
                 toAdd.distanceToMiddleLane = d_local;
 
 
-                if (centerLineNormal.length() != 1)
-                {
+                if (centerLineNormal.length() != 1) {
                     //std::cout << "normal length wrong " << centerLineNormal.length() << std::endl;
                 }
-                if (centerLineNormal.length() != 1)
-                {
+                if (centerLineNormal.length() != 1) {
                     //std::cout << "tangent length wrong " << centerLineTangent.length() << std::endl;
                 }
 
-                if (d_local > 0.3)
-                {
+                if (d_local > 0.3) {
                     //std::cout << "d_local too big: " << d_local << ",   d0: " << D.d0 << ",  d1: " << D.d1 << ",  d0d: " << D.d0d << ",  d0dd: " << D.d0dd << std::endl;
                     //std::cout << " centerLinePoint" << centerLinePoint << std::endl;
                     //std::cout << " s loc " << s_local << ",  d loc " << d_local << ",  t_end " << tend << ",  t_local " << t_local << std::endl ;
@@ -416,8 +424,7 @@ public:
                     //std::cout << std::endl << std::endl;
                 }
 
-                if (d_local < -0.3)
-                {
+                if (d_local < -0.3) {
                     //std::cout << "d_local too small: " << d_local << std::endl;
                 }
 
@@ -437,11 +444,11 @@ public:
                 if (isnan(toAdd.directory.y)) {
                     //std::cout << "lhadfs dy" << std::endl;
                 }
-
-
-                // add to Trajectory
-                trajectoryOut.push_back(toAdd);
             }
+
+
+            // add to Trajectory
+            trajectoryOut.push_back(toAdd);
         }
 
 
@@ -451,24 +458,24 @@ public:
 /**
  * @brief work in progress: Do not USE!!!!
  */
-   /* template<size_t m>
-    RoadData Trajectory::convertPointsToRoadData(const points2d<m> pointsIn){
+    /* template<size_t m>
+     RoadData Trajectory::convertPointsToRoadData(const points2d<m> pointsIn){
 
-        RoadData roadDataOut;
+         RoadData roadDataOut;
 
-        if (pointsIn.x(0) > 0){
-            // the points are all infront of the car so i extrapolate linearly
-            T dx = pointsIn.x(1) - pointsIn.x(0);
-            T dy = pointsIn.y(1) - pointsIn.y(0);
+         if (pointsIn.x(0) > 0){
+             // the points are all infront of the car so i extrapolate linearly
+             T dx = pointsIn.x(1) - pointsIn.x(0);
+             T dy = pointsIn.y(1) - pointsIn.y(0);
 
-            if (dx == 0){
-                dx = 0.001;
-            }
+             if (dx == 0){
+                 dx = 0.001;
+             }
 
-            roadDataOut.y0 = pointsIn.y(0) + dy/dx*(-pointsIn.x(0));
-            roadDataOut.phi = atan(dy/dx);
-        }
-    }*/
+             roadDataOut.y0 = pointsIn.y(0) + dy/dx*(-pointsIn.x(0));
+             roadDataOut.phi = atan(dy/dx);
+         }
+     }*/
 
 
     /**
