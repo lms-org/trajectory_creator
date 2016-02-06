@@ -14,7 +14,7 @@ public:
     bool deinitialize() override;
     bool cycle() override;
 private:
-    street_environment::Trajectory simpleTrajectory(float trajectoryMaxLength,const float obstacleTrustThreshold,float endVelocity);
+    street_environment::Trajectory simpleTrajectory(float trajectoryMaxLength, float endVelocity);
     bool advancedTrajectory(street_environment::Trajectory &trajectory,bool rightSide, float endVelocity,float minTime,float maxTime);
     lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
     lms::ReadDataChannel<street_environment::RoadStates> roadStates;
@@ -30,7 +30,7 @@ private:
     float alphaPT1; // between 0 and 1. if 1 only current value
 
     lms::math::vertex2f interpolateRoadAtDistance(const float distanceIn);
-    float targetVelocity(float obstacleTrustThreshold);
+    float targetVelocity();
 };
 
 #endif /* IMAGE_HINT_TRANSFORMER_H */
