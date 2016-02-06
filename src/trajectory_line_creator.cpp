@@ -282,6 +282,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
     const float crossingTrustThreshold = config().get<float>("crossingTrustThreshold",0.5);
     bool useFixedSpeed = false;
     float fixedSpeed= 0;
+    bool firstAdd = true;
 
     street_environment::Trajectory tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
@@ -294,17 +295,18 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         return tempTrajectory;
     }
     //we start in the car - NOT TODAY MY FRIEND
-    tempTrajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(0,0),lms::math::vertex2f(1,0),endVelocity,-road->polarDarstellung[0])); //Add first point
     const float trajectoryStartDistance = config().get<float>("trajectoryStartDistance",0.3);
     const float distanceBetweenTrajectoryPoints = config().get<float>("obstacleResolution",0.05);
     const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints);
     float tangLength = 0;
     //ignore first point
-    for(size_t i = 2; i < middle.points().size(); i++) {
+    for(int i = 1; i <(int) middle.points().size(); i++) {
         const vertex2f p1 = middle.points()[i - 1];
         const vertex2f p2 = middle.points()[i];
-        if(p1 == p2) //should never happen
+        if(p1 == p2){ //should never happen
+            logger.error("simpleTrajectory")<<"p1 == p2";
             continue;
+        }
 
         const vertex2f along = p2 - p1;
         //check if the trajectory is long enough
@@ -398,9 +400,17 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         }
         vertex2f result;
         if(rightSide){
+            if(firstAdd){
+                firstAdd = false;
+                tempTrajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(0,0),normAlong,endVelocity,-0.2)); //TODO
+            }
             result= p1 + orthogonalTrans;
             tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,endVelocity,-0.2)); //TODO
         }else{
+            if(firstAdd){
+                firstAdd = false;
+                tempTrajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(0,0),normAlong,endVelocity,0.2)); //TODO
+            }
             result= p1 - orthogonalTrans;
             tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,endVelocity,0.2)); //TODO
         }
