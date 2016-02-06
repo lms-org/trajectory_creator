@@ -343,7 +343,6 @@ public:
         float k = (1.0 * nPoints);
         float l = road.points()[0].distance(road.points()[1]);
 
-        float s_begin = 0;
         float s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
 
         float min_velocity = S.v0;
