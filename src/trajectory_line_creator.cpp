@@ -22,7 +22,8 @@ bool TrajectoryLineCreator::deinitialize() {
     return true;
 }
 
-float TrajectoryLineCreator::targetVelocity(float obstacleTrustThreshold){
+float TrajectoryLineCreator::targetVelocity(){
+    const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     float velocity = 0;
     bool obstacleInSight = false;
     float distanceToObstacle = 0;
@@ -38,7 +39,6 @@ float TrajectoryLineCreator::targetVelocity(float obstacleTrustThreshold){
             }
         }
     }
-    //TODO
 
     Eigen::Vector3f stateVelocities;
     stateVelocities(0) = config().get<float>("velocity_straight", 6);
@@ -109,19 +109,17 @@ float TrajectoryLineCreator::targetVelocity(float obstacleTrustThreshold){
 bool TrajectoryLineCreator::cycle() {
     //clear old trajectory
     trajectory->clear();
-    //calculate data for creating the trajectory
-    float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
-    //calculate the speed without obstacles
-    float velocity = targetVelocity(obstacleTrustThreshold);
+    //calculate data for creating the trajectory    //calculate the speed without obstacles
+    float velocity = targetVelocity();
     logger.debug("set velocity: ") << velocity;
 
 
     bool advancedTraj = false;
     street_environment::Trajectory traj;
     if(config().get<bool>("simpleTraj",true)){
-        traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold,velocity);
+        traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),velocity);
     }else{
-        traj= simpleTrajectory(0,obstacleTrustThreshold,velocity);
+        traj= simpleTrajectory(0,velocity);
         //detect if we have to go left or right
         if(traj[traj.size()-1].velocity == 0){
             //Stop it, we won't go for an advancedTrajectory :)
@@ -162,7 +160,7 @@ bool TrajectoryLineCreator::cycle() {
             traj.clear();
             if(!advancedTrajectory(traj,initRightSide,endVelocity,minTime,maxTime)){
                 logger.warn("advancedTrajectory")<<"FAILED";
-                traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),obstacleTrustThreshold,velocity);
+                traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),velocity);
             }else{
                 advancedTraj = true;
             }
@@ -274,10 +272,12 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     return true;
 }
 
-street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine,const float obstacleTrustThreshold, float endVelocity){
+street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine, float endVelocity){
     //Mindestabstand zwischen zwei Hindernissen 1m
     //Maximalabstand von der Kreuzung: 15cm
     //An der Kreuzung warten: 2s
+    const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
+    const float crossingTrustThreshold = config().get<float>("crossingTrustThreshold",0.5);
     bool useFixedSpeed = false;
     float fixedSpeed= 0;
 
@@ -311,7 +311,6 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         if(tangLength < trajectoryStartDistance /* tangLength > trajectoryMaxLength*/){//TODO trajectoryMaxLength
             continue;
         }
-        const vertex2f mid((p1.x + p2.x) / 2., (p1.y + p2.y) / 2.);
         const vertex2f normAlong = along / along.length();
         const vertex2f orthogonal(normAlong.y, -normAlong.x);
         const vertex2f orthogonalTrans = orthogonal*translation;
@@ -322,15 +321,13 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         //check all obstacles
         //TODO not smart at all, won't work in all cases
         for(const std::shared_ptr<street_environment::EnvironmentObject> obj : envObstacles->objects){
-            if(obj->trust() < obstacleTrustThreshold){
-                continue;
-            }
             if(obj->getType() == street_environment::Obstacle::TYPE){
-               const street_environment::ObstaclePtr obst = std::static_pointer_cast<street_environment::Obstacle>(obj);
-                //check if the obstacle is trusted
-                if(obst->trust() < obstacleTrustThreshold){
+                //Check the trust
+                if(obj->trust() < obstacleTrustThreshold){
                     continue;
                 }
+               const street_environment::ObstaclePtr obst = std::static_pointer_cast<street_environment::Obstacle>(obj);
+                //check if the obstacle is trusted
 
                 distanceToObstacle = obst->distanceTang()-tangLength;//abstand zum Punkt p2
                 if((distanceToObstacle >= 0 && distanceToObstacle <= distanceObstacleBeforeChangeLine)||
@@ -340,11 +337,15 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                     break;
                 }
             }else if(obj->getType() == street_environment::Crossing::TYPE){
+                //Check the trust
+                if(obj->trust() < crossingTrustThreshold){
+                    continue;
+                }
                 const street_environment::CrossingPtr crossing = std::static_pointer_cast<street_environment::Crossing>(obj);
                 if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //we already missed the trajectory!
                     continue;
                 }
-                if(crossing->foundOppositeStopLine || !config().get<bool>("crossingUseOppositeLine",false)){
+                //TODO doesn't work that good if(crossing->foundOppositeStopLine || !config().get<bool>("crossingUseOppositeLine",false)){
                     if(car->velocity() < 0.1){//TODO HACK but may work
                         if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
                             logger.info("start waiting in front of crossing");
@@ -379,13 +380,13 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
                             }
                         }
                     }
-                }else{
+                /*}else{
                     useFixedSpeed = true;
                     fixedSpeed = config().get<float>("slowDownInFrontOfCrossing",1); //TODO #IMPORTANT
-                }
+                }*/
                 //add endPoint
             }else{
-                //I don't care about astartLine/whatever
+                //I don't care about a startLine/whatever
                 continue;
             }
         }

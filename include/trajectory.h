@@ -360,7 +360,7 @@ public:
 
         float t_local = 0;
         float s_local = mPtr_s->evalAtPoint(t_local);
-        float d_local = mPtr_d->evalAtPoint(t_local)
+        float d_local = mPtr_d->evalAtPoint(t_local);
 
 
         float s_d_local = poly_s_d.evalAtPoint(t_local);
