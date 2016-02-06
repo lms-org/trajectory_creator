@@ -360,7 +360,7 @@ public:
 
         float t_local = 0;
         float s_local = mPtr_s->evalAtPoint(t_local);
-        float d_local = mPtr_d->evalAtPoint(t_local)
+        float d_local = mPtr_d->evalAtPoint(t_local);
 
 
         float s_d_local = poly_s_d.evalAtPoint(t_local);
@@ -373,29 +373,76 @@ public:
             d_local = mPtr_d->evalAtPoint(t_local);
             s_d_local = poly_s_d.evalAtPoint(t_local);
 
-            lms::math::vertex2f centerLinePoint = road.interpolateAtDistance(s_local);
+            if ((s_local > 0) && (s_local < s_end) && (t_local > 0) && (t_local < tend)) {
 
-            //normal
-            lms::math::vertex2f centerLineNormal = road.interpolateNormalAtDistance(s_local);
-            lms::math::vertex2f trajPoint = centerLinePoint + (centerLineNormal*d_local); //the trajectoray point is the centerLinePoint plus d times the normal (should be oriented the right way and normalized)
-
-            toAdd.position = trajPoint;
-
-            // tangent
-            lms::math::vertex2f centerLineTangent = road.interpolateTangentAtDistance(s_local);
-
-            lms::math::vertex2f directionTraj = (centerLineTangent*s_d_local) + (centerLineNormal*d_d_local);
-            toAdd.directory = directionTraj.normalize();
-
-            // velocity (norm tangent times derivative d/dt s(t))
-            toAdd.velocity = sqrtf(pow(s_d_local, 2) + pow(d_d_local, 2));
-
-            // side
-            toAdd.distanceToMiddleLane = d_local;
+                lms::math::vertex2f centerLinePoint = road.interpolateAtDistance(s_local);
 
 
-            // add to Trajectory
-            trajectoryOut.push_back(toAdd);
+                //normal
+                lms::math::vertex2f centerLineNormal = road.interpolateNormalAtDistance(s_local);
+                lms::math::vertex2f trajPoint = centerLinePoint + (centerLineNormal *
+                                                                   d_local); //the trajectoray point is the centerLinePoint plus d times the normal (should be oriented the right way and normalized)
+
+                toAdd.position = trajPoint;
+
+                // tangent
+                lms::math::vertex2f centerLineTangent = road.interpolateTangentAtDistance(s_local);
+
+                lms::math::vertex2f directionTraj = (centerLineTangent * s_d_local) + (centerLineNormal * d_d_local);
+                toAdd.directory = directionTraj.normalize();
+
+                // velocity (norm tangent times derivative d/dt s(t))
+                toAdd.velocity = sqrtf(pow(s_d_local, 2) + pow(d_d_local, 2));
+
+                // side
+                toAdd.distanceToMiddleLane = d_local;
+
+
+                if (centerLineNormal.length() != 1)
+                {
+                    //std::cout << "normal length wrong " << centerLineNormal.length() << std::endl;
+                }
+                if (centerLineNormal.length() != 1)
+                {
+                    //std::cout << "tangent length wrong " << centerLineTangent.length() << std::endl;
+                }
+
+                if (d_local > 0.3)
+                {
+                    //std::cout << "d_local too big: " << d_local << ",   d0: " << D.d0 << ",  d1: " << D.d1 << ",  d0d: " << D.d0d << ",  d0dd: " << D.d0dd << std::endl;
+                    //std::cout << " centerLinePoint" << centerLinePoint << std::endl;
+                    //std::cout << " s loc " << s_local << ",  d loc " << d_local << ",  t_end " << tend << ",  t_local " << t_local << std::endl ;
+                    //std::cout << "tangent " << centerLineTangent << std::endl;
+                    //std::cout << "normal " << centerLineNormal << std::endl;
+                    //std::cout << std::endl << std::endl;
+                }
+
+                if (d_local < -0.3)
+                {
+                    //std::cout << "d_local too small: " << d_local << std::endl;
+                }
+
+                if (isnan(toAdd.position.x)) {
+                    //std::cout << "lhadfs x" << std::endl;
+                    //std::cout << " centerLinePoint" << centerLinePoint << std::endl;
+                    //std::cout << " s loc" << s_local << "d loc " << d_local << std::endl;
+                    //std::cout << "tangent " << centerLineTangent << std::endl;
+                    //std::cout << "normal " << centerLineNormal << std::endl;
+                }
+                if (isnan(toAdd.position.y)) {
+                    //std::cout << "lhadfs y" << std::endl;
+                }
+                if (isnan(toAdd.directory.x)) {
+                    //std::cout << "lhadfs dx" << std::endl;
+                }
+                if (isnan(toAdd.directory.y)) {
+                    //std::cout << "lhadfs dy" << std::endl;
+                }
+
+
+                // add to Trajectory
+                trajectoryOut.push_back(toAdd);
+            }
         }
 
 

@@ -154,7 +154,7 @@ bool TrajectoryLineCreator::cycle() {
             }
             averageVelocity /= traj.size();
             float minTime = 0.05; //TODO #IMPORTANT
-            float maxTime = 5;
+            float maxTime = 1.5;
             if(endVelocity < 1){ //TODO HACK
                 endVelocity = 1;
             }
@@ -243,9 +243,9 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     CoeffCtot tot;
 
     tot.kj = config().get<double>("kj",1.0);
-    tot.kT = config().get<double>("kT",1.0);
-    tot.ks = config().get<double>("ks",1.0);
-    tot.kd = config().get<double>("kd",1.0);
+    tot.kT = config().get<double>("kT",10.0);
+    tot.ks = config().get<double>("ks",0.1);
+    tot.kd = config().get<double>("kd",10.0);
 
 
     double safetyS = config().get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
@@ -266,7 +266,9 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
             pointsMiddle.x(i) = myroad.points()[i].x;
             pointsMiddle.y(i) = myroad.points()[i].y;
         }
-        trajectory = result.projectOntoBezierCurvePlusVelocity<20>(pointsMiddle, 0.1);
+        //trajectory = result.projectOntoBezierCurvePlusVelocity<20>(pointsMiddle, 0.1);
+        lms::math::polyLine2f lineMiddle = *road;
+        trajectory = result.projectOntoLineSegments(lineMiddle, 0.05);
         return true;
     }else{
         return false;
