@@ -214,16 +214,20 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
     if(velocity < 1) //TODO HACK
         velocity = 1;
-    if(velocity > 3)
-        velocity = 3;
     dataRoad.vx0 = velocity;
     dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
     dataRoad.y0 = road->polarDarstellung[0];
-    /*logger.warn("kappa")<<dataRoad.kappa<< " distanceToMiddle: "<<d1;
+    logger.warn("kappa")<<dataRoad.kappa<< " distanceToMiddle: "<<d1;
     logger.warn("vx0 ") << dataRoad.vx0 << ",  v1 " << endVelocity;
     logger.warn("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
-    logger.warn("tmin ") << tMin << ",  tMAx " << tMax;*/
+    logger.warn("tmin ") << tMin << ",  tMAx " << tMax;
 
+
+    float tangLength = 0;
+
+    float s0_closest;
+    bool leftLane_closest;
+    bool obstacleInTheWay = false;
 
     std::vector<ObstacleData> dataObstacle;
     float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
@@ -231,16 +235,44 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         if(objPtr->trust() < obstacleTrustThreshold)
             continue;
         if(objPtr->getType() == street_environment::Obstacle::TYPE){
+
             street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(objPtr);
+            if (obstPtr->distanceTang()-tangLength < 0.15)
+            {
+                continue;
+            }
             ObstacleData toAdd;
             toAdd.s0 = obstPtr->distanceTang();
             toAdd.v0 = 0;
             toAdd.leftLane = obstPtr->distanceOrth()> 0;
             dataObstacle.push_back(toAdd);
             logger.debug("obstacle: s0: ") << toAdd.s0 << ",  v0: " << toAdd.v0 << ",  leftLane: " << toAdd.leftLane;
+
+
+            if ((!obstacleInTheWay) || toAdd.s0 < s0_closest)
+            {
+                s0_closest = toAdd.s0;
+                leftLane_closest = toAdd.leftLane;
+            }
+            obstacleInTheWay = true;
         }
     }
     CoeffCtot tot;
+
+    // generate d1
+    if (!obstacleInTheWay)
+    {
+        d1 = -0.2;
+    }else
+    {
+        logger.warn("obstacle in the way: s0 = ") << s0_closest << ",  leftLane: " << leftLane_closest;
+        if (leftLane_closest)
+        {
+            d1 = -0.2;
+        }else{
+            d1 = 0.2;
+        }
+    }
 
     tot.kj = config().get<double>("kj",1.0);
     tot.kT = config().get<double>("kT",10.0);
