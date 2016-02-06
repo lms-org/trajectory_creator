@@ -32,7 +32,7 @@ float TrajectoryLineCreator::targetVelocity(){
             continue;
         street_environment::ObstaclePtr obst = std::static_pointer_cast<street_environment::Obstacle>(obj);
         //Only looking for obstacles on the right side
-        if(obst->distanceOrth() < 0 && obst->trust() > obstacleTrustThreshold){
+        if(obst->distanceOrth() < 0.1 && obst->trust() > obstacleTrustThreshold){
             obstacleInSight = true;
             if(obst->position().x > -0.1 && (distanceToObstacle > obst->distanceTang())){
                 distanceToObstacle = obst->distanceTang();
