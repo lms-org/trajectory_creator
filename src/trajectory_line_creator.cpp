@@ -3,6 +3,8 @@
 #include "street_environment/obstacle.h"
 #include "street_environment/crossing.h"
 #include "lms/math/mathEigen.h"
+#include "phoenix_CC2016_service/phoenix_CC2016_service.h"
+
 bool TrajectoryLineCreator::initialize() {
     envObstacles = readChannel<street_environment::EnvironmentObjects>("ENVIRONMENT_OBSTACLE");
     roadStates= readChannel<street_environment::RoadStates>("ROAD_STATES");
@@ -41,13 +43,29 @@ float TrajectoryLineCreator::targetVelocity(){
     }
 
     Eigen::Vector3f stateVelocities;
-    stateVelocities(0) = config().get<float>("velocity_straight", 6);
 
-    float aOrthMax = config().get<float>("aOrthMax", 9.81*0.5);
-    float curve_minVelocity = config().get<float>("curve_minVelocity", 1.8);
-    float curve_maxVelocity = config().get<float>("curve_maxVelocity", 5);
-    float curveStraight_minVelocity = config().get<float>("curveStraight_minVelocity", 1.5);
-    float curveStraight_maxVelocity = config().get<float>("curveStraight_maxVelocity", 2.0);
+    const lms::Config* myConfig = &config();
+    lms::ServiceHandle<phoenix_CC2016_service::Phoenix_CC2016Service> service = getService<phoenix_CC2016_service::Phoenix_CC2016Service>("PHOENIX_SERVICE");
+
+    if(!service.isValid()){
+        logger.error("PHOENIX SERVICE IS INVALID!");
+    }else{
+        if(service->driveMode() == phoenix_CC2016_service::CCDriveMode::FMH){
+            myConfig = &config("FMH");
+        }else if(service->driveMode() == phoenix_CC2016_service::CCDriveMode::FOH){
+            myConfig = &config("FOH");
+        }else{
+            logger.warn("no drivemode set!")<<"using default config";
+        }
+    }
+
+    stateVelocities(0) = myConfig->get<float>("velocity_straight", 6);
+
+    float aOrthMax = myConfig->get<float>("aOrthMax", 9.81*0.5);
+    float curve_minVelocity = myConfig->get<float>("curve_minVelocity", 1.8);
+    float curve_maxVelocity = myConfig->get<float>("curve_maxVelocity", 5);
+    float curveStraight_minVelocity = myConfig->get<float>("curveStraight_minVelocity", 1.5);
+    float curveStraight_maxVelocity = myConfig->get<float>("curveStraight_maxVelocity", 2.0);
 
     float curveVelocity = sqrt(aOrthMax/fabs(roadStates->states[2].curvature));
     float straightCurveVelocity = sqrt(aOrthMax/fabs(roadStates->states[1].curvature));
@@ -119,9 +137,9 @@ bool TrajectoryLineCreator::cycle() {
     bool advancedTraj = false;
     street_environment::Trajectory traj;
     if(config().get<bool>("simpleTraj",true)){
-        traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),velocity);
+        traj= simpleTrajectory(true,velocity);
     }else{
-        traj= simpleTrajectory(0,velocity);
+        traj= simpleTrajectory(false,velocity);
         //detect if we have to go left or right
         if(traj[traj.size()-1].velocity == 0){
             //Stop it, we won't go for an advancedTrajectory :)
@@ -137,10 +155,6 @@ bool TrajectoryLineCreator::cycle() {
                     initRightSide = rightSide;
                     break;
                 }
-            }
-            float a = a;
-            if(a == 0){
-
             }
             //What happens if the current car velocity and the end-velocity is close to zero?
             float endVelocity = traj[traj.size()-1].velocity;
@@ -165,7 +179,7 @@ bool TrajectoryLineCreator::cycle() {
             traj.clear();
             if(!advancedTrajectory(traj,initRightSide,endVelocity,minTime,maxTime)){
                 logger.warn("advancedTrajectory")<<"FAILED";
-                traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),velocity);
+                traj = simpleTrajectory(true,velocity);
             }else{
                 advancedTraj = true;
             }
@@ -227,9 +241,9 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
 
 
     float tangLength = 0;
-
-    float s0_closest;
-    bool leftLane_closest;
+    //TODO sinnvoll initialisieren!
+    float s0_closest = 1000;
+    bool leftLane_closest = 1000;
     bool obstacleInTheWay = false;
 
     std::vector<ObstacleData> dataObstacle;
@@ -313,12 +327,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
 
 
 
-street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine, float endVelocity){
-    //Mindestabstand zwischen zwei Hindernissen 1m
-    //Maximalabstand von der Kreuzung: 15cm
-    //An der Kreuzung warten: 2s
-    const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
-    const float crossingTrustThreshold = config().get<float>("crossingTrustThreshold",0.5);
+street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useSavety, float endVelocity){
     bool useFixedSpeed = false;
     float fixedSpeed= 0;
     bool firstAdd = true;
@@ -331,10 +340,11 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
     if(road->points().size() == 0){
         logger.error("cycle") << "no valid environment given";
         return tempTrajectory;
+
     }
     const float trajectoryStartDistance = config().get<float>("trajectoryStartDistance",0.3);
-    const float distanceBetweenTrajectoryPoints = config().get<float>("obstacleResolution",0.05);
-    const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints);
+    const float obstacleResolution = config().get<float>("obstacleResolution",0.05);
+    const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(obstacleResolution);
     float tangLength = 0;
     //ignore first point
     for(int i = 1; i <(int) middle.points().size(); i++) {
@@ -357,18 +367,23 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         const vertex2f orthogonalTrans = orthogonal*translation;
 
         bool rightSide = true;
+        street_environment::EnvironmentObject *reasonObj;
         if(!(useFixedSpeed && (fixedSpeed == 0))){
             //check all obstacles
-            LaneState rightState = getLaneState(tangLength,true);
-            LaneState leftState = getLaneState(tangLength,false);
-            if(rightState > leftState){
+            LaneState rightState = getLaneState(tangLength,true,&reasonObj);
+            LaneState leftState = getLaneState(tangLength,false,&reasonObj);
+            if(rightState > leftState && (useSavety || (rightState == LaneState::BLOCKED))){
                 rightSide = false;
             }
             logger.debug("states")<<(int)rightState<<" "<<(int)leftState;
 
             if(rightSide && rightState == LaneState::BLOCKED){
-                useFixedSpeed = true;
-                fixedSpeed = 0;
+                if(reasonObj->getType() == street_environment::Obstacle::TYPE){ //TODO
+                    logger.error("street is blocked by obstacles!");
+                }else{
+                    useFixedSpeed = true;
+                    fixedSpeed = 0;
+                }
             }
         }
 
@@ -399,10 +414,13 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
 
 
 LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide,street_environment::EnvironmentObject** reason){
+    //Mindestabstand zwischen zwei Hindernissen 1m
+    //Maximalabstand von der Kreuzung: 15cm
+    //An der Kreuzung warten: 2s
     LaneState result = LaneState::CLEAR;
     const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     const float obstacleLength = config().get<float>("obstacleLength",0.5);
-    const float obstacleSavetyDistance = config().get<float>("distanceObstacleBeforeChangeLine",0);
+    const float obstacleSavetyDistance = config().get<float>("obstacleSavetyDistance",0);
     const float crossingTrustThreshold = config().get<float>("crossingTrustThreshold",0.5);
     for(street_environment::EnvironmentObjectPtr objPtr: envObstacles->objects){
         if(objPtr->getType() == street_environment::Obstacle::TYPE){

@@ -20,7 +20,7 @@ public:
     bool deinitialize() override;
     bool cycle() override;
 private:
-    street_environment::Trajectory simpleTrajectory(float trajectoryMaxLength, float endVelocity);
+    street_environment::Trajectory simpleTrajectory(bool useSavety, float endVelocity);
     bool advancedTrajectory(street_environment::Trajectory &trajectory,bool rightSide, float endVelocity,float minTime,float maxTime);
     lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
     lms::ReadDataChannel<street_environment::RoadStates> roadStates;

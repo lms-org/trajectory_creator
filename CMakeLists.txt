@@ -22,4 +22,4 @@ set (HEADERS
 include_directories("include" "/usr/inlcude/eigen3/")
 
 add_library (trajectory_creator MODULE ${SOURCES} ${HEADERS})
-target_link_libraries(trajectory_creator PRIVATE lmscore math_lib sensor_utils street_environment)
+target_link_libraries(trajectory_creator PRIVATE lmscore math_lib sensor_utils street_environment phoenix_CC2016_service)
