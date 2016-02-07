@@ -326,14 +326,12 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
     street_environment::Trajectory tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
     const float translation = config().get<float>("street_width", 0.8)/4.0f;
-    const float obstacleLength = config().get<float>("obstacleLength",0.5);
 
     using lms::math::vertex2f;
     if(road->points().size() == 0){
         logger.error("cycle") << "no valid environment given";
         return tempTrajectory;
     }
-    //we start in the car - NOT TODAY MY FRIEND
     const float trajectoryStartDistance = config().get<float>("trajectoryStartDistance",0.3);
     const float distanceBetweenTrajectoryPoints = config().get<float>("obstacleResolution",0.05);
     const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints);
@@ -359,16 +357,19 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         const vertex2f orthogonalTrans = orthogonal*translation;
 
         bool rightSide = true;
-        //check all obstacles
-        LaneState rightState = getLaneState(tangLength,true);
-        LaneState leftState = getLaneState(tangLength,false);
-        if(rightState > leftState){
-            rightSide = false;
-        }
+        if(!(useFixedSpeed && (fixedSpeed == 0))){
+            //check all obstacles
+            LaneState rightState = getLaneState(tangLength,true);
+            LaneState leftState = getLaneState(tangLength,false);
+            if(rightState > leftState){
+                rightSide = false;
+            }
+            logger.error("states")<<(int)rightState<<" "<<(int)leftState;
 
-        if(rightSide && rightState == LaneState::BLOCKED){
-            useFixedSpeed = true;
-            fixedSpeed = 0;
+            if(rightSide && rightState == LaneState::BLOCKED){
+                useFixedSpeed = true;
+                fixedSpeed = 0;
+            }
         }
 
         if(useFixedSpeed){
@@ -425,11 +426,13 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                 }
             }
         }else if(objPtr->getType() == street_environment::Crossing::TYPE){
+            logger.error("I HAVE A CROSSING")<<objPtr->trust();
             //Check the trust
             if(objPtr->trust() < crossingTrustThreshold){
                 continue;
             }
             const street_environment::CrossingPtr crossing = std::static_pointer_cast<street_environment::Crossing>(objPtr);
+            logger.debug("CROSSING DATA")<<crossing->distanceTang()<< " pos: "<<crossing->position();
             if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //we already missed the trajectory!
                 continue;
             }
@@ -439,22 +442,29 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                         logger.info("start waiting in front of crossing");
                     }
                 }
-                logger.info("simpleTrajectory")<<"crossing: stop "<< crossing->hasToStop() << " blocked:"<<crossing->blocked()<< " waiting for:"<<crossing->stopTime().since().toFloat();
+                logger.info("simpleTrajectory")<<"crossing: stop "<< crossing->hasToStop() << " blocked:"<<crossing->blocked();
+                if(crossing->hasWaited()){
+                    logger.info("simpleTrajectory")<<" waiting for:"<<crossing->stopTime().since().toFloat();
+                }else{
+                    logger.info("simpleTrajectory")<<" haven't waited on crossing yet";
+                }
 
                 //check if we have to stop or if crossing is blocked
                 if(crossing->hasToStop() || crossing->blocked()){
                     //Check if we are waiting for to long
                     if(!crossing->hasToStop() && crossing->stopTime().since().toFloat()>config().get<float>("maxStopTimeAtCrossing",10)){
-                        logger.warn("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
+                        logger.info("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
                     }else{
                         //check if the Crossing is close enough
                         //As there won't be an obstacle in front of the crossing we can go on the right
                         //TODO we won't indicate if we change line
                         if(crossing->distanceTang()-tangDistance < config().get<float>("minDistanceToCrossing",0.1)){
                             result = LaneState::BLOCKED;
-                            continue;
+                            break;
                         }
                     }
+                }else{
+                    logger.info("I CAN GO; CROSSING");
                 }
         }
     }
