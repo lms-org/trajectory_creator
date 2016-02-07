@@ -38,7 +38,7 @@ private:
     lms::math::vertex2f interpolateRoadAtDistance(const float distanceIn);
     float targetVelocity();
 
-    LaneState getLaneState(float tangDistance, bool rightSide);
+    LaneState getLaneState(float tangDistance, bool rightSide,street_environment::EnvironmentObject** reason = nullptr);
 };
 
 #endif /* IMAGE_HINT_TRANSFORMER_H */

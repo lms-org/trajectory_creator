@@ -364,7 +364,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
             if(rightState > leftState){
                 rightSide = false;
             }
-            logger.error("states")<<(int)rightState<<" "<<(int)leftState;
+            logger.debug("states")<<(int)rightState<<" "<<(int)leftState;
 
             if(rightSide && rightState == LaneState::BLOCKED){
                 useFixedSpeed = true;
@@ -398,7 +398,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
 }
 
 
-LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide){
+LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide,street_environment::EnvironmentObject** reason){
     LaneState result = LaneState::CLEAR;
     const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     const float obstacleLength = config().get<float>("obstacleLength",0.5);
@@ -418,6 +418,9 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                 continue;
             }
             if(distanceToObstacle < obstacleLength){
+                if(reason != nullptr){
+                    *reason = objPtr.get();
+                }
                 if(distanceToObstacle >= 0 && distanceToObstacle){
                     result = LaneState::BLOCKED;
                     break;
@@ -426,7 +429,7 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                 }
             }
         }else if(objPtr->getType() == street_environment::Crossing::TYPE){
-            logger.error("I HAVE A CROSSING")<<objPtr->trust();
+            logger.debug("I HAVE A CROSSING")<<objPtr->trust();
             //Check the trust
             if(objPtr->trust() < crossingTrustThreshold){
                 continue;
@@ -460,6 +463,9 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                         //TODO we won't indicate if we change line
                         if(crossing->distanceTang()-tangDistance < config().get<float>("minDistanceToCrossing",0.1)){
                             result = LaneState::BLOCKED;
+                            if(reason != nullptr){
+                                *reason = objPtr.get();
+                            }
                             break;
                         }
                     }
