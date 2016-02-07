@@ -8,7 +8,13 @@
 #include "trajectory_generator.h"
 #include "street_environment/trajectory.h"
 
+
+enum class LaneState{
+    CLEAR,DANGEROUS,BLOCKED
+};
+
 class TrajectoryLineCreator : public lms::Module {
+
 public:
     bool initialize() override;
     bool deinitialize() override;
@@ -31,6 +37,8 @@ private:
 
     lms::math::vertex2f interpolateRoadAtDistance(const float distanceIn);
     float targetVelocity();
+
+    LaneState getLaneState(float tangDistance, bool rightSide);
 };
 
 #endif /* IMAGE_HINT_TRANSFORMER_H */
