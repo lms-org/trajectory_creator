@@ -28,6 +28,8 @@ public:
 
     float ctot(); //function: gives back the value of the total cost function
 
+    float tend; //time the traj. needs (as tstart = 0 by definition)
+
     /**
      * should not be used anymore. Better use projectOntoBezierCurve
      */
@@ -669,8 +671,6 @@ private:
 
     CoeffCtot coeffCtot1; //coefficients of the cost function (see also types.h)
 
-    float tend; //time the traj. needs (as tstart = 0 by definition)
-
     float kappa; //curvature of the road (approx. as a circle)
 
     float ctot_value; //value of the total cost function
@@ -683,8 +683,8 @@ private:
     bool collision = true; //is there a collision
     bool collisionDetected = false; //was collision already checked
 
-    bool drivable = false; //is the traj. physically (no obstacles considered)
-    bool drivabilityDetected = false; //was drivability already calculated
+    bool drivable = true; //is the traj. physically (no obstacles considered)
+    bool drivabilityDetected = true; //was drivability already calculated
 
     int nSamplesCollisionAndDrivabilityDetection = 300;
 

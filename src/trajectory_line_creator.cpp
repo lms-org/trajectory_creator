@@ -131,15 +131,17 @@ bool TrajectoryLineCreator::cycle() {
     trajectory->clear();
     //calculate data for creating the trajectory    //calculate the speed without obstacles
     float velocity = targetVelocity();
-    logger.debug("set velocity: ") << velocity;
+    logger.warn("set velocity: ") << velocity;
 
 
     bool advancedTraj = false;
 
     street_environment::Trajectory traj;
-    if(config().get<bool>("simpleTraj",true)){
+    if(config().get<bool>("simpleTraj",false)){
+        logger.warn("hier");
         traj= simpleTrajectory(true,velocity);
     }else{
+        logger.warn("hier 2");
         traj= simpleTrajectory(false,velocity);
         //detect if we have to go left or right
         if(traj[traj.size()-1].velocity == 0){
@@ -171,11 +173,12 @@ bool TrajectoryLineCreator::cycle() {
                 maxVelocity = 1;
             }
             averageVelocity /= traj.size();
-            float minTime = 0.05; //TODO #IMPORTANT
-            float maxTime = 1.5;
+
             if(endVelocity < 1){ //TODO HACK
                 endVelocity = 1;
             }
+            float minTime = 0.05; //TODO #IMPORTANT
+            float maxTime = 2/(0.5*(endVelocity+car->velocity()));
 
             traj.clear();
             if(!advancedTrajectory(traj,initRightSide,endVelocity,minTime,maxTime)){
@@ -219,11 +222,11 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     //vector mit y-koordinaten
 
     int nSamplesTraj = config().get<int>("nSamplesTraj",50);
-    double d1; //Abstand zur Mittellinie
+    /*double d1; //Abstand zur Mittellinie
     if(rightSide)
         d1= -0.2;
     else
-        d1= 0.2;
+        d1= 0.2;*/
 
     //aktuelle daten der fahrspur und des autos relativ dazu
     RoadData dataRoad;
@@ -236,16 +239,12 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     dataRoad.vx0 = velocity;
     dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
     dataRoad.y0 = road->polarDarstellung[0];
-    logger.debug("kappa")<<dataRoad.kappa<< " distanceToMiddle: "<<d1;
-    logger.debug("vx0 ") << dataRoad.vx0 << ",  v1 " << endVelocity;
-    logger.debug("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
-    logger.debug("tmin ") << tMin << ",  tMAx " << tMax;
 
 
     float tangLength = 0;
     //TODO sinnvoll initialisieren!
-    float s0_closest = 1000;
-    bool leftLane_closest = 1000;
+    float s0_closest = -0.1;
+    bool leftLane_closest = true;
     bool obstacleInTheWay = false;
 
     bool forceUpdate = false;
@@ -291,7 +290,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         d1 = -0.2;
     }
 
-
+    logger.warn("d1 set") << d1;
 
     if (obstacleInTheWay)
     {
@@ -314,9 +313,15 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
 
     d1_last = d1;
 
-    int updateEveryNCycles = config().get<int>("updateEveryNCycles", 40);
+    int updateEveryNCycles = config().get<int>("updateEveryNCycles", 10);
 
-    if ((counter == 0) ||(counter == updateEveryNCycles) || forceUpdate) {
+
+    logger.debug("kappa")<<dataRoad.kappa<< " distanceToMiddle: "<<d1;
+    logger.debug("vx0 ") << dataRoad.vx0 << ",  v1 " << endVelocity;
+    logger.debug("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
+    logger.debug("tmin ") << tMin << ",  tMAx " << tMax;
+
+    if ((counter == 0) ||(counter == updateEveryNCycles) || forceUpdate || (!oneTrajGenerated)) {
         counter = 1;
         t_sinceLastUpdate = 0;
         //INPUT
@@ -377,13 +382,20 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
             lms::math::polyLine2f lineMiddle = *road;
             trajectory = result.projectOntoLineSegments(lineMiddle, 0.1);
 
+            logger.warn("tend ") << result.tend;
+
             lastResult = result;
+            oneTrajGenerated = true;
             return true;
         } else {
             return false;
         }
         return true;
     } else{
+        if (!oneTrajGenerated)
+        {
+            return false;
+        }
         lms::math::polyLine2f lineMiddle = *road;
 
         t_sinceLastUpdate = t_sinceLastUpdate + dt;

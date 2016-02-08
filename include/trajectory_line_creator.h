@@ -37,21 +37,19 @@ private:
 
     lms::math::vertex2f interpolateRoadAtDistance(const float distanceIn);
     float targetVelocity();
-<<<<<<< HEAD
     int counter = 0;
 
     float dt = 0.01;
     float t_sinceLastUpdate = 0;
 
     bool obstacleInSightGlobal = false;
+    bool oneTrajGenerated = false;
 
     float d1_last = -0.2;
 
     Trajectory lastResult;
-=======
 
     LaneState getLaneState(float tangDistance, bool rightSide,street_environment::EnvironmentObject** reason = nullptr);
->>>>>>> 92bcabb43760a099d5ed5177aa2998d43d2e2a6a
 };
 
 #endif /* IMAGE_HINT_TRANSFORMER_H */
