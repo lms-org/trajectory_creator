@@ -54,6 +54,8 @@ float TrajectoryLineCreator::targetVelocity(){
             myConfig = &config("FMH");
         }else if(service->driveMode() == phoenix_CC2016_service::CCDriveMode::FOH){
             myConfig = &config("FOH");
+        }else if(service->driveMode() == phoenix_CC2016_service::CCDriveMode::PARKING){
+            //we do nothing
         }else{
             logger.warn("no drivemode set!")<<"using default config";
         }
@@ -131,17 +133,15 @@ bool TrajectoryLineCreator::cycle() {
     trajectory->clear();
     //calculate data for creating the trajectory    //calculate the speed without obstacles
     float velocity = targetVelocity();
-    logger.warn("set velocity: ") << velocity;
+    //logger.warn("set velocity: ") << velocity;
 
 
     bool advancedTraj = false;
 
     street_environment::Trajectory traj;
-    if(config().get<bool>("simpleTraj",false)){
-        logger.warn("hier");
+    if(config().get<bool>("simpleTraj",true)){
         traj= simpleTrajectory(true,velocity);
     }else{
-        logger.warn("hier 2");
         traj= simpleTrajectory(false,velocity);
         //detect if we have to go left or right
         if(traj[traj.size()-1].velocity == 0){
@@ -290,7 +290,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         d1 = -0.2;
     }
 
-    logger.warn("d1 set") << d1;
+    logger.debug("d1 set") << d1;
 
     if (obstacleInTheWay)
     {
@@ -344,10 +344,10 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         dataRoad.vx0 = velocity;
         dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
         dataRoad.y0 = road->polarDarstellung[0];
-        logger.warn("kappa") << dataRoad.kappa << " distanceToMiddle: " << d1;
-        logger.warn("vx0 ") << dataRoad.vx0 << ",  v1 " << endVelocity;
-        logger.warn("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
-        logger.warn("tmin ") << tMin << ",  tMAx " << tMax;
+        logger.debug("kappa") << dataRoad.kappa << " distanceToMiddle: " << d1;
+        logger.debug("vx0 ") << dataRoad.vx0 << ",  v1 " << endVelocity;
+        logger.debug("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
+        logger.debug("tmin ") << tMin << ",  tMAx " << tMax;
 
 
 
@@ -382,7 +382,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
             lms::math::polyLine2f lineMiddle = *road;
             trajectory = result.projectOntoLineSegments(lineMiddle, 0.1);
 
-            logger.warn("tend ") << result.tend;
+            logger.debug("tend ") << result.tend;
 
             lastResult = result;
             oneTrajGenerated = true;
@@ -414,6 +414,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
     bool useFixedSpeed = false;
     float fixedSpeed= 0;
     bool firstAdd = true;
+    lms::ServiceHandle<phoenix_CC2016_service::Phoenix_CC2016Service> phoenixService = getService<phoenix_CC2016_service::Phoenix_CC2016Service>("PHOENIX_SERVICE");
 
     street_environment::Trajectory tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
@@ -450,13 +451,19 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
         const vertex2f orthogonalTrans = orthogonal*translation;
 
         bool rightSide = true;
+
+
         street_environment::EnvironmentObject *reasonObj;
         if(!(useFixedSpeed && (fixedSpeed == 0))){
             //check all obstacles
-            LaneState rightState = getLaneState(tangLength,true,&reasonObj);
-            LaneState leftState = getLaneState(tangLength,false,&reasonObj);
-            if(rightState > leftState && (useSavety || (rightState == LaneState::BLOCKED))){
-                rightSide = false;
+            LaneState rightState = LaneState::CLEAR;
+            LaneState leftState = LaneState::CLEAR;
+            if(phoenixService->driveMode() == phoenix_CC2016_service::CCDriveMode::FMH){
+                LaneState rightState = getLaneState(tangLength,true,&reasonObj);
+                LaneState leftState = getLaneState(tangLength,false,&reasonObj);
+                if(rightState > leftState && (useSavety || (rightState == LaneState::BLOCKED))){
+                    rightSide = false;
+                }
             }
             logger.debug("states")<<(int)rightState<<" "<<(int)leftState;
 
