@@ -357,8 +357,8 @@ public:
 
         float dt = lSample/max_velocity;
         const int m = ceil(s_end/(dt*min_velocity));
-        std::cout << "m for first eval: " << m << " ,  l: " << l << " ,lSample: " << lSample << ",  s_end " << s_end <<  std::endl;
-        std::cout << "dt for first eval: " << dt << std::endl;
+        //std::cout << "m for first eval: " << m << " ,  l: " << l << " ,lSample: " << lSample << ",  s_end " << s_end <<  std::endl;
+        //std::cout << "dt for first eval: " << dt << std::endl;
 
 
         float t_local = 0;
@@ -503,12 +503,12 @@ public:
 
         float dt = lSample/max_velocity;
         const int m = ceil(s_end/(dt*min_velocity));
-        std::cout << "m for alternate eval: " << m << std::endl;
-        std::cout << "dt for alternate eval: " << dt << std::endl;
+        //std::cout << "m for alternate eval: " << m << std::endl;
+        //std::cout << "dt for alternate eval: " << dt << std::endl;
 
 
         float t_local = 0 + t_offset;
-        std::cout << "new eval with offset in t: " << t_offset << ",  offset in s: " << s_offset << std::endl;
+        //std::cout << "new eval with offset in t: " << t_offset << ",  offset in s: " << s_offset << std::endl;
 
         float s_local = mPtr_s->evalAtPoint(t_local)-s_offset;
         float d_local = mPtr_d->evalAtPoint(t_local);

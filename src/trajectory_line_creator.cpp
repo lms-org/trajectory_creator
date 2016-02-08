@@ -210,7 +210,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         return false;
     }
 
-    
+
 
     //INPUT
     //hindernisse: vector Abstand-Straße,geschwindigkeit-Straße(absolut), -1 (links) +1 (rechts) (alle hindernisse hintereinander)
@@ -241,7 +241,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     logger.debug("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
     logger.debug("tmin ") << tMin << ",  tMAx " << tMax;
 
-    
+
     float tangLength = 0;
     //TODO sinnvoll initialisieren!
     float s0_closest = 1000;
@@ -378,7 +378,6 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
             trajectory = result.projectOntoLineSegments(lineMiddle, 0.1);
 
             lastResult = result;
-            std::cout << "new traj generated" << std::endl;
             return true;
         } else {
             return false;
@@ -390,7 +389,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         t_sinceLastUpdate = t_sinceLastUpdate + dt;
         counter = counter + 1;
 
-        std::cout << "eval existing traj at counter = " << counter << ",  t_offset = " << t_sinceLastUpdate << std::endl;
+        //std::cout << "eval existing traj at counter = " << counter << ",  t_offset = " << t_sinceLastUpdate << std::endl;
 
         trajectory = lastResult.projectOntoLineSegments(lineMiddle, 0.1, t_sinceLastUpdate);
         return true;
