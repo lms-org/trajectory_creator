@@ -459,8 +459,8 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
             LaneState rightState = LaneState::CLEAR;
             LaneState leftState = LaneState::CLEAR;
             if(phoenixService->driveMode() == phoenix_CC2016_service::CCDriveMode::FMH){
-                LaneState rightState = getLaneState(tangLength,true,&reasonObj);
-                LaneState leftState = getLaneState(tangLength,false,&reasonObj);
+                rightState = getLaneState(tangLength,true,&reasonObj);
+                leftState = getLaneState(tangLength,false,&reasonObj);
                 if(rightState > leftState && (useSavety || (rightState == LaneState::BLOCKED))){
                     rightSide = false;
                 }
@@ -468,9 +468,10 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
             logger.debug("states")<<(int)rightState<<" "<<(int)leftState;
 
             if(rightSide && rightState == LaneState::BLOCKED){
-                if(reasonObj->getType() == street_environment::Obstacle::TYPE){ //TODO
-                    logger.error("street is blocked by obstacles!");
+                if(reasonObj != nullptr && reasonObj->getType() == street_environment::Obstacle::TYPE){ //TODO
+                    logger.info("street is blocked by obstacles!");
                 }else{
+                    logger.info("street is blocked by crossing!");
                     useFixedSpeed = true;
                     fixedSpeed = 0;
                 }
@@ -557,18 +558,19 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                 if(crossing->hasWaited()){
                     logger.info("simpleTrajectory")<<" waiting for:"<<crossing->stopTime().since().toFloat();
                 }else{
-                    logger.info("simpleTrajectory")<<" haven't waited on crossing yet";
+                    logger.debug("simpleTrajectory")<<" haven't waited on crossing yet";
                 }
 
                 //check if we have to stop or if crossing is blocked
                 if(crossing->hasToStop() || crossing->blocked()){
                     //Check if we are waiting for to long
-                    if(!crossing->hasToStop() && crossing->stopTime().since().toFloat()>config().get<float>("maxStopTimeAtCrossing",10)){
-                        logger.info("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
+                    if(crossing->hasWaited() && crossing->stopTime().since().toFloat()>config().get<float>("maxStopTimeAtCrossing",10)){
+                        logger.warn("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
                     }else{
                         //check if the Crossing is close enough
                         //As there won't be an obstacle in front of the crossing we can go on the right
                         //TODO we won't indicate if we change line
+                        logger.debug("tang distance to crossing")<<crossing->distanceTang()-tangDistance;
                         if(crossing->distanceTang()-tangDistance < config().get<float>("minDistanceToCrossing",0.1)){
                             result = LaneState::BLOCKED;
                             if(reason != nullptr){
@@ -578,7 +580,7 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                         }
                     }
                 }else{
-                    logger.info("I CAN GO; CROSSING");
+                    logger.info("CROSSING")<< "clear, I will go on :)";
                 }
         }
     }
