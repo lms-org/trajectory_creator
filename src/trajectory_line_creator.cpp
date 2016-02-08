@@ -3,6 +3,8 @@
 #include "street_environment/obstacle.h"
 #include "street_environment/crossing.h"
 #include "lms/math/mathEigen.h"
+#include "phoenix_CC2016_service/phoenix_CC2016_service.h"
+
 bool TrajectoryLineCreator::initialize() {
     envObstacles = readChannel<street_environment::EnvironmentObjects>("ENVIRONMENT_OBSTACLE");
     roadStates= readChannel<street_environment::RoadStates>("ROAD_STATES");
@@ -32,7 +34,7 @@ float TrajectoryLineCreator::targetVelocity(){
             continue;
         street_environment::ObstaclePtr obst = std::static_pointer_cast<street_environment::Obstacle>(obj);
         //Only looking for obstacles on the right side
-        if(obst->distanceOrth() < 0 && obst->trust() > obstacleTrustThreshold){
+        if(obst->distanceOrth() < 0.1 && obst->trust() > obstacleTrustThreshold){
             obstacleInSight = true;
             if(obst->position().x > -0.1 && (distanceToObstacle > obst->distanceTang())){
                 distanceToObstacle = obst->distanceTang();
@@ -41,13 +43,29 @@ float TrajectoryLineCreator::targetVelocity(){
     }
 
     Eigen::Vector3f stateVelocities;
-    stateVelocities(0) = config().get<float>("velocity_straight", 6);
 
-    float aOrthMax = config().get<float>("aOrthMax", 9.81*0.5);
-    float curve_minVelocity = config().get<float>("curve_minVelocity", 1.8);
-    float curve_maxVelocity = config().get<float>("curve_maxVelocity", 5);
-    float curveStraight_minVelocity = config().get<float>("curveStraight_minVelocity", 1.5);
-    float curveStraight_maxVelocity = config().get<float>("curveStraight_maxVelocity", 2.0);
+    const lms::Config* myConfig = &config();
+    lms::ServiceHandle<phoenix_CC2016_service::Phoenix_CC2016Service> service = getService<phoenix_CC2016_service::Phoenix_CC2016Service>("PHOENIX_SERVICE");
+
+    if(!service.isValid()){
+        logger.error("PHOENIX SERVICE IS INVALID!");
+    }else{
+        if(service->driveMode() == phoenix_CC2016_service::CCDriveMode::FMH){
+            myConfig = &config("FMH");
+        }else if(service->driveMode() == phoenix_CC2016_service::CCDriveMode::FOH){
+            myConfig = &config("FOH");
+        }else{
+            logger.warn("no drivemode set!")<<"using default config";
+        }
+    }
+
+    stateVelocities(0) = myConfig->get<float>("velocity_straight", 6);
+
+    float aOrthMax = myConfig->get<float>("aOrthMax", 9.81*0.5);
+    float curve_minVelocity = myConfig->get<float>("curve_minVelocity", 1.8);
+    float curve_maxVelocity = myConfig->get<float>("curve_maxVelocity", 5);
+    float curveStraight_minVelocity = myConfig->get<float>("curveStraight_minVelocity", 1.5);
+    float curveStraight_maxVelocity = myConfig->get<float>("curveStraight_maxVelocity", 2.0);
 
     float curveVelocity = sqrt(aOrthMax/fabs(roadStates->states[2].curvature));
     float straightCurveVelocity = sqrt(aOrthMax/fabs(roadStates->states[1].curvature));
@@ -120,9 +138,9 @@ bool TrajectoryLineCreator::cycle() {
 
     street_environment::Trajectory traj;
     if(config().get<bool>("simpleTraj",true)){
-        traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),velocity);
+        traj= simpleTrajectory(true,velocity);
     }else{
-        traj= simpleTrajectory(0,velocity);
+        traj= simpleTrajectory(false,velocity);
         //detect if we have to go left or right
         if(traj[traj.size()-1].velocity == 0){
             //Stop it, we won't go for an advancedTrajectory :)
@@ -139,7 +157,6 @@ bool TrajectoryLineCreator::cycle() {
                     break;
                 }
             }
-            //TODO calculate the endVelocity #IMPORTANT
             //What happens if the current car velocity and the end-velocity is close to zero?
             float endVelocity = traj[traj.size()-1].velocity;
             float averageVelocity = 0;
@@ -163,7 +180,7 @@ bool TrajectoryLineCreator::cycle() {
             traj.clear();
             if(!advancedTrajectory(traj,initRightSide,endVelocity,minTime,maxTime)){
                 logger.warn("advancedTrajectory")<<"FAILED";
-                traj = simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),velocity);
+                traj = simpleTrajectory(true,velocity);
             }else{
                 advancedTraj = true;
             }
@@ -193,10 +210,42 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         return false;
     }
 
-    float tangLength = 0;
+    
 
-    float s0_closest;
-    bool leftLane_closest;
+    //INPUT
+    //hindernisse: vector Abstand-Straße,geschwindigkeit-Straße(absolut), -1 (links) +1 (rechts) (alle hindernisse hintereinander)
+    //eigenes auto, vx,vy, dw -winkelgeschwindigkeit dw (zunächst mal 0)
+    //vector mit x-koordinaten
+    //vector mit y-koordinaten
+
+    int nSamplesTraj = config().get<int>("nSamplesTraj",50);
+    double d1; //Abstand zur Mittellinie
+    if(rightSide)
+        d1= -0.2;
+    else
+        d1= 0.2;
+
+    //aktuelle daten der fahrspur und des autos relativ dazu
+    RoadData dataRoad;
+    dataRoad.ax0 = 0; //beschl. am anfang
+    dataRoad.kappa = lms::math::circleCurvature(road->points()[2],road->points()[5],road->points()[7]);
+    dataRoad.phi = road->polarDarstellung[1];
+    float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
+    if(velocity < 1) //TODO HACK
+        velocity = 1;
+    dataRoad.vx0 = velocity;
+    dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
+    dataRoad.y0 = road->polarDarstellung[0];
+    logger.debug("kappa")<<dataRoad.kappa<< " distanceToMiddle: "<<d1;
+    logger.debug("vx0 ") << dataRoad.vx0 << ",  v1 " << endVelocity;
+    logger.debug("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
+    logger.debug("tmin ") << tMin << ",  tMAx " << tMax;
+
+    
+    float tangLength = 0;
+    //TODO sinnvoll initialisieren!
+    float s0_closest = 1000;
+    bool leftLane_closest = 1000;
     bool obstacleInTheWay = false;
 
     bool forceUpdate = false;
@@ -247,6 +296,8 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     if (obstacleInTheWay)
     {
         if (!obstacleInSightGlobal)
+        logger.debug("obstacle in the way: s0 = ") << s0_closest << ",  leftLane: " << leftLane_closest;
+        if (leftLane_closest)
         {
             obstacleInSightGlobal = true;
         }else{
@@ -346,12 +397,9 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     }
 }
 
-street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine, float endVelocity){
-    //Mindestabstand zwischen zwei Hindernissen 1m
-    //Maximalabstand von der Kreuzung: 15cm
-    //An der Kreuzung warten: 2s
-    const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
-    const float crossingTrustThreshold = config().get<float>("crossingTrustThreshold",0.5);
+
+
+street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useSavety, float endVelocity){
     bool useFixedSpeed = false;
     float fixedSpeed= 0;
     bool firstAdd = true;
@@ -359,17 +407,16 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
     street_environment::Trajectory tempTrajectory;
     // translate the middle lane to the right with a quarter of the street width
     const float translation = config().get<float>("street_width", 0.8)/4.0f;
-    const float obstacleLength = config().get<float>("obstacleLength",0.5);
 
     using lms::math::vertex2f;
     if(road->points().size() == 0){
         logger.error("cycle") << "no valid environment given";
         return tempTrajectory;
+
     }
-    //we start in the car - NOT TODAY MY FRIEND
     const float trajectoryStartDistance = config().get<float>("trajectoryStartDistance",0.3);
-    const float distanceBetweenTrajectoryPoints = config().get<float>("obstacleResolution",0.05);
-    const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(distanceBetweenTrajectoryPoints);
+    const float obstacleResolution = config().get<float>("obstacleResolution",0.05);
+    const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(obstacleResolution);
     float tangLength = 0;
     //ignore first point
     for(int i = 1; i <(int) middle.points().size(); i++) {
@@ -392,78 +439,23 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
         const vertex2f orthogonalTrans = orthogonal*translation;
 
         bool rightSide = true;
-        //man geht davon aus, dass die Abstand, in dem man ausweicht deutlich größer ist als das hinderniss lang!
-        float distanceToObstacle = 0;
-        //check all obstacles
-        //TODO not smart at all, won't work in all cases
-        for(const std::shared_ptr<street_environment::EnvironmentObject> obj : envObstacles->objects){
-            if(obj->getType() == street_environment::Obstacle::TYPE){
-                //Check the trust
-                if(obj->trust() < obstacleTrustThreshold){
-                    continue;
-                }
-               const street_environment::ObstaclePtr obst = std::static_pointer_cast<street_environment::Obstacle>(obj);
-                //check if the obstacle is trusted
+        street_environment::EnvironmentObject *reasonObj;
+        if(!(useFixedSpeed && (fixedSpeed == 0))){
+            //check all obstacles
+            LaneState rightState = getLaneState(tangLength,true,&reasonObj);
+            LaneState leftState = getLaneState(tangLength,false,&reasonObj);
+            if(rightState > leftState && (useSavety || (rightState == LaneState::BLOCKED))){
+                rightSide = false;
+            }
+            logger.debug("states")<<(int)rightState<<" "<<(int)leftState;
 
-                distanceToObstacle = obst->distanceTang()-tangLength;//abstand zum Punkt p2
-                if((distanceToObstacle >= 0 && distanceToObstacle <= distanceObstacleBeforeChangeLine)||
-                        (distanceToObstacle<=0 && distanceToObstacle >=-obstacleLength)){//obstacle is in front of us
-                    rightSide = obst->distanceOrth() > 0;
-                    //TODO check if trajectory is blocked
-                    break;
-                }
-            }else if(obj->getType() == street_environment::Crossing::TYPE){
-                //Check the trust
-                if(obj->trust() < crossingTrustThreshold){
-                    continue;
-                }
-                const street_environment::CrossingPtr crossing = std::static_pointer_cast<street_environment::Crossing>(obj);
-                if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //we already missed the trajectory!
-                    continue;
-                }
-                //TODO doesn't work that good if(crossing->foundOppositeStopLine || !config().get<bool>("crossingUseOppositeLine",false)){
-                    if(car->velocity() < 0.1){//TODO HACK but may work
-                        if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
-                            logger.info("start waiting in front of crossing");
-                        }
-                    }
-                    logger.info("simpleTrajectory")<<"crossing: stop "<< crossing->hasToStop() << " blocked:"<<crossing->blocked()<< " waiting for:"<<crossing->stopTime().since().toFloat();
-
-                    //check if we have to stop or if crossing is blocked
-                    if(crossing->hasToStop() || crossing->blocked()){
-                        //Check if we are waiting for to long
-                        if(!crossing->hasToStop() && crossing->stopTime().since().toFloat()>config().get<float>("maxStopTimeAtCrossing",10)){
-                            logger.warn("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
-                        }else{
-                            //check if the Crossing is close enough
-                            //As there won't be an obstacle in front of the crossing we can go on the right
-                            //TODO we won't indicate if we change line
-                            if(crossing->distanceTang()-tangLength < config().get<float>("minDistanceToCrossing",0.1)){
-                                if(useFixedSpeed){
-                                    continue;
-                                }
-                                //Create a trajectory with speed 0
-                                useFixedSpeed = true;
-                                fixedSpeed = 0;
-                                float x = crossing->position().x-config().get<float>("minDistanceToCrossing",0.1);//Wir gehen davon aus, dass crossing.distanceTang() == crossing.position.x ist
-                                float y= crossing->position().y;
-                                //vertex2f result = mid + orthogonalTrans;
-                                //tempTrajectory.push_back(street_environment::TrajectoryPoint(result,normAlong,0,-0.2)); //TODO
-                                //add endPoint
-                                //TODO wir gehen davon aus, dass die Kreuzung in der Mitte der rechten Linie ihre Position hat!
-                                tempTrajectory.push_back(street_environment::TrajectoryPoint(lms::math::vertex2f(x,y),normAlong,0,-0.2)); //TODO
-                                continue;
-                            }
-                        }
-                    }
-                /*}else{
+            if(rightSide && rightState == LaneState::BLOCKED){
+                if(reasonObj->getType() == street_environment::Obstacle::TYPE){ //TODO
+                    logger.error("street is blocked by obstacles!");
+                }else{
                     useFixedSpeed = true;
-                    fixedSpeed = config().get<float>("slowDownInFrontOfCrossing",1); //TODO #IMPORTANT
-                }*/
-                //add endPoint
-            }else{
-                //I don't care about a startLine/whatever
-                continue;
+                    fixedSpeed = 0;
+                }
             }
         }
 
@@ -490,6 +482,89 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float dis
 
     return tempTrajectory;
 
+}
+
+
+LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide,street_environment::EnvironmentObject** reason){
+    //Mindestabstand zwischen zwei Hindernissen 1m
+    //Maximalabstand von der Kreuzung: 15cm
+    //An der Kreuzung warten: 2s
+    LaneState result = LaneState::CLEAR;
+    const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
+    const float obstacleLength = config().get<float>("obstacleLength",0.5);
+    const float obstacleSavetyDistance = config().get<float>("obstacleSavetyDistance",0);
+    const float crossingTrustThreshold = config().get<float>("crossingTrustThreshold",0.5);
+    for(street_environment::EnvironmentObjectPtr objPtr: envObstacles->objects){
+        if(objPtr->getType() == street_environment::Obstacle::TYPE){
+            if(objPtr->trust() < obstacleTrustThreshold){
+                continue;
+            }
+            street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(objPtr);
+            if(!((rightSide && obstPtr->distanceOrth()< 0)||(rightSide && obstPtr->distanceOrth() > 0))){
+                continue;
+            }
+            float distanceToObstacle = tangDistance-obstPtr->distanceTang();//abstand zum Punkt p2
+            if(obstPtr->trust() < obstacleTrustThreshold){
+                continue;
+            }
+            if(distanceToObstacle < obstacleLength){
+                if(reason != nullptr){
+                    *reason = objPtr.get();
+                }
+                if(distanceToObstacle >= 0 && distanceToObstacle){
+                    result = LaneState::BLOCKED;
+                    break;
+                }else if(distanceToObstacle >= -obstacleSavetyDistance){
+                    result = LaneState::DANGEROUS;
+                }
+            }
+        }else if(objPtr->getType() == street_environment::Crossing::TYPE){
+            logger.debug("I HAVE A CROSSING")<<objPtr->trust();
+            //Check the trust
+            if(objPtr->trust() < crossingTrustThreshold){
+                continue;
+            }
+            const street_environment::CrossingPtr crossing = std::static_pointer_cast<street_environment::Crossing>(objPtr);
+            logger.debug("CROSSING DATA")<<crossing->distanceTang()<< " pos: "<<crossing->position();
+            if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //we already missed the trajectory!
+                continue;
+            }
+            //TODO doesn't work that good if(crossing->foundOppositeStopLine || !config().get<bool>("crossingUseOppositeLine",false)){
+                if(car->velocity() < 0.1){//TODO HACK but may work
+                    if(const_cast<street_environment::Crossing*>(crossing.get())->startStop()){//TODO HACK
+                        logger.info("start waiting in front of crossing");
+                    }
+                }
+                logger.info("simpleTrajectory")<<"crossing: stop "<< crossing->hasToStop() << " blocked:"<<crossing->blocked();
+                if(crossing->hasWaited()){
+                    logger.info("simpleTrajectory")<<" waiting for:"<<crossing->stopTime().since().toFloat();
+                }else{
+                    logger.info("simpleTrajectory")<<" haven't waited on crossing yet";
+                }
+
+                //check if we have to stop or if crossing is blocked
+                if(crossing->hasToStop() || crossing->blocked()){
+                    //Check if we are waiting for to long
+                    if(!crossing->hasToStop() && crossing->stopTime().since().toFloat()>config().get<float>("maxStopTimeAtCrossing",10)){
+                        logger.info("ignoring crossing")<<"I was waiting for "<<crossing->stopTime().since()<<"s";
+                    }else{
+                        //check if the Crossing is close enough
+                        //As there won't be an obstacle in front of the crossing we can go on the right
+                        //TODO we won't indicate if we change line
+                        if(crossing->distanceTang()-tangDistance < config().get<float>("minDistanceToCrossing",0.1)){
+                            result = LaneState::BLOCKED;
+                            if(reason != nullptr){
+                                *reason = objPtr.get();
+                            }
+                            break;
+                        }
+                    }
+                }else{
+                    logger.info("I CAN GO; CROSSING");
+                }
+        }
+    }
+    return result;
 }
 
 

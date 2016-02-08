@@ -8,13 +8,19 @@
 #include "trajectory_generator.h"
 #include "street_environment/trajectory.h"
 
+
+enum class LaneState{
+    CLEAR,DANGEROUS,BLOCKED
+};
+
 class TrajectoryLineCreator : public lms::Module {
+
 public:
     bool initialize() override;
     bool deinitialize() override;
     bool cycle() override;
 private:
-    street_environment::Trajectory simpleTrajectory(float trajectoryMaxLength, float endVelocity);
+    street_environment::Trajectory simpleTrajectory(bool useSavety, float endVelocity);
     bool advancedTrajectory(street_environment::Trajectory &trajectory,bool rightSide, float endVelocity,float minTime,float maxTime);
     lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
     lms::ReadDataChannel<street_environment::RoadStates> roadStates;
@@ -31,6 +37,7 @@ private:
 
     lms::math::vertex2f interpolateRoadAtDistance(const float distanceIn);
     float targetVelocity();
+<<<<<<< HEAD
     int counter = 0;
 
     float dt = 0.01;
@@ -41,6 +48,10 @@ private:
     float d1_last = -0.2;
 
     Trajectory lastResult;
+=======
+
+    LaneState getLaneState(float tangDistance, bool rightSide,street_environment::EnvironmentObject** reason = nullptr);
+>>>>>>> 92bcabb43760a099d5ed5177aa2998d43d2e2a6a
 };
 
 #endif /* IMAGE_HINT_TRANSFORMER_H */
