@@ -117,6 +117,7 @@ bool TrajectoryLineCreator::cycle() {
 
 
     bool advancedTraj = false;
+
     street_environment::Trajectory traj;
     if(config().get<bool>("simpleTraj",true)){
         traj= simpleTrajectory(config().get<float>("distanceObstacleBeforeChangeLine",0),velocity);
@@ -192,120 +193,157 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         return false;
     }
 
-
-    //INPUT
-    //hindernisse: vector Abstand-Straße,geschwindigkeit-Straße(absolut), -1 (links) +1 (rechts) (alle hindernisse hintereinander)
-    //eigenes auto, vx,vy, dw -winkelgeschwindigkeit dw (zunächst mal 0)
-    //vector mit x-koordinaten
-    //vector mit y-koordinaten
-
-    int nSamplesTraj = config().get<int>("nSamplesTraj",50);
-    double d1; //Abstand zur Mittellinie
-    if(rightSide)
-        d1= -0.2;
-    else
-        d1= 0.2;
-
-    //aktuelle daten der fahrspur und des autos relativ dazu
-    RoadData dataRoad;
-    dataRoad.ax0 = 0; //beschl. am anfang
-    dataRoad.kappa = lms::math::circleCurvature(road->points()[2],road->points()[5],road->points()[7]);
-    dataRoad.phi = road->polarDarstellung[1];
-    float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
-    if(velocity < 1) //TODO HACK
-        velocity = 1;
-    dataRoad.vx0 = velocity;
-    dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
-    dataRoad.y0 = road->polarDarstellung[0];
-    logger.warn("kappa")<<dataRoad.kappa<< " distanceToMiddle: "<<d1;
-    logger.warn("vx0 ") << dataRoad.vx0 << ",  v1 " << endVelocity;
-    logger.warn("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
-    logger.warn("tmin ") << tMin << ",  tMAx " << tMax;
-
-
     float tangLength = 0;
 
     float s0_closest;
     bool leftLane_closest;
     bool obstacleInTheWay = false;
 
-    std::vector<ObstacleData> dataObstacle;
-    float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
-    for(const street_environment::EnvironmentObjectPtr objPtr:envObstacles->objects){
-        if(objPtr->trust() < obstacleTrustThreshold)
-            continue;
-        if(objPtr->getType() == street_environment::Obstacle::TYPE){
+    bool forceUpdate = false;
 
-            street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(objPtr);
-            if (obstPtr->distanceTang()-tangLength < 0.15)
-            {
+    std::vector<ObstacleData> dataObstacle;
+    float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold", 0.5);
+    for (const street_environment::EnvironmentObjectPtr objPtr:envObstacles->objects) {
+        if (objPtr->trust() < obstacleTrustThreshold)
+            continue;
+        if (objPtr->getType() == street_environment::Obstacle::TYPE) {
+
+            street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(
+                    objPtr);
+            if (obstPtr->distanceTang() - tangLength < 0.15) {
                 continue;
             }
             ObstacleData toAdd;
             toAdd.s0 = obstPtr->distanceTang();
             toAdd.v0 = 0;
-            toAdd.leftLane = obstPtr->distanceOrth()> 0;
+            toAdd.leftLane = obstPtr->distanceOrth() > 0;
             dataObstacle.push_back(toAdd);
-            logger.debug("obstacle: s0: ") << toAdd.s0 << ",  v0: " << toAdd.v0 << ",  leftLane: " << toAdd.leftLane;
+            logger.debug("obstacle: s0: ") << toAdd.s0 << ",  v0: " << toAdd.v0 << ",  leftLane: " <<
+            toAdd.leftLane;
 
 
-            if ((!obstacleInTheWay) || toAdd.s0 < s0_closest)
-            {
+            if ((!obstacleInTheWay) || toAdd.s0 < s0_closest) {
                 s0_closest = toAdd.s0;
                 leftLane_closest = toAdd.leftLane;
             }
             obstacleInTheWay = true;
         }
     }
-    CoeffCtot tot;
 
-    // generate d1
-    if (!obstacleInTheWay)
-    {
-        d1 = -0.2;
-    }else
-    {
-        logger.warn("obstacle in the way: s0 = ") << s0_closest << ",  leftLane: " << leftLane_closest;
+    //double d1; //Abstand zur Mittellinie
+    float d1 = 0;
+    
+    if (obstacleInTheWay) {
         if (leftLane_closest)
-        {
             d1 = -0.2;
-        }else{
+        else
             d1 = 0.2;
-        }
+    }else {
+        d1 = -0.2;
     }
 
-    tot.kj = config().get<double>("kj",1.0);
-    tot.kT = config().get<double>("kT",10.0);
-    tot.ks = config().get<double>("ks",0.1);
-    tot.kd = config().get<double>("kd",10.0);
 
 
-    double safetyS = config().get<double>("safetyS",0.1); //Sicherheitsabstand tangential zur Straße
-    double safetyD = config().get<double>("safetyD",0.1); //Sicherheitsabstand orthogonal zur Straße
-
-    Trajectory result;
-    if(generator->createTrajectorySample(result,endVelocity,d1,safetyS,safetyD,tMin,tMax,nSamplesTraj,dataRoad,dataObstacle,tot)){
-        //convert data
-        //TODO anzahl der punkte
-        //points2d<20> points = result.sampleXY<20>();
-        //float middleLength = road->length();
-        float middleStepLength = road->length()/10;
-        lms::math::polyLine2f myroad= road->getWithDistanceBetweenPoints(middleStepLength);
-        points2d<10> pointsMiddle;
-
-        for (int i = 0; i < 10; i++)
+    if (obstacleInTheWay)
+    {
+        if (!obstacleInSightGlobal)
         {
-            pointsMiddle.x(i) = myroad.points()[i].x;
-            pointsMiddle.y(i) = myroad.points()[i].y;
+            obstacleInSightGlobal = true;
+        }else{
+            //nothing i guess
         }
-        //trajectory = result.projectOntoBezierCurvePlusVelocity<20>(pointsMiddle, 0.1);
-        lms::math::polyLine2f lineMiddle = *road;
-        trajectory = result.projectOntoLineSegments(lineMiddle, 0.05);
-        return true;
     }else{
-        return false;
+        obstacleInSightGlobal = false;
     }
-    return true;
+
+    if (fabs(d1_last - d1) > 0.02)
+    {
+        forceUpdate = true;
+    }
+
+    d1_last = d1;
+
+    int updateEveryNCycles = config().get<int>("updateEveryNCycles", 40);
+
+    if ((counter == 0) ||(counter == updateEveryNCycles) || forceUpdate) {
+        counter = 1;
+        t_sinceLastUpdate = 0;
+        //INPUT
+        //hindernisse: vector Abstand-Straße,geschwindigkeit-Straße(absolut), -1 (links) +1 (rechts) (alle hindernisse hintereinander)
+        //eigenes auto, vx,vy, dw -winkelgeschwindigkeit dw (zunächst mal 0)
+        //vector mit x-koordinaten
+        //vector mit y-koordinaten
+
+        int nSamplesTraj = config().get<int>("nSamplesTraj", 50);
+
+
+        //aktuelle daten der fahrspur und des autos relativ dazu
+        RoadData dataRoad;
+        dataRoad.ax0 = 0; //beschl. am anfang
+        dataRoad.kappa = lms::math::circleCurvature(road->points()[2], road->points()[5], road->points()[7]);
+        dataRoad.phi = road->polarDarstellung[1];
+        float velocity = car->velocity();//Sollte nicht 0 sein, wegen smoothem start
+        if (velocity < 1) //TODO HACK
+            velocity = 1;
+        dataRoad.vx0 = velocity;
+        dataRoad.w = 0; //aktuelle winkelgeschwindigkeit
+        dataRoad.y0 = road->polarDarstellung[0];
+        logger.warn("kappa") << dataRoad.kappa << " distanceToMiddle: " << d1;
+        logger.warn("vx0 ") << dataRoad.vx0 << ",  v1 " << endVelocity;
+        logger.warn("y0 ") << dataRoad.y0 << ",  phi " << dataRoad.phi;
+        logger.warn("tmin ") << tMin << ",  tMAx " << tMax;
+
+
+
+        CoeffCtot tot;
+
+        tot.kj = config().get<double>("kj", 1.0);
+        tot.kT = config().get<double>("kT", 10.0);
+        tot.ks = config().get<double>("ks", 0.1);
+        tot.kd = config().get<double>("kd", 10.0);
+
+
+        double safetyS = config().get<double>("safetyS", 0.1); //Sicherheitsabstand tangential zur Straße
+        double safetyD = config().get<double>("safetyD", 0.1); //Sicherheitsabstand orthogonal zur Straße
+
+
+        Trajectory result;
+        if (generator->createTrajectorySample(result, endVelocity, d1, safetyS, safetyD, tMin, tMax, nSamplesTraj,
+                                              dataRoad, dataObstacle, tot)) {
+            //convert data
+            //TODO anzahl der punkte
+            //points2d<20> points = result.sampleXY<20>();
+            //float middleLength = road->length();
+            float middleStepLength = road->length() / 10;
+            lms::math::polyLine2f myroad = road->getWithDistanceBetweenPoints(middleStepLength);
+            points2d<10> pointsMiddle;
+
+            for (int i = 0; i < 10; i++) {
+                pointsMiddle.x(i) = myroad.points()[i].x;
+                pointsMiddle.y(i) = myroad.points()[i].y;
+            }
+            //trajectory = result.projectOntoBezierCurvePlusVelocity<20>(pointsMiddle, 0.1);
+            lms::math::polyLine2f lineMiddle = *road;
+            trajectory = result.projectOntoLineSegments(lineMiddle, 0.1);
+
+            lastResult = result;
+            std::cout << "new traj generated" << std::endl;
+            return true;
+        } else {
+            return false;
+        }
+        return true;
+    } else{
+        lms::math::polyLine2f lineMiddle = *road;
+
+        t_sinceLastUpdate = t_sinceLastUpdate + dt;
+        counter = counter + 1;
+
+        std::cout << "eval existing traj at counter = " << counter << ",  t_offset = " << t_sinceLastUpdate << std::endl;
+
+        trajectory = lastResult.projectOntoLineSegments(lineMiddle, 0.1, t_sinceLastUpdate);
+        return true;
+    }
 }
 
 street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(float distanceObstacleBeforeChangeLine, float endVelocity){

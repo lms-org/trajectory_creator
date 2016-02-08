@@ -31,6 +31,16 @@ private:
 
     lms::math::vertex2f interpolateRoadAtDistance(const float distanceIn);
     float targetVelocity();
+    int counter = 0;
+
+    float dt = 0.01;
+    float t_sinceLastUpdate = 0;
+
+    bool obstacleInSightGlobal = false;
+
+    float d1_last = -0.2;
+
+    Trajectory lastResult;
 };
 
 #endif /* IMAGE_HINT_TRANSFORMER_H */

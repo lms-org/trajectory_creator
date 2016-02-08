@@ -345,16 +345,20 @@ public:
 
         float s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
 
+        float max_velocity = S.v1;
         float min_velocity = S.v0;
 
         if (S.v1 < S.v0)
         {
+            max_velocity = S.v0;
             min_velocity = S.v1;
         }
 
 
-        float dt = lSample/min_velocity;
-        const int m = floor(s_end/lSample);
+        float dt = lSample/max_velocity;
+        const int m = ceil(s_end/(dt*min_velocity));
+        std::cout << "m for first eval: " << m << " ,  l: " << l << " ,lSample: " << lSample << ",  s_end " << s_end <<  std::endl;
+        std::cout << "dt for first eval: " << dt << std::endl;
 
 
         float t_local = 0;
@@ -380,6 +384,8 @@ public:
                 d_local = D.d1;
                 d_d_local = 0;
             }
+
+            //std::cout << "s_local: " << s_local << std::endl;
 
             if ((s_local > 0) && (s_local < s_end) && (t_local > 0))
             {
@@ -455,6 +461,153 @@ public:
         return trajectoryOut;
     }
 
+
+    street_environment::Trajectory projectOntoLineSegments(lms::math::polyLine2f road, float lSample, float t_offset)
+    {
+
+        float s_offset = 0;
+
+        if (t_offset > tend)
+        {
+            s_offset = mPtr_s->evalAtPoint(tend) + (t_offset-tend)*S.v1;
+        }else
+        {
+            s_offset = mPtr_s->evalAtPoint(t_offset);
+        }
+
+
+
+        // initialize
+        // generate output
+        street_environment::Trajectory trajectoryOut;
+        street_environment::TrajectoryPoint toAdd;
+
+        Poly<3> poly_s_d = mPtr_s->differentiate(); //first derivative
+        Poly<4> poly_d_d = mPtr_d->differentiate();
+
+        int nPoints = (road.points().size());
+        float k = (1.0 * nPoints);
+        float l = road.points()[0].distance(road.points()[1]);
+
+        float s_end = l*(k-1); //as there are (k-1) segemnts of length l between k points
+
+        float max_velocity = S.v1;
+        float min_velocity = S.v0;
+
+        if (S.v1 < S.v0)
+        {
+            max_velocity = S.v0;
+            min_velocity = S.v1;
+        }
+
+
+        float dt = lSample/max_velocity;
+        const int m = ceil(s_end/(dt*min_velocity));
+        std::cout << "m for alternate eval: " << m << std::endl;
+        std::cout << "dt for alternate eval: " << dt << std::endl;
+
+
+        float t_local = 0 + t_offset;
+        std::cout << "new eval with offset in t: " << t_offset << ",  offset in s: " << s_offset << std::endl;
+
+        float s_local = mPtr_s->evalAtPoint(t_local)-s_offset;
+        float d_local = mPtr_d->evalAtPoint(t_local);
+
+
+        float s_d_local = poly_s_d.evalAtPoint(t_local);
+        float d_d_local = poly_d_d.evalAtPoint(t_local);
+
+        for (int i = 0; i <m ; i++)
+        {
+
+            t_local = dt*i + t_offset;
+            if (t_local <= tend) {
+                s_local = mPtr_s->evalAtPoint(t_local) - s_offset;
+                d_local = mPtr_d->evalAtPoint(t_local);
+                s_d_local = poly_s_d.evalAtPoint(t_local);
+            }else
+            {
+                s_local = mPtr_s->evalAtPoint(tend) + S.v1*(t_local-tend) - s_offset;
+                s_d_local = S.v1;
+                d_local = D.d1;
+                d_d_local = 0;
+            }
+
+            //std::cout << "s_local: " << s_local << ",  t_local: " << t_local << std::endl;
+
+            if ((s_local > 0) && (s_local < s_end) && (t_local > 0))
+            {
+
+                lms::math::vertex2f centerLinePoint = road.interpolateAtDistance(s_local);
+
+
+                //normal
+                lms::math::vertex2f centerLineNormal = road.interpolateNormalAtDistance(s_local);
+                lms::math::vertex2f trajPoint = centerLinePoint + (centerLineNormal *
+                                                                   d_local); //the trajectoray point is the centerLinePoint plus d times the normal (should be oriented the right way and normalized)
+
+                toAdd.position = trajPoint;
+
+                // tangent
+                lms::math::vertex2f centerLineTangent = road.interpolateTangentAtDistance(s_local);
+
+                lms::math::vertex2f directionTraj =
+                        (centerLineTangent * s_d_local) + (centerLineNormal * d_d_local);
+                toAdd.directory = directionTraj.normalize();
+
+                // velocity (norm tangent times derivative d/dt s(t))
+                toAdd.velocity = sqrtf(pow(s_d_local, 2) + pow(d_d_local, 2));
+
+                // side
+                toAdd.distanceToMiddleLane = d_local;
+
+
+                if (centerLineNormal.length() != 1) {
+                    //std::cout << "normal length wrong " << centerLineNormal.length() << std::endl;
+                }
+                if (centerLineNormal.length() != 1) {
+                    //std::cout << "tangent length wrong " << centerLineTangent.length() << std::endl;
+                }
+
+                if (d_local > 0.3) {
+                    //std::cout << "d_local too big: " << d_local << ",   d0: " << D.d0 << ",  d1: " << D.d1 << ",  d0d: " << D.d0d << ",  d0dd: " << D.d0dd << std::endl;
+                    //std::cout << " centerLinePoint" << centerLinePoint << std::endl;
+                    //std::cout << " s loc " << s_local << ",  d loc " << d_local << ",  t_end " << tend << ",  t_local " << t_local << std::endl ;
+                    //std::cout << "tangent " << centerLineTangent << std::endl;
+                    //std::cout << "normal " << centerLineNormal << std::endl;
+                    //std::cout << std::endl << std::endl;
+                }
+
+                if (d_local < -0.3) {
+                    //std::cout << "d_local too small: " << d_local << std::endl;
+                }
+
+                if (isnan(toAdd.position.x)) {
+                    //std::cout << "lhadfs x" << std::endl;
+                    //std::cout << " centerLinePoint" << centerLinePoint << std::endl;
+                    //std::cout << " s loc" << s_local << "d loc " << d_local << std::endl;
+                    //std::cout << "tangent " << centerLineTangent << std::endl;
+                    //std::cout << "normal " << centerLineNormal << std::endl;
+                }
+                if (isnan(toAdd.position.y)) {
+                    //std::cout << "lhadfs y" << std::endl;
+                }
+                if (isnan(toAdd.directory.x)) {
+                    //std::cout << "lhadfs dx" << std::endl;
+                }
+                if (isnan(toAdd.directory.y)) {
+                    //std::cout << "lhadfs dy" << std::endl;
+                }
+            }
+
+
+            // add to Trajectory
+            trajectoryOut.push_back(toAdd);
+        }
+
+
+        return trajectoryOut;
+    }
 /**
  * @brief work in progress: Do not USE!!!!
  */
