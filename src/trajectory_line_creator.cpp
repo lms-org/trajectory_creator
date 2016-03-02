@@ -56,6 +56,8 @@ float TrajectoryLineCreator::targetVelocity(){
             myConfig = &config("FOH");
         }else if(service->driveMode() == phoenix_CC2016_service::CCDriveMode::PARKING){
             //we do nothing
+        }else if(service->driveMode() == phoenix_CC2016_service::CCDriveMode::IDLE){
+            //we do nothing
         }else{
             logger.warn("no drivemode set!")<<"using default config";
         }
