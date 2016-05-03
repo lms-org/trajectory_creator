@@ -25,7 +25,7 @@ private:
     lms::ReadDataChannel<street_environment::EnvironmentObjects> envObstacles;
     lms::ReadDataChannel<street_environment::RoadStates> roadStates;
     lms::ReadDataChannel<street_environment::RoadLane> road;
-    lms::ReadDataChannel<sensor_utils::Car> car;
+    lms::ReadDataChannel<street_environment::Car> car;
     lms::WriteDataChannel<lms::math::polyLine2f> debug_trajectory;
     lms::WriteDataChannel<lms::math::polyLine2f> debug_trajectory2;
     lms::WriteDataChannel<street_environment::Trajectory> trajectory;

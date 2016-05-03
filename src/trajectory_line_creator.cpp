@@ -12,7 +12,7 @@ bool TrajectoryLineCreator::initialize() {
     trajectory = writeChannel<street_environment::Trajectory>("LINE");
     debug_trajectory = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY");
     debug_trajectory2 = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY_2");
-    car = readChannel<sensor_utils::Car>("CAR");
+    car = readChannel<street_environment::Car>("CAR");
 
     generator = new TrajectoryGenerator(logger);
 
@@ -223,7 +223,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     //vector mit x-koordinaten
     //vector mit y-koordinaten
 
-    int nSamplesTraj = config().get<int>("nSamplesTraj",50);
+    //int nSamplesTraj = config().get<int>("nSamplesTraj",50);
     /*double d1; //Abstand zur Mittellinie
     if(rightSide)
         d1= -0.2;
