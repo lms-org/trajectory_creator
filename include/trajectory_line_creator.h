@@ -49,6 +49,13 @@ private:
 
     Trajectory lastResult;
 
+    /**
+     * @brief getLaneState
+     * @param tangDistance
+     * @param rightSide
+     * @param reason TODO hier wird der pointer aus einem shared pointer geholt!
+     * @return
+     */
     LaneState getLaneState(float tangDistance, bool rightSide,street_environment::EnvironmentObject** reason = nullptr);
 };
 
