@@ -4,7 +4,7 @@
 #include "lms/module.h"
 #include "lms/math/polyline.h"
 #include "street_environment/road.h"
-#include "sensor_utils/car.h"
+#include "street_environment/car.h"
 #include "trajectory_generator.h"
 #include "street_environment/trajectory.h"
 
