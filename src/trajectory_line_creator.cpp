@@ -210,7 +210,7 @@ bool TrajectoryLineCreator::cycle() {
 }
 
 bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &trajectory, bool rightSide, float endVelocity, float tMin,float tMax){
-    if(road->polarDarstellung.size() < 8){
+/*    if(road->polarDarstellung.size() < 8){
         logger.error("invalid middle")<<road->polarDarstellung.size();
         return false;
     }
@@ -224,11 +224,11 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
     //vector mit y-koordinaten
 
     //int nSamplesTraj = config().get<int>("nSamplesTraj",50);
-    /*double d1; //Abstand zur Mittellinie
+    double d1; //Abstand zur Mittellinie
     if(rightSide)
         d1= -0.2;
     else
-        d1= 0.2;*/
+        d1= 0.2;
 
     //aktuelle daten der fahrspur und des autos relativ dazu
     RoadData dataRoad;
@@ -408,6 +408,7 @@ bool TrajectoryLineCreator::advancedTrajectory(street_environment::Trajectory &t
         trajectory = lastResult.projectOntoLineSegments(lineMiddle, 0.1, t_sinceLastUpdate);
         return true;
     }
+    */
 }
 
 
