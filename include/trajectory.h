@@ -12,6 +12,7 @@
 #include <types.h>
 #include <iomanip>
 #include <math.h>
+#include <cmath>
 #include <lms/math/vertex.h>
 #include <street_environment/trajectory.h>
 
@@ -436,20 +437,20 @@ public:
                     //std::cout << "d_local too small: " << d_local << std::endl;
                 }
 
-                if (isnan(toAdd.position.x)) {
+                if (std::isnan(toAdd.position.x)) {
                     //std::cout << "lhadfs x" << std::endl;
                     //std::cout << " centerLinePoint" << centerLinePoint << std::endl;
                     //std::cout << " s loc" << s_local << "d loc " << d_local << std::endl;
                     //std::cout << "tangent " << centerLineTangent << std::endl;
                     //std::cout << "normal " << centerLineNormal << std::endl;
                 }
-                if (isnan(toAdd.position.y)) {
+                if (std::isnan(toAdd.position.y)) {
                     //std::cout << "lhadfs y" << std::endl;
                 }
-                if (isnan(toAdd.directory.x)) {
+                if (std::isnan(toAdd.directory.x)) {
                     //std::cout << "lhadfs dx" << std::endl;
                 }
-                if (isnan(toAdd.directory.y)) {
+                if (std::isnan(toAdd.directory.y)) {
                     //std::cout << "lhadfs dy" << std::endl;
                 }
             }
@@ -584,20 +585,20 @@ public:
                     //std::cout << "d_local too small: " << d_local << std::endl;
                 }
 
-                if (isnan(toAdd.position.x)) {
+                if (std::isnan(toAdd.position.x)) {
                     //std::cout << "lhadfs x" << std::endl;
                     //std::cout << " centerLinePoint" << centerLinePoint << std::endl;
                     //std::cout << " s loc" << s_local << "d loc " << d_local << std::endl;
                     //std::cout << "tangent " << centerLineTangent << std::endl;
                     //std::cout << "normal " << centerLineNormal << std::endl;
                 }
-                if (isnan(toAdd.position.y)) {
+                if (std::isnan(toAdd.position.y)) {
                     //std::cout << "lhadfs y" << std::endl;
                 }
-                if (isnan(toAdd.directory.x)) {
+                if (std::isnan(toAdd.directory.x)) {
                     //std::cout << "lhadfs dx" << std::endl;
                 }
-                if (isnan(toAdd.directory.y)) {
+                if (std::isnan(toAdd.directory.y)) {
                     //std::cout << "lhadfs dy" << std::endl;
                 }
             }
