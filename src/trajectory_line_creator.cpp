@@ -166,11 +166,16 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
     if(road->points().size() == 0){
         logger.error("cycle") << "no valid environment given";
         return tempTrajectory;
-
+    }
+    //check if road is valid
+    for(const lms::math::vertex2f &v:road->points()){
+        if(std::isnan(v.x) || std::isnan(v.y)){
+            logger.error("simpleTrajectory")<<"Invalid road, element is nan!";
+            return tempTrajectory;
+        }
     }
     const float trajectoryStartDistance = config().get<float>("trajectoryStartDistance",0.3);
     const float obstacleResolution = config().get<float>("obstacleResolution",0.05);
-    logger.debug("simpleTrajectory")<<"roadpoints: "<<road->points().size();
     const lms::math::polyLine2f middle = road->getWithDistanceBetweenPoints(obstacleResolution);
     float tangLength = 0;
     //ignore first point
