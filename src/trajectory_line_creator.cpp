@@ -25,6 +25,7 @@ bool TrajectoryLineCreator::deinitialize() {
 }
 
 float TrajectoryLineCreator::targetVelocity(){
+    //TODO invalid input causes segfault
     const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     float velocity = 0;
     bool obstacleInSight = false;
