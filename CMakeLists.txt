@@ -19,7 +19,7 @@ set (HEADERS
 
 
 
-include_directories("include" "/usr/inlcude/eigen3/")
+include_directories("include")
 
 add_library (trajectory_creator MODULE ${SOURCES} ${HEADERS})
 target_link_libraries(trajectory_creator PRIVATE lmscore lms_math lms_sensor_utils street_environment phoenix_CC2016_service)

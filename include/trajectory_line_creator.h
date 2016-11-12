@@ -26,7 +26,6 @@ private:
     lms::ReadDataChannel<street_environment::RoadLane> road;
     lms::ReadDataChannel<street_environment::Car> car;
     lms::WriteDataChannel<lms::math::polyLine2f> debug_trajectory;
-    lms::WriteDataChannel<lms::math::polyLine2f> debug_trajectory2;
     lms::WriteDataChannel<street_environment::Trajectory> trajectory;
     TrajectoryGenerator* generator;
 

@@ -11,16 +11,15 @@ bool TrajectoryLineCreator::initialize() {
     road = readChannel<street_environment::RoadLane>("ROAD");
     trajectory = writeChannel<street_environment::Trajectory>("LINE");
     debug_trajectory = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY");
-    debug_trajectory2 = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY_2");
     car = readChannel<street_environment::Car>("CAR");
 
-    generator = new TrajectoryGenerator(logger);
+    //generator = new TrajectoryGenerator(logger);
 
     return true;
 }
 
 bool TrajectoryLineCreator::deinitialize() {
-    delete generator;
+    //delete generator;
     return true;
 }
 
@@ -134,16 +133,12 @@ float TrajectoryLineCreator::targetVelocity(){
 bool TrajectoryLineCreator::cycle() {
     //clear old trajectory
     trajectory->clear();
-    //calculate data for creating the trajectory    //calculate the speed without obstacles
-    float velocity = targetVelocity();
-    //logger.warn("set velocity: ") << velocity;
-
-
-    *trajectory= simpleTrajectory(true,velocity);
-
     debug_trajectory->points().clear();
-    debug_trajectory2->points().clear();
 
+    //calculate the speed without obstacles
+    float velocity = targetVelocity();
+    //calculate the trajectory
+    *trajectory= simpleTrajectory(true,velocity);
 
     for(street_environment::TrajectoryPoint &v:*trajectory){
         debug_trajectory->points().push_back(v.position);
@@ -210,20 +205,21 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
             if(phoenixService->driveMode() == phoenix_CC2016_service::CCDriveMode::FMH){
                 rightState = getLaneState(tangLength,true,&reasonObj);
                 leftState = getLaneState(tangLength,false,&reasonObj);
+                //if useSavety, we will avoid the right lane if it's blocked/dangerous
                 if(rightState > leftState && (useSavety || (rightState == LaneState::BLOCKED))){
-                    rightSide = false;
+                    rightSide = false; //if both are blocked, we will stay on the right
                 }
             }
             logger.debug("states")<<(int)rightState<<" "<<(int)leftState;
-
+            //check if the road is blocked, if yes, stop
             if(rightSide && rightState == LaneState::BLOCKED){
                 if(reasonObj != nullptr && reasonObj->getType() == street_environment::Obstacle::TYPE){ //TODO
                     logger.info("street is blocked by obstacles!");
                 }else{
                     logger.info("street is blocked by crossing!");
-                    useFixedSpeed = true;
-                    fixedSpeed = 0;
                 }
+                useFixedSpeed = true;
+                fixedSpeed = 0;
             }
         }
 
