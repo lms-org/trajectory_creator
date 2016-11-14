@@ -24,7 +24,10 @@ bool TrajectoryLineCreator::deinitialize() {
 }
 
 float TrajectoryLineCreator::targetVelocity(){
-    //TODO invalid input causes segfault
+    if(roadStates->states.size() != 3){
+        logger.error("targetVelocity")<<"invalid roadstates given, size: "<< roadStates->states.size();
+        return 0;
+    }
     const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     float velocity = 0;
     bool obstacleInSight = false;
