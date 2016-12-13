@@ -11,7 +11,7 @@ bool TrajectoryLineCreator::initialize() {
     road = readChannel<street_environment::RoadLane>("ROAD");
     trajectory = writeChannel<street_environment::Trajectory>("LINE");
     debug_trajectory = writeChannel<lms::math::polyLine2f>("DEBUG_TRAJECTORY");
-    car = readChannel<street_environment::Car>("CAR");
+    car = readChannel<street_environment::CarCommand>("CAR");
 
     //generator = new TrajectoryGenerator(logger);
 
