@@ -7,6 +7,7 @@
 #include "street_environment/car.h"
 #include "trajectory_generator.h"
 #include "street_environment/trajectory.h"
+#include "street_environment/obstacle.h"
 
 
 enum class LaneState{
@@ -55,6 +56,11 @@ private:
      * @return
      */
     LaneState getLaneState(float tangDistance, bool rightSide,street_environment::EnvironmentObject** reason = nullptr);
+
+
+    float distanceTang(street_environment::ObstaclePtr obstacle);
+
+    float distanceOrth(street_environment::ObstaclePtr obstacle);
 };
 
 #endif /* IMAGE_HINT_TRANSFORMER_H */

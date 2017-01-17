@@ -37,10 +37,10 @@ float TrajectoryLineCreator::targetVelocity(){
             continue;
         street_environment::ObstaclePtr obst = std::static_pointer_cast<street_environment::Obstacle>(obj);
         //Only looking for obstacles on the right side
-        if(obst->distanceOrth() < 0.1 && obst->trust() > obstacleTrustThreshold){
+        if(distanceOrth(obst) < 0.1 && obst->trust() > obstacleTrustThreshold){
             obstacleInSight = true;
-            if(obst->position().x > -0.1 && (distanceToObstacle > obst->distanceTang())){
-                distanceToObstacle = obst->distanceTang();
+            if(obst->position().x > -0.1 && (distanceToObstacle > distanceTang(obst))){
+                distanceToObstacle = distanceTang(obst);
             }
         }
     }
@@ -267,10 +267,10 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                 continue;
             }
             street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(objPtr);
-            if(!((rightSide && obstPtr->distanceOrth()< 0)||(rightSide && obstPtr->distanceOrth() > 0))){
+            if(!((rightSide && distanceOrth(obstPtr)< 0)||(rightSide && distanceOrth(obstPtr) > 0))){
                 continue;
             }
-            float distanceToObstacle = tangDistance-obstPtr->distanceTang();//abstand zum Punkt p2
+            float distanceToObstacle = tangDistance-distanceTang(obstPtr);//abstand zum Punkt p2
             if(obstPtr->trust() < obstacleTrustThreshold){
                 continue;
             }
@@ -292,7 +292,7 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                 continue;
             }
             const street_environment::CrossingPtr crossing = std::static_pointer_cast<street_environment::Crossing>(objPtr);
-            logger.debug("CROSSING DATA")<<crossing->distanceTang()<< " pos: "<<crossing->position();
+            logger.debug("CROSSING DATA")<<distanceTang(crossing)<< " pos: "<<crossing->position();
             if(crossing->position().x < config().get<float>("crossingMinDistance",0.3)){ //we already missed the trajectory!
                 continue;
             }
@@ -318,8 +318,8 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                         //check if the Crossing is close enough
                         //As there won't be an obstacle in front of the crossing we can go on the right
                         //TODO we won't indicate if we change line
-                        logger.debug("tang distance to crossing")<<crossing->distanceTang()-tangDistance;
-                        if(crossing->distanceTang()-tangDistance < config().get<float>("minDistanceToCrossing",0.1)){
+                        logger.debug("tang distance to crossing")<<distanceTang(crossing)-tangDistance;
+                        if(distanceTang(crossing)-tangDistance < config().get<float>("minDistanceToCrossing",0.1)){
                             result = LaneState::BLOCKED;
                             if(reason != nullptr){
                                 *reason = objPtr.get();
@@ -333,6 +333,19 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
         }
     }
     return result;
+}
+
+float TrajectoryLineCreator::distanceTang(street_environment::ObstaclePtr obstacle){
+    float t,o;
+    road->firstOrthogonalDistance(obstacle->position(),o,t);
+    return t;
+}
+
+float TrajectoryLineCreator::distanceOrth(street_environment::ObstaclePtr obstacle){
+    float t,o;
+    road->firstOrthogonalDistance(obstacle->position(),o,t);
+    return o;
+
 }
 
 
