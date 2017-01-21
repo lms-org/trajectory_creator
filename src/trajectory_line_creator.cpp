@@ -267,9 +267,16 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistance, bool rightSide
                 continue;
             }
             street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(objPtr);
-            if(!((rightSide && distanceOrth(obstPtr)< 0)||(rightSide && distanceOrth(obstPtr) > 0))){
+            //check if the obstacle is on the side we are looking for
+            if(!((rightSide && distanceOrth(obstPtr)< 0)||(!rightSide && distanceOrth(obstPtr) > 0))){
                 continue;
             }
+            logger.error("distAobstacle position")<<obstPtr->position().x<<" "<<obstPtr->position().y;
+            logger.error("distATang")<<distanceTang(obstPtr);
+            logger.error("distAOrth")<<distanceOrth(obstPtr);
+            logger.error("distAroadPos")<<road->points()[0].x<<" "<<road->points()[0].y;
+            logger.error("distAroadPos")<<road->points()[1].x<<" "<<road->points()[1].y;
+
             float distanceToObstacle = tangDistance-distanceTang(obstPtr);//abstand zum Punkt p2
             if(obstPtr->trust() < obstacleTrustThreshold){
                 continue;
