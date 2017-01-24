@@ -206,12 +206,17 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
             LaneState rightState = LaneState::CLEAR;
             LaneState leftState = LaneState::CLEAR;
             if(phoenixService->driveMode() == phoenix_CC2016_service::CCDriveMode::FMH){
+                logger.debug("simpleTrajectory")<<"driving with obstacles";
                 rightState = getLaneState(tangLength,true,&reasonObj);
                 leftState = getLaneState(tangLength,false,&reasonObj);
                 //if useSavety, we will avoid the right lane if it's blocked/dangerous
                 if(rightState > leftState && (useSavety || (rightState == LaneState::BLOCKED))){
                     rightSide = false; //if both are blocked, we will stay on the right
                 }
+            }else if(phoenixService->driveMode() == phoenix_CC2016_service::CCDriveMode::FOH){
+                logger.debug("simpleTrajectory")<<"driving without obstacles";
+            }else{
+                logger.debug("simpleTrajectory")<<"no valid mode set, using drining without obstacles";
             }
             logger.debug("states")<<(int)rightState<<" "<<(int)leftState;
             //check if the road is blocked, if yes, stop
