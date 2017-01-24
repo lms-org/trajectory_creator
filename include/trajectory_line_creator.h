@@ -55,7 +55,7 @@ private:
      * @param reason TODO hier wird der pointer aus einem shared pointer geholt!
      * @return
      */
-    LaneState getLaneState(float tangDistance, bool rightSide,street_environment::EnvironmentObject** reason = nullptr);
+    LaneState getLaneState(const float tangDistance,const bool rightSide,street_environment::EnvironmentObject** reason = nullptr);
 
 
     float distanceTang(street_environment::ObstaclePtr obstacle);

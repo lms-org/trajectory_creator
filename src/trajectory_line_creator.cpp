@@ -257,13 +257,13 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
 }
 
 
-LaneState TrajectoryLineCreator::getLaneState(float tangDistanceLane, bool rightSide,street_environment::EnvironmentObject** reason){
+LaneState TrajectoryLineCreator::getLaneState(const float tangDistanceLane,const bool rightSide,street_environment::EnvironmentObject** reason){
     //Mindestabstand zwischen zwei Hindernissen 1m
     //Maximalabstand von der Kreuzung: 15cm
     //An der Kreuzung warten: 2s
     LaneState result = LaneState::CLEAR;
     const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
-    const float obstacleLength = config().get<float>("obstacleLength",0.5);
+    const float obstacleLength = config().get<float>("obstacleLength",0.3);
     const float obstacleSavetyDistance = config().get<float>("obstacleSavetyDistance",0);
     const float crossingTrustThreshold = config().get<float>("crossingTrustThreshold",0.5);
     const float obstacleMaxOrthDistance = config().get<float>("obstacleMaxOrthDistance",0.35);
@@ -298,6 +298,11 @@ LaneState TrajectoryLineCreator::getLaneState(float tangDistanceLane, bool right
                     result = LaneState::DANGEROUS;
                 }
             }
+            /*
+            if(!rightSide && (int)result > 0){
+                logger.error("states pos: ")<<obstPtr->position().x<<" "<<obstPtr->position().y<<" dist: "<<tangDistanceLane<<" "<<distanceToObstacle;
+            }
+            */
         }else if(objPtr->getType() == street_environment::Crossing::TYPE){
             logger.debug("I HAVE A CROSSING")<<objPtr->trust();
             //Check the trust
