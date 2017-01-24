@@ -216,7 +216,7 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
             }else if(phoenixService->driveMode() == phoenix_CC2016_service::CCDriveMode::FOH){
                 logger.debug("simpleTrajectory")<<"driving without obstacles";
             }else{
-                logger.debug("simpleTrajectory")<<"no valid mode set, using drining without obstacles";
+                logger.debug("simpleTrajectory")<<"no valid mode set, using driving without obstacles: "<<(int)phoenixService->driveMode();
             }
             logger.debug("states")<<(int)rightState<<" "<<(int)leftState;
             //check if the road is blocked, if yes, stop
