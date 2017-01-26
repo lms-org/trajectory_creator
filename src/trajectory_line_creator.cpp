@@ -74,8 +74,9 @@ float TrajectoryLineCreator::targetVelocity(){
     float curveStraight_minVelocity = myConfig->get<float>("curveStraight_minVelocity", 1.5);
     float curveStraight_maxVelocity = myConfig->get<float>("curveStraight_maxVelocity", 2.0);
 
-    float curveVelocity = sqrt(aOrthMax/fabs(roadStates->states[2].curvature));
+    //calculate the velocity given by the roadStates
     float straightCurveVelocity = sqrt(aOrthMax/fabs(roadStates->states[1].curvature));
+    float curveVelocity = sqrt(aOrthMax/fabs(roadStates->states[2].curvature));
 
     if (roadStates->states[2].curvature == 0)
     {
