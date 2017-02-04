@@ -261,50 +261,18 @@ street_environment::Trajectory TrajectoryLineCreator::simpleTrajectory(bool useS
 LaneState TrajectoryLineCreator::getLaneState(const float tangDistanceLane,const bool rightSide,street_environment::EnvironmentObject** reason){
     //Mindestabstand zwischen zwei Hindernissen 1m
     //Maximalabstand von der Kreuzung: 15cm
-    //An der Kreuzung warten: 2s
+    //An der Kreuzung warten: 3s
     LaneState result = LaneState::CLEAR;
     const float obstacleTrustThreshold = config().get<float>("obstacleTrustThreshold",0.5);
     const float obstacleLength = config().get<float>("obstacleLength",0.3);
     const float obstacleSavetyDistance = config().get<float>("obstacleSavetyDistance",0);
     const float crossingTrustThreshold = config().get<float>("crossingTrustThreshold",0.5);
     const float obstacleMaxOrthDistance = config().get<float>("obstacleMaxOrthDistance",0.35);
+    //TODO if there is an obstacle close to the crossing we might fail
+    //TODO we should sort everything by their tang distance
+    //check if there is a crossing
     for(street_environment::EnvironmentObjectPtr objPtr: envObstacles->objects){
-        if(objPtr->getType() == street_environment::Obstacle::TYPE){
-            if(objPtr->trust() < obstacleTrustThreshold){
-                continue;
-            }
-            street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(objPtr);
-            float orthDistanceToObstacle = distanceOrth(obstPtr);
-            if(std::fabs(orthDistanceToObstacle) > obstacleMaxOrthDistance){
-                continue;
-            }
-
-            //check if the obstacle is on the side we are looking for
-            if(!((rightSide && orthDistanceToObstacle< 0)||(!rightSide && orthDistanceToObstacle > 0))){
-                continue;
-            }
-
-            float distanceToObstacle = tangDistanceLane-distanceTang(obstPtr);//abstand zum Punkt p2
-            if(obstPtr->trust() < obstacleTrustThreshold){
-                continue;
-            }
-            if(distanceToObstacle < obstacleLength){
-                if(reason != nullptr){
-                    *reason = objPtr.get();
-                }
-                if(distanceToObstacle >= 0 && distanceToObstacle){
-                    result = LaneState::BLOCKED;
-                    break;
-                }else if(distanceToObstacle >= -obstacleSavetyDistance){
-                    result = LaneState::DANGEROUS;
-                }
-            }
-            /*
-            if(!rightSide && (int)result > 0){
-                logger.error("states pos: ")<<obstPtr->position().x<<" "<<obstPtr->position().y<<" dist: "<<tangDistanceLane<<" "<<distanceToObstacle;
-            }
-            */
-        }else if(objPtr->getType() == street_environment::Crossing::TYPE){
+        if(objPtr->getType() == street_environment::Crossing::TYPE){
             logger.debug("I HAVE A CROSSING")<<objPtr->trust();
             //Check the trust
             if(objPtr->trust() < crossingTrustThreshold){
@@ -343,12 +311,51 @@ LaneState TrajectoryLineCreator::getLaneState(const float tangDistanceLane,const
                             if(reason != nullptr){
                                 *reason = objPtr.get();
                             }
-                            break;
+                            return result; //we have a crossing, we will drive and stop on the right
                         }
                     }
                 }else{
                     logger.info("CROSSING")<< "clear, I will go on :)";
                 }
+        }
+    }
+    //check if there is a obstacle
+    for(street_environment::EnvironmentObjectPtr objPtr: envObstacles->objects){
+        if(objPtr->getType() == street_environment::Obstacle::TYPE){
+            if(objPtr->trust() < obstacleTrustThreshold){
+                continue;
+            }
+            street_environment::ObstaclePtr obstPtr = std::static_pointer_cast<street_environment::Obstacle>(objPtr);
+            float orthDistanceToObstacle = distanceOrth(obstPtr);
+            if(std::fabs(orthDistanceToObstacle) > obstacleMaxOrthDistance){
+                continue;
+            }
+
+            //check if the obstacle is on the side we are looking for
+            if(!((rightSide && orthDistanceToObstacle< 0)||(!rightSide && orthDistanceToObstacle > 0))){
+                continue;
+            }
+
+            float distanceToObstacle = tangDistanceLane-distanceTang(obstPtr);//abstand zum Punkt p2
+            if(obstPtr->trust() < obstacleTrustThreshold){
+                continue;
+            }
+            if(distanceToObstacle < obstacleLength){
+                if(reason != nullptr){
+                    *reason = objPtr.get();
+                }
+                if(distanceToObstacle >= 0 && distanceToObstacle){
+                    result = LaneState::BLOCKED;
+                    break;
+                }else if(distanceToObstacle >= -obstacleSavetyDistance){
+                    result = LaneState::DANGEROUS;
+                }
+            }
+            /*
+            if(!rightSide && (int)result > 0){
+                logger.error("states pos: ")<<obstPtr->position().x<<" "<<obstPtr->position().y<<" dist: "<<tangDistanceLane<<" "<<distanceToObstacle;
+            }
+            */
         }
     }
     return result;
